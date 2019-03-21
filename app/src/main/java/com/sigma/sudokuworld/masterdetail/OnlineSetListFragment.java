@@ -16,33 +16,34 @@ import android.view.ViewGroup;
 
 import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.adapters.FireBaseSetRecycleViewAdapter;
-import com.sigma.sudokuworld.adapters.SetRecyclerViewAdapter;
-import com.sigma.sudokuworld.persistence.db.entities.Set;
 import com.sigma.sudokuworld.persistence.firebase.FireBaseSet;
 import com.sigma.sudokuworld.viewmodels.MasterDetailViewModel;
 
 import java.util.List;
 
 
-public class SetListFragment extends Fragment {
+public class OnlineSetListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private MasterDetailViewModel mMasterDetailViewModel;
-    private SetRecyclerViewAdapter mAdapter;
-    public static SetListFragment newInstance() {
-        return new SetListFragment();
+    private FireBaseSetRecycleViewAdapter mAdapter;
+
+    public static OnlineSetListFragment newInstance() {
+        return new OnlineSetListFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class);
-        mAdapter = new SetRecyclerViewAdapter(mListener);
+        mAdapter = new FireBaseSetRecycleViewAdapter(mListener);
 
-        LiveData<List<Set>> allSets = mMasterDetailViewModel.getAllSets();
-        allSets.observe(this, new Observer<List<Set>>() {
+        LiveData<List<FireBaseSet>> onlineSets = mMasterDetailViewModel.getOnlineSets();
+        onlineSets.observe(this, new Observer<List<FireBaseSet>>() {
             @Override
-            public void onChanged(@Nullable List<Set> sets) {
-                mAdapter.setItems(sets);
+            public void onChanged(@Nullable List<FireBaseSet> sets) {
+                if (sets != null) {
+                    mAdapter.setItems(sets);
+                }
             }
         });
     }
@@ -51,9 +52,9 @@ public class SetListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
 
-        RecyclerView recyclerView = view.findViewById(R.id.list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-        recyclerView.setAdapter(mAdapter);
+        RecyclerView localView = view.findViewById(R.id.list);
+        localView.setLayoutManager(new LinearLayoutManager(localView.getContext()));
+        localView.setAdapter(mAdapter);
 
         return view;
     }
@@ -76,7 +77,7 @@ public class SetListFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        void onClickSetFragmentInteraction(Set set);
-        void onLongClickSetFragmentInteraction(View view, Set set);
+        void onClickSetFragmentInteraction(FireBaseSet set);
+        void onLongClickSetFragmentInteraction(View view, FireBaseSet set);
     }
 }

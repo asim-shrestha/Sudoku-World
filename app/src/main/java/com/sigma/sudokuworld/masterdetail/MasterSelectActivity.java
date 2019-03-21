@@ -31,7 +31,10 @@ import com.sigma.sudokuworld.masterdetail.detail.PairDetailActivity;
 import com.sigma.sudokuworld.masterdetail.detail.SetDetailActivity;
 import com.sigma.sudokuworld.viewmodels.MasterDetailViewModel;
 
-public class MasterSelectActivity extends AppCompatActivity implements SetListFragment.OnFragmentInteractionListener, PairListFragment.OnFragmentInteractionListener {
+public class MasterSelectActivity extends AppCompatActivity implements
+        SetListFragment.OnFragmentInteractionListener,
+        OnlineSetListFragment.OnFragmentInteractionListener,
+        PairListFragment.OnFragmentInteractionListener {
 
     ViewPager mViewPager;
     TabLayout mTabLayout;
@@ -67,12 +70,12 @@ public class MasterSelectActivity extends AppCompatActivity implements SetListFr
 
     //Fire base listeners
     @Override
-    public void onFireBaseClick(FireBaseSet set) {
-          //Stub
+    public void onClickSetFragmentInteraction(FireBaseSet set) {
+        //TODO: stub
     }
 
     @Override
-    public void onFireBaseLongClick(View view, final FireBaseSet set) {
+    public void onLongClickSetFragmentInteraction(View view, final FireBaseSet set) {
         new AlertDialog.Builder(this)
                 .setTitle(set.getName())
                 .setPositiveButton("Download", new DialogInterface.OnClickListener() {
@@ -165,7 +168,7 @@ public class MasterSelectActivity extends AppCompatActivity implements SetListFr
     }
 
     public class TabPagerAdapter extends FragmentPagerAdapter {
-        private String[] tabTitles = new String[]{"Sets", "Pairs"};
+        private String[] tabTitles = new String[]{"Online Sets", "My Sets", "My Word Pairs"};
 
         public TabPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -174,8 +177,9 @@ public class MasterSelectActivity extends AppCompatActivity implements SetListFr
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0: return SetListFragment.newInstance();
-                case 1:
+                case 0: return OnlineSetListFragment.newInstance();
+                case 1: return SetListFragment.newInstance();
+                case 2:
                 default:
                     return PairListFragment.newInstance();
             }
@@ -183,7 +187,7 @@ public class MasterSelectActivity extends AppCompatActivity implements SetListFr
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override

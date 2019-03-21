@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sigma.sudokuworld.R;
-import com.sigma.sudokuworld.persistence.db.entities.Set;
 import com.sigma.sudokuworld.persistence.db.views.WordPair;
 import com.sigma.sudokuworld.adapters.PairRecyclerViewAdapter;
 import com.sigma.sudokuworld.viewmodels.MasterDetailViewModel;
@@ -23,7 +22,7 @@ import java.util.List;
 public class PairListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private MasterDetailViewModel mMasterDetailViewModel;
-    private PairRecyclerViewAdapter mPairRecyclerViewAdapter;
+    private PairRecyclerViewAdapter mAdapter;
 
     public static PairListFragment newInstance() {
         return new PairListFragment();
@@ -33,11 +32,11 @@ public class PairListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class);
-        mPairRecyclerViewAdapter = new PairRecyclerViewAdapter(mListener);
+        mAdapter = new PairRecyclerViewAdapter(mListener);
         mMasterDetailViewModel.getAllWordPairs().observe(this, new Observer<List<WordPair>>() {
             @Override
             public void onChanged(@Nullable List<WordPair> wordPairs) {
-                mPairRecyclerViewAdapter.setItems(wordPairs);
+                mAdapter.setItems(wordPairs);
             }
         });
     }
@@ -46,15 +45,9 @@ public class PairListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
 
-
-
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(mPairRecyclerViewAdapter);
-        }
+        RecyclerView recyclerView = view.findViewById(R.id.list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
+        recyclerView.setAdapter(mAdapter);
 
         return view;
     }

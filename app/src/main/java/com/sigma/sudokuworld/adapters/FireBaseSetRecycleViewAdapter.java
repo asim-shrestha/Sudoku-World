@@ -8,8 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sigma.sudokuworld.R;
-import com.sigma.sudokuworld.masterdetail.SetListFragment;
-import com.sigma.sudokuworld.masterdetail.SetListFragment.OnFragmentInteractionListener;
+import com.sigma.sudokuworld.masterdetail.OnlineSetListFragment;
+import com.sigma.sudokuworld.masterdetail.OnlineSetListFragment.OnFragmentInteractionListener;
 import com.sigma.sudokuworld.persistence.firebase.FireBaseSet;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.List;
 public class FireBaseSetRecycleViewAdapter extends RecyclerView.Adapter<FireBaseSetRecycleViewAdapter.ViewHolder> {
 
     private List<FireBaseSet> mSets;
-    private final SetListFragment.OnFragmentInteractionListener mListener;
+    private final OnlineSetListFragment.OnFragmentInteractionListener mListener;
 
     public FireBaseSetRecycleViewAdapter(OnFragmentInteractionListener listener) {
         mSets = new ArrayList<>();
@@ -46,7 +46,7 @@ public class FireBaseSetRecycleViewAdapter extends RecyclerView.Adapter<FireBase
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onFireBaseClick(holder.mSetItem);
+                    mListener.onClickSetFragmentInteraction(holder.mSetItem);
                 }
             }
         });
@@ -57,7 +57,7 @@ public class FireBaseSetRecycleViewAdapter extends RecyclerView.Adapter<FireBase
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onFireBaseLongClick(holder.mView, holder.mSetItem);
+                    mListener.onLongClickSetFragmentInteraction(holder.mView, holder.mSetItem);
                 }
 
                 return true;
