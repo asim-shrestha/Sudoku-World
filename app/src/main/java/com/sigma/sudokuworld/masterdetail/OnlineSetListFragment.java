@@ -26,24 +26,19 @@ public class OnlineSetListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private MasterDetailViewModel mMasterDetailViewModel;
     private FireBaseSetRecycleViewAdapter mAdapter;
-
-    public static OnlineSetListFragment newInstance() {
-        return new OnlineSetListFragment();
-    }
+    private String filterQuery = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class);
-        mAdapter = new FireBaseSetRecycleViewAdapter(mListener);
+        filterList(filterQuery);
 
-        LiveData<List<FireBaseSet>> onlineSets = mMasterDetailViewModel.getOnlineSets();
-        onlineSets.observe(this, new Observer<List<FireBaseSet>>() {
+        mAdapter = new FireBaseSetRecycleViewAdapter(mListener);
+        mMasterDetailViewModel.getFilteredOnlineSets().observe(this, new Observer<List<FireBaseSet>>() {
             @Override
-            public void onChanged(@Nullable List<FireBaseSet> sets) {
-                if (sets != null) {
-                    mAdapter.setItems(sets);
-                }
+            public void onChanged(@Nullable List<FireBaseSet> fireBaseSets) {
+                mAdapter.setItems(fireBaseSets);
             }
         });
     }
@@ -74,6 +69,15 @@ public class OnlineSetListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void filterList(String query) {
+        if (query == null) query = "";
+        filterQuery = query;
+
+        if(mMasterDetailViewModel != null) {
+            mMasterDetailViewModel.filterOnlineSets(query);
+        }
     }
 
     public interface OnFragmentInteractionListener {

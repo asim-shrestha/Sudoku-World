@@ -46,6 +46,7 @@
     <string name="ChangeSet">Change Set</string>
     <string name="SetTabTitle">Sets</string>
     <string name="WordPairTabTitle">Pairs</string>
+    <string name="Search">Search</string>
     <string name="title_wordset_list">Word Sets</string>
     <string name="title_wordset_detail">Word Set Detail</string>
     <string name="title_default_set">Default se</string>

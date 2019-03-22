@@ -16,18 +16,18 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 
 import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.persistence.db.entities.Set;
-import com.sigma.sudokuworld.persistence.db.entities.Pair;
 import com.sigma.sudokuworld.persistence.db.views.WordPair;
 import com.sigma.sudokuworld.persistence.firebase.FireBaseSet;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 import com.sigma.sudokuworld.masterdetail.detail.AddPairActivity;
 import com.sigma.sudokuworld.masterdetail.detail.AddSetActivity;
-import com.sigma.sudokuworld.masterdetail.detail.PairDetailActivity;
 import com.sigma.sudokuworld.masterdetail.detail.SetDetailActivity;
 import com.sigma.sudokuworld.viewmodels.MasterDetailViewModel;
 
@@ -40,6 +40,10 @@ public class MasterSelectActivity extends AppCompatActivity implements
     TabLayout mTabLayout;
     FloatingActionButton mFloatingActionButton;
     MasterDetailViewModel mMasterDetailViewModel;
+
+    private OnlineSetListFragment mOnlineSetListFragment;
+    private SetListFragment mSetListFragment;
+    private PairListFragment mPairListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +61,10 @@ public class MasterSelectActivity extends AppCompatActivity implements
 
         mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class);
 
+        mPairListFragment = new PairListFragment();
+        mOnlineSetListFragment = new OnlineSetListFragment();
+        mSetListFragment = new SetListFragment();
+
         mFloatingActionButton = findViewById(R.id.fab);
         mTabLayout = findViewById(R.id.tabs);
         mViewPager = findViewById(R.id.tabPager);
@@ -67,6 +75,28 @@ public class MasterSelectActivity extends AppCompatActivity implements
         mFloatingActionButton.setImageResource(R.drawable.ic_add_black_24dp);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        SearchView searchView = (SearchView) menu.findItem(R.id.searchItem).getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mPairListFragment.filterList(newText);
+                mSetListFragment.filterList(newText);
+                mOnlineSetListFragment.filterList(newText);
+                return false;
+            }
+        });
+
+        return true;
+    }
 
     //Fire base listeners
     @Override
@@ -177,11 +207,11 @@ public class MasterSelectActivity extends AppCompatActivity implements
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0: return OnlineSetListFragment.newInstance();
-                case 1: return SetListFragment.newInstance();
+                case 0: return mOnlineSetListFragment;
+                case 1: return mSetListFragment;
                 case 2:
                 default:
-                    return PairListFragment.newInstance();
+                    return mPairListFragment;
             }
         }
 

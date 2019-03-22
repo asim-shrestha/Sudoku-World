@@ -21,19 +21,18 @@ import java.util.List;
 
 public class PairListFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
-    private MasterDetailViewModel mMasterDetailViewModel;
     private PairRecyclerViewAdapter mAdapter;
-
-    public static PairListFragment newInstance() {
-        return new PairListFragment();
-    }
+    private MasterDetailViewModel mMasterDetailViewModel;
+    private String filterQuery = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class);
+        filterList(filterQuery);
+
         mAdapter = new PairRecyclerViewAdapter(mListener);
-        mMasterDetailViewModel.getAllWordPairs().observe(this, new Observer<List<WordPair>>() {
+        mMasterDetailViewModel.getFilteredWordPairs().observe(this, new Observer<List<WordPair>>() {
             @Override
             public void onChanged(@Nullable List<WordPair> wordPairs) {
                 mAdapter.setItems(wordPairs);
@@ -66,6 +65,15 @@ public class PairListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void filterList(String query) {
+        if (query == null) query = "";
+        filterQuery = query;
+
+        if(mMasterDetailViewModel != null) {
+            mMasterDetailViewModel.filterWordPairs(query);
+        }
     }
 
     public interface OnFragmentInteractionListener {
