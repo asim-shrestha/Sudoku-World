@@ -30,6 +30,11 @@
     <string name="difficultyEasy">Easy</string>
     <string name="difficultyMedium">Medium</string>
     <string name="difficultyHard">Hard</string>
+    <string name="sudokuSizeLabel">Board Size</string>
+    <string name="sudokuSize0">4x4</string>
+    <string name="sudokuSize1">6x6</string>
+    <string name="sudokuSize2">9x9</string>
+    <string name="sudokuSize3">12x12</string>
     <string name="audioMode">Listening Comprehension Mode</string>
     <string name="soundMode">Sound</string>
     <string name="hintsMode">Hints</string>

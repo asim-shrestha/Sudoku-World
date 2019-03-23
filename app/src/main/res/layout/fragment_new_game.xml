@@ -12,139 +12,194 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
 
         <TextView
             android:id="@+id/newGameHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
             android:background="@drawable/settings_header"
-            android:text="@string/newGameHeader"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
+            android:text="@string/newGameHeader"
+            android:textAlignment="center"
             android:textSize="22sp"
-            android:textStyle="bold"
-            />
+            android:textStyle="bold" />
 
         <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-
-        <RadioGroup
-            android:id="@+id/gameModeRadioGroup"
-            android:theme="@style/AppTheme.MenuText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checkedButton="@+id/nativeModeRadioButton">
-
-            <RadioButton
-                android:id="@+id/nativeModeRadioButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/nativeMode"
-                android:checked="true"
-                android:textColor="@color/colorWhite"/>
-
-            <RadioButton
-                android:id="@+id/foreignModeRadioButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/foreignMode"
-                android:textColor="@color/colorWhite"/>
-
-            <RadioButton
-                android:id="@+id/numbersModeRadioButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/numbersMode"
-                android:visibility="visible"
-                android:textColor="@color/colorWhite"/>
-
-        </RadioGroup>
-
-        <LinearLayout
-            android:id="@+id/setViewLayout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
+
+            <RadioGroup
+                android:id="@+id/gameModeRadioGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkedButton="@+id/nativeModeRadioButton"
+                android:theme="@style/AppTheme.MenuText">
+
+                <RadioButton
+                    android:id="@+id/nativeModeRadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/nativeMode"
+                    android:textColor="@color/colorWhite" />
+
+                <RadioButton
+                    android:id="@+id/foreignModeRadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/foreignMode"
+                    android:textColor="@color/colorWhite" />
+
+                <RadioButton
+                    android:id="@+id/numbersModeRadioButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/numbersMode"
+                    android:textColor="@color/colorWhite"
+                    android:visibility="visible" />
+
+            </RadioGroup>
+
+            <LinearLayout
+                android:id="@+id/setViewLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
                     android:id="@+id/setTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/WordSetName"
-                    android:visibility="visible"/>
+                    android:visibility="visible" />
 
-            <Button
-                android:id="@+id/setBuilderButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/ChangeSet"
-                android:layout_weight="1"
-                android:background="@drawable/red_button"/>
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/difficultyLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/difficultyLabel"
-            android:textAlignment="center"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+                <Button
+                    android:id="@+id/setBuilderButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/red_button"
+                    android:text="@string/ChangeSet" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/textView6"
-                android:layout_width="wrap_content"
+                android:id="@+id/difficultyLabel"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/difficultyEasy" />
+                android:text="@string/difficultyLabel"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/difficultyEasy" />
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/difficultyMedium"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/difficultyHard"
+                    android:textAlignment="textEnd" />
+
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/difficultyBar"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="2"
+                android:progress="1" />
 
             <TextView
-                android:id="@+id/textView7"
-                android:layout_width="wrap_content"
+                android:id="@+id/sudokuSizeLabel"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/difficultyMedium"
-                android:textAlignment="center" />
+                android:text="@string/sudokuSizeLabel"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
-            <TextView
-                android:id="@+id/textView8"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/sudokuSize0" />
+
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/sudokuSize1"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:id="@+id/textView11"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/sudokuSize2"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:id="@+id/textView12"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/sudokuSize3"
+                    android:textAlignment="textEnd" />
+
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/sudokuSizeBar"
+                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/difficultyHard"
-                android:textAlignment="textEnd" />
-
-        </LinearLayout>
-
-        <SeekBar
-            android:id="@+id/difficultyBar"
-            style="@style/Widget.AppCompat.SeekBar.Discrete"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:max="2"
-            android:progress="1" />
+                android:max="3"
+                android:progress="2" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -152,30 +207,30 @@
                 android:orientation="horizontal">
 
                 <Button
-                        android:id="@+id/cancelButton"
-                        android:layout_height="wrap_content"
-                        android:layout_width="fill_parent"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginTop="20dp"
-                        android:background="@drawable/red_button"
-                        android:elevation="0dp"
-                        android:text="@string/cancel_button"
-                        android:textSize="15sp"/>
+                    android:id="@+id/cancelButton"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/red_button"
+                    android:elevation="0dp"
+                    android:text="@string/cancel_button"
+                    android:textSize="15sp" />
 
                 <Button
                     android:id="@+id/playNewGameButton"
-                    android:layout_height="wrap_content"
                     android:layout_width="fill_parent"
-                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:layout_marginTop="20dp"
+                    android:layout_weight="1"
                     android:background="@drawable/red_button"
                     android:elevation="0dp"
                     android:text="@string/play_button"
                     android:textSize="15sp" />
             </LinearLayout>
 
-    </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
