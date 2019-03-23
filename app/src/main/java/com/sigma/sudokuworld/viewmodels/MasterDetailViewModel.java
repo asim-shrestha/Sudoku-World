@@ -4,12 +4,10 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.Transformations;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.sigma.sudokuworld.persistence.WordPairRepository;
 import com.sigma.sudokuworld.persistence.WordSetRepository;
-import com.sigma.sudokuworld.persistence.db.entities.Pair;
 import com.sigma.sudokuworld.persistence.db.entities.Set;
 import com.sigma.sudokuworld.persistence.db.entities.Word;
 import com.sigma.sudokuworld.persistence.db.views.WordPair;
@@ -156,17 +154,8 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         mFilteredFirebaseSets.setValue(filteredFirebaseSets);
     }
 
-
     public void setSelectedSet(long setID) {
         PersistenceService.saveSetSetting(mApplication, setID);
-    }
-
-    public void setSelectedSet(Set set) {
-        PersistenceService.saveSetSetting(mApplication, set.getSetID());
-    }
-
-    public Set getSelectedSet() {
-        return mWordSetRepository.getSet(PersistenceService.loadSetSettingSetting(mApplication));
     }
 
     public Set getSet(long setID) {

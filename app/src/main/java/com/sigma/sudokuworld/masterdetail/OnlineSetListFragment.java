@@ -1,12 +1,9 @@
 package com.sigma.sudokuworld.masterdetail;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,22 +14,18 @@ import android.view.ViewGroup;
 import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.adapters.FireBaseSetRecycleViewAdapter;
 import com.sigma.sudokuworld.persistence.firebase.FireBaseSet;
-import com.sigma.sudokuworld.viewmodels.MasterDetailViewModel;
 
 import java.util.List;
 
 
-public class OnlineSetListFragment extends Fragment {
+public class OnlineSetListFragment extends AbstractListFragment {
+
     private OnFragmentInteractionListener mListener;
-    private MasterDetailViewModel mMasterDetailViewModel;
     private FireBaseSetRecycleViewAdapter mAdapter;
-    private String filterQuery = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class);
-        filterList(filterQuery);
 
         mAdapter = new FireBaseSetRecycleViewAdapter(mListener);
         mMasterDetailViewModel.getFilteredOnlineSets().observe(this, new Observer<List<FireBaseSet>>() {
@@ -71,9 +64,9 @@ public class OnlineSetListFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
     public void filterList(String query) {
         if (query == null) query = "";
-        filterQuery = query;
 
         if(mMasterDetailViewModel != null) {
             mMasterDetailViewModel.filterOnlineSets(query);

@@ -16,7 +16,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -31,6 +30,8 @@ import com.sigma.sudokuworld.masterdetail.detail.AddSetActivity;
 import com.sigma.sudokuworld.masterdetail.detail.SetDetailActivity;
 import com.sigma.sudokuworld.viewmodels.MasterDetailViewModel;
 
+import java.util.List;
+
 public class MasterSelectActivity extends AppCompatActivity implements
         SetListFragment.OnFragmentInteractionListener,
         OnlineSetListFragment.OnFragmentInteractionListener,
@@ -40,10 +41,6 @@ public class MasterSelectActivity extends AppCompatActivity implements
     TabLayout mTabLayout;
     FloatingActionButton mFloatingActionButton;
     MasterDetailViewModel mMasterDetailViewModel;
-
-    private OnlineSetListFragment mOnlineSetListFragment;
-    private SetListFragment mSetListFragment;
-    private PairListFragment mPairListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,16 +56,14 @@ public class MasterSelectActivity extends AppCompatActivity implements
             actionBar.setBackgroundDrawable(avd);
         }
 
-        mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class);
+        mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class); //TODO: make frags and master share the same ViewModel
 
-        mPairListFragment = new PairListFragment();
-        mOnlineSetListFragment = new OnlineSetListFragment();
-        mSetListFragment = new SetListFragment();
 
         mFloatingActionButton = findViewById(R.id.fab);
         mTabLayout = findViewById(R.id.tabs);
         mViewPager = findViewById(R.id.tabPager);
         mViewPager.setAdapter(new TabPagerAdapter(getSupportFragmentManager()));
+
         mTabLayout.setupWithViewPager(mViewPager);
 
         mFloatingActionButton.setOnClickListener(new FloatingActionButtonListener());
@@ -78,23 +73,6 @@ public class MasterSelectActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.searchItem).getActionView();
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                mPairListFragment.filterList(newText);
-                mSetListFragment.filterList(newText);
-                mOnlineSetListFragment.filterList(newText);
-                return false;
-            }
-        });
-
         return true;
     }
 
@@ -200,18 +178,18 @@ public class MasterSelectActivity extends AppCompatActivity implements
     public class TabPagerAdapter extends FragmentPagerAdapter {
         private String[] tabTitles = new String[]{"Online Sets", "My Sets", "My Word Pairs"};
 
-        public TabPagerAdapter(FragmentManager fragmentManager) {
+        private TabPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
         }
 
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0: return mOnlineSetListFragment;
-                case 1: return mSetListFragment;
+                case 0: return new OnlineSetListFragment();
+                case 1: return new SetListFragment();
                 case 2:
                 default:
-                    return mPairListFragment;
+                    return new PairListFragment();
             }
         }
 
