@@ -12,26 +12,26 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.sigma.sudokuworld.R;
-import com.sigma.sudokuworld.adapters.SetRecyclerViewAdapter;
-import com.sigma.sudokuworld.persistence.db.entities.Set;
+import com.sigma.sudokuworld.adapters.FireBaseSetRecycleViewAdapter;
+import com.sigma.sudokuworld.persistence.firebase.FireBaseSet;
 
 import java.util.List;
 
 
-public class SetListFragment extends AbstractListFragment {
+public class OnlineSetListFragment extends AbstractListFragment {
 
     private OnFragmentInteractionListener mListener;
-    private SetRecyclerViewAdapter mAdapter;
+    private FireBaseSetRecycleViewAdapter mAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAdapter = new SetRecyclerViewAdapter(mListener);
-        mMasterDetailViewModel.getFilteredSets().observe(this, new Observer<List<Set>>() {
+        mAdapter = new FireBaseSetRecycleViewAdapter(mListener);
+        mMasterDetailViewModel.getFilteredOnlineSets().observe(this, new Observer<List<FireBaseSet>>() {
             @Override
-            public void onChanged(@Nullable List<Set> sets) {
-                mAdapter.setItems(sets);
+            public void onChanged(@Nullable List<FireBaseSet> fireBaseSets) {
+                mAdapter.setItems(fireBaseSets);
             }
         });
     }
@@ -40,9 +40,9 @@ public class SetListFragment extends AbstractListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
 
-        RecyclerView recyclerView = view.findViewById(R.id.list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
-        recyclerView.setAdapter(mAdapter);
+        RecyclerView localView = view.findViewById(R.id.list);
+        localView.setLayoutManager(new LinearLayoutManager(localView.getContext()));
+        localView.setAdapter(mAdapter);
 
         return view;
     }
@@ -69,12 +69,12 @@ public class SetListFragment extends AbstractListFragment {
         if (query == null) query = "";
 
         if(mMasterDetailViewModel != null) {
-            mMasterDetailViewModel.filterSets(query);
+            mMasterDetailViewModel.filterOnlineSets(query);
         }
     }
 
     public interface OnFragmentInteractionListener {
-        void onClickSetFragmentInteraction(Set set);
-        void onLongClickSetFragmentInteraction(View view, Set set);
+        void onClickSetFragmentInteraction(FireBaseSet set);
+        void onLongClickSetFragmentInteraction(View view, FireBaseSet set);
     }
 }

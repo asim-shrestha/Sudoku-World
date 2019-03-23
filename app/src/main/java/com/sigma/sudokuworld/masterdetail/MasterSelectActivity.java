@@ -17,21 +17,25 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 
 import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.persistence.db.entities.Set;
-import com.sigma.sudokuworld.persistence.db.entities.Pair;
 import com.sigma.sudokuworld.persistence.db.views.WordPair;
 import com.sigma.sudokuworld.persistence.firebase.FireBaseSet;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 import com.sigma.sudokuworld.masterdetail.detail.AddPairActivity;
 import com.sigma.sudokuworld.masterdetail.detail.AddSetActivity;
-import com.sigma.sudokuworld.masterdetail.detail.PairDetailActivity;
 import com.sigma.sudokuworld.masterdetail.detail.SetDetailActivity;
 import com.sigma.sudokuworld.viewmodels.MasterDetailViewModel;
 
-public class MasterSelectActivity extends AppCompatActivity implements SetListFragment.OnFragmentInteractionListener, PairListFragment.OnFragmentInteractionListener {
+import java.util.List;
+
+public class MasterSelectActivity extends AppCompatActivity implements
+        SetListFragment.OnFragmentInteractionListener,
+        OnlineSetListFragment.OnFragmentInteractionListener,
+        PairListFragment.OnFragmentInteractionListener {
 
     ViewPager mViewPager;
     TabLayout mTabLayout;
@@ -52,27 +56,34 @@ public class MasterSelectActivity extends AppCompatActivity implements SetListFr
             actionBar.setBackgroundDrawable(avd);
         }
 
-        mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class);
+        mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class); //TODO: make frags and master share the same ViewModel
+
 
         mFloatingActionButton = findViewById(R.id.fab);
         mTabLayout = findViewById(R.id.tabs);
         mViewPager = findViewById(R.id.tabPager);
         mViewPager.setAdapter(new TabPagerAdapter(getSupportFragmentManager()));
+
         mTabLayout.setupWithViewPager(mViewPager);
 
         mFloatingActionButton.setOnClickListener(new FloatingActionButtonListener());
         mFloatingActionButton.setImageResource(R.drawable.ic_add_black_24dp);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
     //Fire base listeners
     @Override
-    public void onFireBaseClick(FireBaseSet set) {
-          //Stub
+    public void onClickSetFragmentInteraction(FireBaseSet set) {
+        //TODO: stub
     }
 
     @Override
-    public void onFireBaseLongClick(View view, final FireBaseSet set) {
+    public void onLongClickSetFragmentInteraction(View view, final FireBaseSet set) {
         new AlertDialog.Builder(this)
                 .setTitle(set.getName())
                 .setPositiveButton("Download", new DialogInterface.OnClickListener() {
@@ -165,25 +176,26 @@ public class MasterSelectActivity extends AppCompatActivity implements SetListFr
     }
 
     public class TabPagerAdapter extends FragmentPagerAdapter {
-        private String[] tabTitles = new String[]{"Sets", "Pairs"};
+        private String[] tabTitles = new String[]{"Online Sets", "My Sets", "My Word Pairs"};
 
-        public TabPagerAdapter(FragmentManager fragmentManager) {
+        private TabPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
         }
 
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0: return SetListFragment.newInstance();
-                case 1:
+                case 0: return new OnlineSetListFragment();
+                case 1: return new SetListFragment();
+                case 2:
                 default:
-                    return PairListFragment.newInstance();
+                    return new PairListFragment();
             }
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
