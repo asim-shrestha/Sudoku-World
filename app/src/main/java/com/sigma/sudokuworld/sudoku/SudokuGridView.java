@@ -21,23 +21,29 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SudokuGridView extends View {
+    private static final char COMPETITOR_FILLED_FLAG = '^';
+
     private static final int SUDOKU_SIZE = 9;
     private static final int SUDOKU_ROOT_SIZE = 3;
 
     private int mXOrigin;
     private int mYOrigin;
     private int mSquareWidth;
-    private int mSquareHight;
+    private int mSquareHeight;
     private int mCellWidth;
-    private int mCellHight;
+    private int mCellHeight;
 
     private Rect mGridBoundingRect;
 
     private Paint mGridPaint;
     private Paint mBoldPaint;
-    private Paint mCellFilledPaint;
-    private Paint mLockedCellFillPaint;
-    private Paint mIncorrectCellFillPaint;
+
+    private Paint mHighlightFillPaint;
+    private Paint mIncorrectFillPaint;
+    private Paint mLockedFillPaint;
+    private Paint mCompetitorFillPaint;
+    private Paint mNeighboursFillPaint;
+
     private Paint mTextPaint;
 
     private Float mTextPaintTextHeight;
@@ -63,9 +69,11 @@ public class SudokuGridView extends View {
     private void initPaint(Context context, AttributeSet attrs) {
         mGridPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBoldPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mCellFilledPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mLockedCellFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mIncorrectCellFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mHighlightFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mLockedFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mIncorrectFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mCompetitorFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mNeighboursFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         //Get styling from activity_sudoku.xml
@@ -82,9 +90,9 @@ public class SudokuGridView extends View {
             mBoldPaint.setStrokeWidth(a.getDimension(R.styleable.SudokuGridView_boldGridPaintStrokeWidth, 10));
             mBoldPaint.setColor(a.getColor(R.styleable.SudokuGridView_boldGridPaintColor, Color.BLACK));
             mBoldPaint.setAlpha(125);
-            mCellFilledPaint.setColor(a.getColor(R.styleable.SudokuGridView_highlightedCellColour, Color.YELLOW));
-            mLockedCellFillPaint.setColor(a.getColor(R.styleable.SudokuGridView_lockedCellColour, Color.GRAY));
-            mIncorrectCellFillPaint.setColor(a.getColor(R.styleable.SudokuGridView_incorrectCellColour, Color.RED));
+            mHighlightFillPaint.setColor(a.getColor(R.styleable.SudokuGridView_highlightedCellColour, Color.YELLOW));
+            mLockedFillPaint.setColor(a.getColor(R.styleable.SudokuGridView_lockedCellColour, Color.GRAY));
+            mIncorrectFillPaint.setColor(a.getColor(R.styleable.SudokuGridView_incorrectCellColour, Color.RED));
         } finally {
             a.recycle();
         }
@@ -92,9 +100,18 @@ public class SudokuGridView extends View {
         //More paint styling
         mGridPaint.setStrokeCap(Paint.Cap.BUTT);
         mBoldPaint.setStrokeCap(Paint.Cap.ROUND);
-        mCellFilledPaint.setStyle(Paint.Style.FILL);
-        mLockedCellFillPaint.setStyle(Paint.Style.FILL);
-        mIncorrectCellFillPaint.setStyle(Paint.Style.FILL);
+        mHighlightFillPaint.setStyle(Paint.Style.FILL);
+        mLockedFillPaint.setStyle(Paint.Style.FILL);
+        mIncorrectFillPaint.setStyle(Paint.Style.FILL);
+
+        //TODO add to attrs
+        mCompetitorFillPaint.setStyle(Paint.Style.FILL);
+        mCompetitorFillPaint.setColor(Color.MAGENTA);
+        mCompetitorFillPaint.setAlpha(50);
+
+        mNeighboursFillPaint.setStyle(Paint.Style.FILL);
+        mNeighboursFillPaint.setColor(Color.BLACK);
+        mNeighboursFillPaint.setAlpha(17);
     }
 
     public void setCellLabels(LifecycleOwner owner, LiveData<List<String>> labelsLiveData) {
@@ -139,22 +156,22 @@ public class SudokuGridView extends View {
             int squareSize = Math.min(w - maxPad, h - maxPad);
             int cellSize = squareSize / SUDOKU_SIZE;
             squareSize = cellSize * SUDOKU_SIZE; //Guard against for floating point errors
-            mCellHight = cellSize;
+            mCellHeight = cellSize;
             mCellWidth = cellSize;
-            mSquareHight = squareSize;
+            mSquareHeight = squareSize;
             mSquareWidth = squareSize;
         } else {
             mSquareWidth = (w - maxPad);
             mCellWidth = mSquareWidth / SUDOKU_SIZE;
-            mSquareHight = (h - maxPad);
-            mCellHight = mSquareHight / SUDOKU_SIZE;
+            mSquareHeight = (h - maxPad);
+            mCellHeight = mSquareHeight / SUDOKU_SIZE;
         }
 
         mGridBoundingRect = new Rect(
                 mXOrigin,
                 mYOrigin,
                 mXOrigin + mSquareWidth,
-                mYOrigin + mSquareHight
+                mYOrigin + mSquareHeight
         );
 
         mTextPaint.setTextSize(mCellWidth / 2f);
@@ -200,13 +217,13 @@ public class SudokuGridView extends View {
             //Either bold or not bold
             if (i % SUDOKU_ROOT_SIZE == 0) {
                 canvas.drawLine(
-                        mXOrigin,mYOrigin + (i * mCellHight),
-                        mSquareWidth + mXOrigin, mYOrigin + (i * mCellHight),
+                        mXOrigin,mYOrigin + (i * mCellHeight),
+                        mSquareWidth + mXOrigin, mYOrigin + (i * mCellHeight),
                         mBoldPaint);
             } else {
                 canvas.drawLine(
-                        mXOrigin,mYOrigin + (i * mCellHight),
-                        mSquareWidth + mXOrigin, mYOrigin + (i * mCellHight),
+                        mXOrigin,mYOrigin + (i * mCellHeight),
+                        mSquareWidth + mXOrigin, mYOrigin + (i * mCellHeight),
                         mGridPaint);
             }
         }
@@ -218,12 +235,12 @@ public class SudokuGridView extends View {
             if (i % SUDOKU_ROOT_SIZE == 0) {
                 canvas.drawLine(
                         mXOrigin + (i * mCellWidth), mYOrigin,
-                        mXOrigin + (i * mCellWidth), mSquareHight + mYOrigin,
+                        mXOrigin + (i * mCellWidth), mSquareHeight + mYOrigin,
                         mBoldPaint);
             } else {
                 canvas.drawLine(
                         mXOrigin + (i * mCellWidth), mYOrigin,
-                        mXOrigin + (i * mCellWidth), mSquareHight + mYOrigin,
+                        mXOrigin + (i * mCellWidth), mSquareHeight + mYOrigin,
                         mGridPaint);
             }
         }
@@ -240,43 +257,27 @@ public class SudokuGridView extends View {
 
             // If its the cell that's currently INCORRECT, draw its highlight
             if(i == mIncorrectCell) {
-                Rect cellRect = new Rect(
-                        mXOrigin + (cx * mCellWidth),
-                        mYOrigin + (cy * mCellHight),
-                        mXOrigin + ((cx + 1) * mCellWidth),
-                        mYOrigin + ((cy + 1) * mCellHight)
-                );
-
-                canvas.drawRect(cellRect, mIncorrectCellFillPaint);
+                drawCellHighlight(canvas, mIncorrectFillPaint, i);
             }
 
             //If its the cell that's currently highlighted draw the highlight
             else if (i == mHighlightedCell) {
-                Rect cellRect = new Rect(
-                        mXOrigin + (cx * mCellWidth),
-                        mYOrigin + (cy * mCellHight),
-                        mXOrigin + ((cx + 1) * mCellWidth),
-                        mYOrigin + ((cy + 1) * mCellHight)
-                );
-                canvas.drawRect(cellRect, mCellFilledPaint);
+                drawCellHighlight(canvas, mHighlightFillPaint, i);
             }
 
             //If the cell has a label
             String label = mCellLabels[i];
             if (!label.equals("")) {
 
-
                 //Draws the cell fill for squares that cant be edited
                 if (label.charAt(0) == KeyConstants.CELL_LOCKED_FLAG) {
+                    drawCellHighlight(canvas, mLockedFillPaint, i);
+                    label = label.substring(1);
+                }
 
-                    Rect cellRect = new Rect(
-                            mXOrigin + (cx * mCellWidth),
-                            mYOrigin + (cy * mCellHight),
-                            mXOrigin + ((cx + 1) * mCellWidth),
-                            mYOrigin + ((cy + 1) * mCellHight)
-                    );
-
-                    canvas.drawRect(cellRect, mLockedCellFillPaint);
+                //Draws the cell fill for squares are filled by other player
+                else if (label.charAt(0) == COMPETITOR_FILLED_FLAG) {
+                    drawCellHighlight(canvas, mCompetitorFillPaint, i);
                     label = label.substring(1);
                 }
 
@@ -292,15 +293,12 @@ public class SudokuGridView extends View {
 
                 canvas.drawText(label,
                         mXOrigin + (cx * mCellWidth) + (mCellWidth / 2f) - (textWidth / 2),
-                        mYOrigin + (cy * mCellHight) + (mCellHight / 2f) + (mTextPaintTextHeight / 2) - 10,
+                        mYOrigin + (cy * mCellHeight) + (mCellHeight / 2f) + (mTextPaintTextHeight / 2) - 10,
                         mTextPaint);
 
                 //Reset text paint size
                 mTextPaint.setTextSize(defaultTextSize);
             }
-
-
-
         }
     }
 
@@ -325,16 +323,15 @@ public class SudokuGridView extends View {
             int cellNumber = SUDOKU_SIZE * row + i;
             if (cellNumber != mHighlightedCell)
             {
-                drawCellHighlight(canvas, cellNumber);
+                drawCellHighlight(canvas, mNeighboursFillPaint, cellNumber);
                 visitedList.add(cellNumber);
             }
-
 
             //Column
             cellNumber = column + i * SUDOKU_SIZE;
             if (cellNumber != mHighlightedCell)
             {
-                drawCellHighlight(canvas, cellNumber);
+                drawCellHighlight(canvas, mNeighboursFillPaint, cellNumber);
                 visitedList.add(cellNumber);
             }
         }
@@ -345,13 +342,13 @@ public class SudokuGridView extends View {
             {
                 int cellNumber = subsectionRow + SUDOKU_SIZE * i + subsectionColumn + j;
                 if (!visitedList.contains(cellNumber)) {
-                    drawCellHighlight(canvas, cellNumber);
+                    drawCellHighlight(canvas, mNeighboursFillPaint, cellNumber);
                 }
             }
         }
     }
 
-    private void drawCellHighlight(Canvas canvas, int cellNumber) {
+    private void drawCellHighlight(Canvas canvas, Paint paint, int cellNumber) {
         //Draws the individual highlight of a cell
 
         int cx = cellNumber % SUDOKU_SIZE;   //x cell pos
@@ -359,12 +356,11 @@ public class SudokuGridView extends View {
 
         Rect cellRect = new Rect(
                 mXOrigin + (cx * mCellWidth),
-                mYOrigin + (cy * mCellHight),
+                mYOrigin + (cy * mCellHeight),
                 mXOrigin + ((cx + 1) * mCellWidth),
-                mYOrigin + ((cy + 1) * mCellHight)
+                mYOrigin + ((cy + 1) * mCellHeight)
         );
-        Paint paint = new Paint(mGridPaint);
-        paint.setAlpha(17);
+
         canvas.drawRect(cellRect, paint);
     }
 
@@ -384,7 +380,7 @@ public class SudokuGridView extends View {
         x -= mXOrigin;
         y -= mYOrigin;
         x /= mCellWidth;
-        y /= mCellHight;
+        y /= mCellHeight;
         return (y * SUDOKU_SIZE) + x;
     }
 
