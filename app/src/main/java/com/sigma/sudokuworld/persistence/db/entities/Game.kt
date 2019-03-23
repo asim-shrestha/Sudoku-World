@@ -18,6 +18,7 @@ data class Game (
                 childColumns = ["setID"],
                 onDelete = CASCADE)
         var setID: Long,
+        var boardSize: Int,
         var difficulty: GameDifficulty,
         var gameMode: GameMode,
         var cellValues: IntArray,
