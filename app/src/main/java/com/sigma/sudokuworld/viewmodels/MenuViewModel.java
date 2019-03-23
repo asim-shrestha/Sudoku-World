@@ -38,6 +38,7 @@ public class MenuViewModel extends BaseSettingsViewModel {
         Game game = new Game(
                 0,
                 getSelectedSetID(),
+                getSelectedBoardSize(),
                 getSelectedGameDifficulty(),
                 getSelectedGameMode(),
                 puzzle.getIntArray(KeyConstants.CELL_VALUES_KEY),
@@ -86,5 +87,9 @@ public class MenuViewModel extends BaseSettingsViewModel {
 
     public long getSelectedSetID() {
         return PersistenceService.loadSetSettingSetting(mApplication);
+    }
+
+    public int getSelectedBoardSize(){
+        return PersistenceService.loadBoardSizeSetting(mApplication);
     }
 }
