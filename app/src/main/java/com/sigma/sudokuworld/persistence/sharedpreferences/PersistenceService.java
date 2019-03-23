@@ -13,8 +13,8 @@ public abstract class PersistenceService {
     private static final String SAVE_SETTINGS_FILE = "settings";
 
     /* --- Saving --- */
-    public static void saveBoardSizeSetting(Context context, int boardSize) {
-        getEditor(context).putInt(BOARD_SIZE_KEY, boardSize).apply();
+    public static void saveBoardLengthSetting(Context context, int boardLength) {
+        getEditor(context).putInt(BOARD_LENGTH_KEY, boardLength).apply();
     }
 
     public static void saveDifficultySetting(Context context, GameDifficulty difficulty) {
@@ -46,8 +46,8 @@ public abstract class PersistenceService {
     }
 
     /* --- Loading --- */
-    public static int loadBoardSizeSetting(Context context) {
-        return getSettings(context).getInt(BOARD_SIZE_KEY, 9);
+    public static int loadBoardLengthSetting(Context context) {
+        return getSettings(context).getInt(BOARD_LENGTH_KEY, 9);
     }
     public static GameDifficulty loadDifficultySetting(Context context) {
         return GameDifficulty.fromString(getSettings(context).getString(DIFFICULTY_KEY, GameDifficulty.EASY.name()));

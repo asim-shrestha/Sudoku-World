@@ -13,15 +13,17 @@ import java.lang.Math;
 //and check whether or not a given solution is the correct solution
 public class PuzzleGenerator {
     private SudokuCell[][] mSudokuCells;
-    private int mSudokuSubsectionSize;
+    private int mSubsectionWidth;
+    private int mSubsectionHeight;
     private int mBoardLength;
     private int mBoardSize;
     private int[] mSolutionValues;
 
     //Constructor
-    public PuzzleGenerator(int sudokuSubsectionSize) {
-        mSudokuSubsectionSize = sudokuSubsectionSize;
-        mBoardLength = sudokuSubsectionSize * sudokuSubsectionSize;
+    public PuzzleGenerator(int boardLength) {
+        mBoardLength = boardLength;
+        mSubsectionWidth = (int) Math.floor(Math.sqrt(boardLength));
+        mSubsectionHeight = (int) Math.ceil(Math.sqrt(boardLength));
         mBoardSize = (mBoardLength) * (mBoardLength);
         mSolutionValues = new int[mBoardSize];
     }

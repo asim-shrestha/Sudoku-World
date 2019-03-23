@@ -23,7 +23,7 @@ public final class KeyConstants {
      */
 
     //Public index keys for saving data in bundle
-    public static final String BOARD_SIZE_KEY = "board";
+    public static final String BOARD_LENGTH_KEY = "board";
     public static final String DIFFICULTY_KEY = "difficulty";
     public static final String MODE_KEY = "mode";
     public static final String AUDIO_KEY = "audio";

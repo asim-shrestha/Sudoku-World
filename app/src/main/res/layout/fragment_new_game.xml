@@ -148,10 +148,10 @@
                 android:progress="1" />
 
             <TextView
-                android:id="@+id/sudokuSizeLabel"
+                android:id="@+id/boardSizeLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/sudokuSizeLabel"
+                android:text="@string/boardSizeLabel"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead" />
 
@@ -165,14 +165,14 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/sudokuSize0" />
+                    android:text="@string/boardSize0" />
 
                 <TextView
                     android:id="@+id/textView10"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/sudokuSize1"
+                    android:text="@string/boardSize1"
                     android:textAlignment="center" />
 
                 <TextView
@@ -180,7 +180,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/sudokuSize2"
+                    android:text="@string/boardSize2"
                     android:textAlignment="center" />
 
                 <TextView
@@ -188,13 +188,13 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/sudokuSize3"
+                    android:text="@string/boardSize3"
                     android:textAlignment="textEnd" />
 
             </LinearLayout>
 
             <SeekBar
-                android:id="@+id/sudokuSizeBar"
+                android:id="@+id/BoardSizeBar"
                 style="@style/Widget.AppCompat.SeekBar.Discrete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
