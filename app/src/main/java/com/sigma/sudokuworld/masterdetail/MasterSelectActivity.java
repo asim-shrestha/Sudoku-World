@@ -30,7 +30,6 @@ import com.sigma.sudokuworld.masterdetail.detail.AddSetActivity;
 import com.sigma.sudokuworld.masterdetail.detail.SetDetailActivity;
 import com.sigma.sudokuworld.viewmodels.MasterDetailViewModel;
 
-import java.util.List;
 
 public class MasterSelectActivity extends AppCompatActivity implements
         SetListFragment.OnFragmentInteractionListener,
@@ -163,9 +162,10 @@ public class MasterSelectActivity extends AppCompatActivity implements
     public class FloatingActionButtonListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
+            int pos = mTabLayout.getSelectedTabPosition();
 
             Intent intent;
-            if (mTabLayout.getSelectedTabPosition() == 0) {
+            if (pos == 0 || pos == 1) {
                 intent = new Intent(getBaseContext(), AddSetActivity.class);
             } else {
                 intent = new Intent(getBaseContext(), AddPairActivity.class);
