@@ -295,8 +295,17 @@ public abstract class SudokuActivity extends AppCompatActivity {
     }
 
     private void setButtonLabels(List<String> buttonLabels) {
+        int labelLength = buttonLabels.size();
+
         for(int i = 0; i < mInputButtons.length; i++) {
-            mInputButtons[i].setText(buttonLabels.get(i));
+            //Place the value of of buttonLabel in button if it exists
+            if (labelLength > i) {
+                mInputButtons[i].setText(buttonLabels.get(i));
+            }
+            //buttonLabel does not exist at i so put the value of i in button
+            else {
+                mInputButtons[i].setText(String.valueOf(i + 1));
+            }
         }
     }
 }
