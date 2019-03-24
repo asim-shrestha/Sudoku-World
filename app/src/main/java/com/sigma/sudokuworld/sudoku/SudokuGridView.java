@@ -108,9 +108,14 @@ public class SudokuGridView extends View {
     }
 
     public void lazySetLockedCellsLabels(boolean[] lockedCells) {
+        mCellLabels = new String[ lockedCells.length ];
         for (int i = 0; i < lockedCells.length; i++) {
-            if (lockedCells[i]) mCellLabels[i] = Character.toString(KeyConstants.CELL_LOCKED_FLAG);
+            if (lockedCells[i]) { mCellLabels[i] = Character.toString(KeyConstants.CELL_LOCKED_FLAG); }
+            else { mCellLabels[i] = ""; }
         }
+        mBoardLength = (int) Math.sqrt( lockedCells.length );
+        mSubsectionHeight = (int) Math.floor(Math.sqrt(mBoardLength));
+        mSubsectionWidth = (int) Math.ceil(Math.sqrt(mBoardLength));
         invalidate();
     }
 

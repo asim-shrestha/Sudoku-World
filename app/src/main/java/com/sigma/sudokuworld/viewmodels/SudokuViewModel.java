@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SudokuViewModel extends BaseSettingsViewModel {
-    private final int SUDOKU_SIZE;
+    private final int BOARD_SIZE;
     private GameRepository mGameRepository;
     private Game mGame;
 
@@ -44,7 +44,7 @@ public class SudokuViewModel extends BaseSettingsViewModel {
             Log.wtf(TAG, "Tried loading game save that doesn't exit");
         }
 
-        SUDOKU_SIZE = mGame.getCellValues().length;
+        BOARD_SIZE = mGame.getCellValues().length;
         init();
     }
 
@@ -100,7 +100,7 @@ public class SudokuViewModel extends BaseSettingsViewModel {
     }
 
     public int getIncorrectCellNumber() {
-        for (int i = 0; i < SUDOKU_SIZE; i++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
             if (mGame.getCellValue(i) != mGame.getSolutionValue(i)) return i;
         }
 
@@ -141,7 +141,7 @@ public class SudokuViewModel extends BaseSettingsViewModel {
         labels = new ArrayList<>();
 
         GameMode gameMode = mGame.getGameMode();
-        for (int i = 0; i < SUDOKU_SIZE; i++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
             String label = "";
             if (mGame.isLocked(i)) {
                 label += KeyConstants.CELL_LOCKED_FLAG;
