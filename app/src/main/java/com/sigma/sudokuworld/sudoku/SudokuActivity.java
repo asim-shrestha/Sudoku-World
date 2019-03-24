@@ -243,7 +243,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
         LinearLayout parent = findViewById(R.id.gameLayout);
 
         //Initialize linear layouts for each button
-        mLinearLayouts = new LinearLayout[rowSize];
+        mLinearLayouts = new LinearLayout[columnSize];
 
         //Initialize layout parameters
         LinearLayout.LayoutParams  myParameters=
@@ -253,15 +253,15 @@ public abstract class SudokuActivity extends AppCompatActivity {
         mInputButtons = new Button[boardLength];
 
 
-        for(int i = 0; i < rowSize; i++) {
+        for(int i = 0; i < columnSize; i++) {
             //Initializes each sub linear layout
             mLinearLayouts[i] = new LinearLayout(this);
             mLinearLayouts[i].setLayoutParams( myParameters );
 
             mLinearLayouts[i].setOrientation(LinearLayout.HORIZONTAL);
 
-            for (int j = 0; j < columnSize; j++) {
-                int buttonIndex = i*columnSize + j;
+            for (int j = 0; j < rowSize; j++) {
+                int buttonIndex = i*rowSize + j;
                 //Initializes the buttons for each linear layout row
 
                 //Sets the button array at index to have id button + the current index number
