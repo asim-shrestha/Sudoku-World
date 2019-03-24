@@ -222,7 +222,7 @@ public class SudokuGridView extends View {
         for(int i = 0; i <= mBoardLength; i++) {
 
             //Either bold or not bold
-            if (i % mSubsectionHeight == 0) {
+            if (i % mSubsectionWidth == 0) {
                 canvas.drawLine(
                         mXOrigin + (i * mCellWidth), mYOrigin,
                         mXOrigin + (i * mCellWidth), mSquareHeight + mYOrigin,
