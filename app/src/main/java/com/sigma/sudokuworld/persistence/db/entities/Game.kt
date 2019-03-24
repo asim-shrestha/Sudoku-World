@@ -25,7 +25,6 @@ data class Game (
         var solutionValues: IntArray,
         var lockedCells: BooleanArray
 ) {
-
     fun setCellValue(cellNumber: Int, value: Int) = try {
         cellValues[cellNumber] = value
     } catch(e: IndexOutOfBoundsException) {
@@ -39,6 +38,8 @@ data class Game (
     fun getSolutionValue(cellNumber: Int): Int {
         return solutionValues[cellNumber]
     }
+
+
 
     fun isLocked(cellNumber: Int): Boolean {
         return lockedCells[cellNumber]
@@ -72,5 +73,22 @@ data class Game (
         result = 31 * result + solutionValues.contentHashCode()
         result = 31 * result + lockedCells.contentHashCode()
         return result
+    }
+
+    //Static helper function
+    companion object {
+
+        /**
+         * Used to get locked cells
+         */
+        fun getFilledCells(cellValues: IntArray): BooleanArray {
+            var isFilled = BooleanArray(cellValues.size)
+
+            for (i in isFilled.indices) {
+                isFilled[i] = cellValues[i] != 0
+            }
+
+            return isFilled
+        }
     }
 }

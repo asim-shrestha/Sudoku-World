@@ -5,12 +5,12 @@ package com.sigma.sudokuworld.viewmodels;
         import android.arch.lifecycle.ViewModelProvider;
         import android.support.annotation.NonNull;
 
-public class SudokuViewModelFactory implements ViewModelProvider.Factory {
+public class SingleplayerViewModelFactory implements ViewModelProvider.Factory {
 
     private final Application application;
     private final long saveId;
 
-    public SudokuViewModelFactory(Application application, long saveId) {
+    public SingleplayerViewModelFactory(Application application, long saveId) {
         this.saveId = saveId;
         this.application = application;
     }
@@ -19,6 +19,6 @@ public class SudokuViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new SudokuViewModel(application, saveId);
+        return (T) new SinglePlayerViewModel(application, saveId);
     }
 }

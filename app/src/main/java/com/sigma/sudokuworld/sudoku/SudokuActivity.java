@@ -15,8 +15,9 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
-import com.sigma.sudokuworld.viewmodels.SudokuViewModel;
-import com.sigma.sudokuworld.viewmodels.SudokuViewModelFactory;
+import com.sigma.sudokuworld.viewmodels.GameViewModel;
+import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
+import com.sigma.sudokuworld.viewmodels.SingleplayerViewModelFactory;
 import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.audio.SoundPlayer;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
@@ -27,27 +28,29 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
     protected SudokuGridView mSudokuGridView;
     protected int cellTouched;
-    protected SudokuViewModel mSudokuViewModel;
+    private GameViewModel mGameViewModel;
     protected LinearLayout[] mLinearLayouts;
     protected Button[] mInputButtons;
     private SoundPlayer mSoundPlayer;
-
-    protected long mSaveID = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sudoku);
 
-        if (savedInstanceState != null) {
-            mSaveID = savedInstanceState.getLong(KeyConstants.SAVE_ID_KEY);
-        } else {
-            Intent intent = getIntent();
-            mSaveID = intent.getLongExtra(KeyConstants.SAVE_ID_KEY, 0);
-        }
 
-        SudokuViewModelFactory sudokuViewModelFactory = new SudokuViewModelFactory(getApplication(), mSaveID);
-        mSudokuViewModel = ViewModelProviders.of(this, sudokuViewModelFactory).get(SudokuViewModel.class);
+
+        mGameViewModel = null;
+
+        //Initializing Sudoku grid
+        mSudokuGridView = findViewById(R.id.sudokuGrid_view);
+        mSudokuGridView.setRectangleMode(PersistenceService.loadRectangleModeEnabledSetting(this));
+
+        mSoundPlayer = new SoundPlayer(this);
+    }
+
+    public void setGameViewModel(GameViewModel viewModel) {
+        mGameViewModel = viewModel;
 
         //Set up buttons
         initButtons();
@@ -57,23 +60,10 @@ public abstract class SudokuActivity extends AppCompatActivity {
                 setButtonLabels(strings);
             }
         };
-        mSudokuViewModel.getButtonLabels().observe(this, buttonLabelsObserver);
+        mGameViewModel.getButtonLabels().observe(this, buttonLabelsObserver);
 
-        //Initializing Sudoku grid
-        mSudokuGridView = findViewById(R.id.sudokuGrid_view);
         mSudokuGridView.setOnTouchListener(onSudokuGridTouchListener);
-        mSudokuGridView.setCellLabels(this, mSudokuViewModel.getCellLabels());
-        mSudokuGridView.setRectangleMode(PersistenceService.loadRectangleModeEnabledSetting(this));
-
-        mSoundPlayer = new SoundPlayer(this);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        //Save the current state of the Sudoku board
-        outState.putLong(KeyConstants.SAVE_ID_KEY, mSaveID);
+        mSudokuGridView.setCellLabels(this, mGameViewModel.getCellLabels());
     }
 
     @Override
@@ -113,7 +103,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
                         }
 
                         //Set new highlighted cell if its not a locked cell
-                        if (!mSudokuViewModel.isLockedCell(cellNum)) {
+                        if (!mGameViewModel.isLockedCell(cellNum)) {
                             mSudokuGridView.setHighlightedCell(cellNum);
 
                             //No long press
@@ -151,7 +141,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
             if (cellNumber == -1){
                 mSoundPlayer.playEmptyButtonSound();
             } else {
-                if (mSudokuViewModel.isCorrectValue(cellNumber, buttonValue) || !mSudokuViewModel.isHintsEnabled()) {
+                if (mGameViewModel.isCorrectValue(cellNumber, buttonValue) || !mGameViewModel.isHintsEnabled()) {
                     //Correct number is placed in cell
                     mSudokuGridView.clearHighlightedCell();
                     mSudokuGridView.clearIncorrectCell();
@@ -162,19 +152,21 @@ public abstract class SudokuActivity extends AppCompatActivity {
                     mSoundPlayer.playWrongSound();
                 }
 
-                mSudokuViewModel.setCellValue(cellNumber, buttonValue);
+                mGameViewModel.setCellValue(cellNumber, buttonValue);
             }
         }
     };
 
     public void onCheckAnswerPressed(View v) {
+        if (mGameViewModel == null) return;
+
         //Check if cell is selected
         //If a cell is selected, check if that cell is correct
         int highlightedCell = mSudokuGridView.getHighlightedCell();
         if (highlightedCell != -1)
         {
             //Cell is right
-            if (mSudokuViewModel.isCellCorrect(highlightedCell)){
+            if (mGameViewModel.isCellCorrect(highlightedCell)){
                 mSudokuGridView.clearHighlightedCell();
                 mSudokuGridView.invalidate();
                 mSoundPlayer.playCorrectSound();
@@ -194,7 +186,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
         }
 
         //Checks if the answers are right and displays the first wrong cell (if any)
-        int potentialIndex = mSudokuViewModel.getIncorrectCellNumber();
+        int potentialIndex = mGameViewModel.getIncorrectCellNumber();
         //Clear highlights / what cell is selected for input
         mSudokuGridView.clearHighlightedCell();
 
@@ -218,13 +210,15 @@ public abstract class SudokuActivity extends AppCompatActivity {
     }
 
     public void onClearCellPressed(View v) {
+        if (mGameViewModel == null) return;
+
         int cellNumber = mSudokuGridView.getHighlightedCell();
 
         if (cellNumber == -1){
             //No cell is highlighted
             mSoundPlayer.playEmptyButtonSound();
         } else {
-            mSudokuViewModel.setCellValue(cellNumber, 0);
+            mGameViewModel.setCellValue(cellNumber, 0);
             mSudokuGridView.clearHighlightedCell();
             mSudokuGridView.clearIncorrectCell();
             mSoundPlayer.playClearCellSound();
@@ -236,7 +230,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
      * Sets up the input buttons
      */
     private void initButtons() {
-        int boardLength = mSudokuViewModel.getBoardLength();
+        int boardLength = mGameViewModel.getBoardLength();
         int rowSize = (int) Math.floor( Math.sqrt(boardLength) );
         int columnSize = (int) Math.ceil( Math.sqrt(boardLength) );
 

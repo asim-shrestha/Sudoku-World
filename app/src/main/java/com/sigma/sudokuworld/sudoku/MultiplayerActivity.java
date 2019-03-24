@@ -1,6 +1,7 @@
 package com.sigma.sudokuworld.sudoku;
 
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +25,8 @@ import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.game.GameDifficulty;
 import com.sigma.sudokuworld.game.gen.PuzzleGenerator;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
+import com.sigma.sudokuworld.viewmodels.MultiplayerViewModel;
+import com.sigma.sudokuworld.viewmodels.MultiplayerViewModelFactory;
 import com.sigma.sudokuworld.viewmodels.RealtimeProtocol;
 
 import java.util.ArrayList;
@@ -49,11 +52,11 @@ public class MultiplayerActivity extends SudokuActivity {
     private RoomConfig mRoomConfig;
     private ArrayList<Participant> mParticipants;
 
-    //Game variables
+    //Game
+    private MultiplayerViewModel mMultiplayerViewModel;
     private String mHostParticipantID;
     private String mMyParticipantID;
     private boolean isGameStarted;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -87,7 +90,7 @@ public class MultiplayerActivity extends SudokuActivity {
         if (requestCode == RC_WAITING_ROOM) {
             if (resultCode == RESULT_OK) {
                 Log.d(TAG, "onActivityResult: STARTING GAME");
-                startGame();
+                setupGame();
             } else {
                 leaveRoom();
             }
@@ -125,23 +128,30 @@ public class MultiplayerActivity extends SudokuActivity {
     /**
      * Called when all players have connected
      */
-    private void startGame() {
-        isGameStarted = true;
+    private void setupGame() {
         mHostParticipantID = chooseHost();
 
         if (isParticipantMe(mHostParticipantID)) {
             performHostSetup();
-        } else {
-            //Wait for game start;
         }
+    }
 
+    private void startGame(int[] initialCells, int[] solution) {
+        isGameStarted = true;
+
+        MultiplayerViewModelFactory factory =
+                new MultiplayerViewModelFactory(getApplication(), initialCells, solution);
+
+
+        mMultiplayerViewModel = ViewModelProviders.of(this, factory).get(MultiplayerViewModel.class);
+        super.setGameViewModel(mMultiplayerViewModel);
 
         //Observe when cells are changed and broadcast to opponent
-        mSudokuViewModel.getLastCellChanged().observe(this, new Observer<Integer>() {
+        mMultiplayerViewModel.getLastCellChanged().observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(@Nullable Integer integer) {
                 if (integer != null) {
-                    if (mSudokuViewModel.getCellValue(integer) != 0) {
+                    if (mMultiplayerViewModel.getCellValue(integer) != 0) {
                         broadcastMove(integer, true);
                     } else {
                         broadcastMove(integer, false);
@@ -372,11 +382,22 @@ public class MultiplayerActivity extends SudokuActivity {
             byte[] bytes = realTimeMessage.getMessageData();
 
             if (bytes[0] == RealtimeProtocol.FILL_SQUARE) {
-                mSudokuViewModel.setCompetitorFilledCell(bytes[1], true);
+                if (mMultiplayerViewModel == null) {
+                    Log.d(TAG, "onRealTimeMessageReceived: MOVE RECEIVED BEFORE READY FOR GAME");
+                    return;
+                }
+
+
+                mMultiplayerViewModel.setCompetitorFilledCell(bytes[1], true);
             }
 
             else if (bytes[0] == RealtimeProtocol.UNFILL_SQUARE) {
-                 mSudokuViewModel.setCompetitorFilledCell(bytes[1], false);
+                if (mMultiplayerViewModel == null) {
+                    Log.d(TAG, "onRealTimeMessageReceived: MOVE RECEIVED BEFORE READY FOR GAME");
+                    return;
+                }
+
+                mMultiplayerViewModel.setCompetitorFilledCell(bytes[1], false);
             }
 
             else if (bytes[0] == RealtimeProtocol.PUZZLE) {
@@ -395,6 +416,8 @@ public class MultiplayerActivity extends SudokuActivity {
                 for (int i = 0; i < size; i++, bytePosition++) {
                     solution[i] = bytes[bytePosition];
                 }
+
+                startGame(initialCells, solution);
             }
         }
     };
