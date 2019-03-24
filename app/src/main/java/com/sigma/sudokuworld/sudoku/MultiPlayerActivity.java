@@ -17,6 +17,8 @@ import com.google.android.gms.games.RealTimeMultiplayerClient;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.*;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.sigma.sudokuworld.R;
+import com.sigma.sudokuworld.SettingsFragment;
 import com.sigma.sudokuworld.viewmodels.RealtimeProtocol;
 
 import java.util.ArrayList;
@@ -28,7 +30,6 @@ public class MultiPlayerActivity extends SudokuActivity {
     private static final int RC_WAITING_ROOM = 276;
 
     private static final int MIN_PLAYER_COUNT = 2;
-    private static final int MAX_PLAYER_COUNT = 2;
 
     private GoogleSignInAccount mAccount;
     private RealTimeMultiplayerClient mMultiplayerClient;
@@ -49,6 +50,8 @@ public class MultiPlayerActivity extends SudokuActivity {
         if (mAccount == null) {
             finish();
         }
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new LoadingSrceenFragment()).commit();
 
         mMultiplayerClient = Games.getRealTimeMultiplayerClient(this, mAccount);
         isGameStarted = false;

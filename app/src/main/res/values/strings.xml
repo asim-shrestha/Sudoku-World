@@ -63,4 +63,7 @@
     <string name="ForeignWordHint">Foreign Word</string>
     <string name="SetName">Set Name</string>
     <string name="SetDescription">Description</string>
+
+    <!-- Multiplayer -->
+    <string name="multiplayerSetUpTitle">Setting up game</string>
 </resources>
