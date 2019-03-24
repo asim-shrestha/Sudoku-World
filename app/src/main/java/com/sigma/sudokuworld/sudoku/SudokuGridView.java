@@ -321,7 +321,7 @@ public class SudokuGridView extends View {
         int row = (mHighlightedCell / mBoardLength);
         int column = (mHighlightedCell % mBoardLength);
         int subsectionRow = mBoardLength * mSubsectionHeight * (row / mSubsectionHeight);
-        int subsectionColumn = mSubsectionHeight * (column / mSubsectionHeight);
+        int subsectionColumn = mSubsectionWidth * (column / mSubsectionWidth);
         int i;
         List<Integer> visitedList = new ArrayList<>();
         visitedList.add(mHighlightedCell);
@@ -348,7 +348,7 @@ public class SudokuGridView extends View {
 
         //Draw subsection highlights
         for(i = 0; i < mSubsectionHeight; i++){
-            for (int j = 0; j < mSubsectionHeight; j++)
+            for (int j = 0; j < mSubsectionWidth; j++)
             {
                 int cellNumber = subsectionRow + mBoardLength * i + subsectionColumn + j;
                 if (!visitedList.contains(cellNumber)) {
