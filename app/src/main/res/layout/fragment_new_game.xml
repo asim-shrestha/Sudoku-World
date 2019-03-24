@@ -194,7 +194,7 @@
             </LinearLayout>
 
             <SeekBar
-                android:id="@+id/BoardSizeBar"
+                android:id="@+id/boardSizeBar"
                 style="@style/Widget.AppCompat.SeekBar.Discrete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

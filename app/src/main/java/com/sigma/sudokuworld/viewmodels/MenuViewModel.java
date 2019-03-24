@@ -32,8 +32,7 @@ public class MenuViewModel extends BaseSettingsViewModel {
 
     //Generates a new game based on stored settings
     public long generateNewGameWithStoredSettings() {
-               Bundle puzzle = new PuzzleGenerator(getSelectedBoardLength())
-                .generatePuzzle(PersistenceService.loadDifficultySetting(mApplication));
+               Bundle puzzle = new PuzzleGenerator(getSelectedBoardLength()).generatePuzzle(PersistenceService.loadDifficultySetting(mApplication));
 
         Game game = new Game(
                 0,
@@ -61,6 +60,9 @@ public class MenuViewModel extends BaseSettingsViewModel {
     /*
         Game Settings
      */
+    public void setSelectedBoardLength(int boardLength) {
+        PersistenceService.saveBoardLengthSetting(mApplication, boardLength);
+    }
     public void setSelectedGameMode(GameMode gameMode) {
         PersistenceService.saveGameModeSetting(mApplication, gameMode);
     }
