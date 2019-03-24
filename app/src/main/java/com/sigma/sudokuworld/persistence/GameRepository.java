@@ -2,18 +2,22 @@ package com.sigma.sudokuworld.persistence;
 
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
+import com.google.firebase.database.FirebaseDatabase;
 import com.sigma.sudokuworld.persistence.db.AppDatabase;
 import com.sigma.sudokuworld.persistence.db.daos.GameDao;
 import com.sigma.sudokuworld.persistence.db.entities.Game;
 
 import android.support.annotation.NonNull;
+import com.sigma.sudokuworld.persistence.firebase.FireBasePuzzle;
 
 import java.util.List;
 
 public class GameRepository {
+    private FirebaseDatabase mFirebaseDatabase;
     private GameDao mGameDao;
 
     public GameRepository(@NonNull Application application) {
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
         mGameDao = AppDatabase.Companion.getInstance(application).getGameDao();
     }
 
@@ -40,4 +44,13 @@ public class GameRepository {
     public void deleteGame(Game game) {
         mGameDao.delete(game);
     }
+
+//    public void uploadPuzzle(FireBasePuzzle puzzle) {
+//        mFirebaseDatabase.getReference().child("puzzles")
+//    }
+//
+//    public FireBasePuzzle downloadPuzzle(String key) {
+//
+//    }
+
 }

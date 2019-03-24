@@ -1,11 +1,9 @@
 package com.sigma.sudokuworld.viewmodels;
 
-import android.app.Application;
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
-import android.support.annotation.NonNull;
-
-import com.sigma.sudokuworld.viewmodels.SudokuViewModel;
+        import android.app.Application;
+        import android.arch.lifecycle.ViewModel;
+        import android.arch.lifecycle.ViewModelProvider;
+        import android.support.annotation.NonNull;
 
 public class SudokuViewModelFactory implements ViewModelProvider.Factory {
 
