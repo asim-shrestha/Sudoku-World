@@ -25,6 +25,7 @@ data class Game (
         var solutionValues: IntArray,
         var lockedCells: BooleanArray
 ) {
+
     fun setCellValue(cellNumber: Int, value: Int) = try {
         cellValues[cellNumber] = value
     } catch(e: IndexOutOfBoundsException) {
@@ -51,6 +52,7 @@ data class Game (
 
         if (saveID != other.saveID) return false
         if (setID != other.setID) return false
+        if (boardLength != other.boardLength) return false
         if (difficulty != other.difficulty) return false
         if (gameMode != other.gameMode) return false
         if (!cellValues.contentEquals(other.cellValues)) return false
@@ -63,6 +65,7 @@ data class Game (
     override fun hashCode(): Int {
         var result = saveID
         result = 31 * result + setID.hashCode()
+        result = 31 * result + boardLength.hashCode()
         result = 31 * result + difficulty.hashCode()
         result = 31 * result + gameMode.hashCode()
         result = 31 * result + cellValues.contentHashCode()
