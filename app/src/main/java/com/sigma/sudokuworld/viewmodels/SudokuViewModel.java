@@ -19,6 +19,7 @@ import java.util.List;
 
 public class SudokuViewModel extends BaseSettingsViewModel {
     private final int BOARD_SIZE;
+    private final int BOARD_LENGTH;
     private GameRepository mGameRepository;
     private Game mGame;
 
@@ -45,6 +46,7 @@ public class SudokuViewModel extends BaseSettingsViewModel {
         }
 
         BOARD_SIZE = mGame.getCellValues().length;
+        BOARD_LENGTH = (int) Math.sqrt(BOARD_SIZE);
         init();
     }
 
@@ -67,8 +69,9 @@ public class SudokuViewModel extends BaseSettingsViewModel {
     }
 
     public int getBoardLength(){
-        return (int) Math.sqrt(BOARD_SIZE);
+        return BOARD_LENGTH;
     }
+
     public int getCellValue(int cellNumber) {
         return mGame.getCellValue(cellNumber);
     }
@@ -165,9 +168,8 @@ public class SudokuViewModel extends BaseSettingsViewModel {
 
         GameMode gameMode = mGame.getGameMode();
         gameMode = GameMode.opposite(gameMode);
-        int boardLength = getBoardLength();
 
-        for (int i = 0; i < boardLength; i++) {
+        for (int i = 0; i < BOARD_LENGTH; i++) {
             String label = "";
             label += valueToMappedLabel(i + 1, GameMode.opposite(gameMode));
 
