@@ -183,7 +183,7 @@ public class SudokuViewModel extends BaseSettingsViewModel {
         String label = "";
 
         if (value != 0) {
-            if (gameMode == GameMode.NUMBERS || (nativeWordsMap.size() <= value)) //TODO: Remove or once set sizes >= 12
+            if (gameMode == GameMode.NUMBERS || (nativeWordsMap.size() <= value)) //TODO: Remove OR CASE once set sizes >= 12
                 label = Integer.toString(value);
             else if (gameMode == GameMode.NATIVE) label = nativeWordsMap.valueAt(value);
             else if (gameMode == GameMode.FOREIGN) label = foreignWordsMap.valueAt(value);

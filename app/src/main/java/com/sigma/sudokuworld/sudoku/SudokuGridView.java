@@ -108,10 +108,11 @@ public class SudokuGridView extends View {
     }
 
     public void lazySetLockedCellsLabels(boolean[] lockedCells) {
-        //Set the proper cell label size
-        mCellLabels = new String[ lockedCells.length ];
+        int labelSize = lockedCells.length;
+        //Initialize mCellLabels with the proper size
+        mCellLabels = new String[ labelSize ];
 
-        for (int i = 0; i < lockedCells.length; i++) {
+        for (int i = 0; i < labelSize; i++) {
             if (lockedCells[i]) { mCellLabels[i] = Character.toString(KeyConstants.CELL_LOCKED_FLAG); }
             else { mCellLabels[i] = ""; }
         }
