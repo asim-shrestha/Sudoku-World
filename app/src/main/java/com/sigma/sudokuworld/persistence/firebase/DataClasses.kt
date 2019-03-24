@@ -25,7 +25,6 @@ data class FireBaseSet(
     }
 }
 
-
 data class FireBaseWordSet(
         var key: String = "",
         var name: String = "",
@@ -39,3 +38,26 @@ data class FireBaseWordPair(
         var nativeWord: String = "",
         var foreignWord: String = ""
 )
+
+data class FireBasePuzzle(
+        var initialValues: IntArray,
+        var solutionValues: IntArray
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as FireBasePuzzle
+
+        if (!initialValues.contentEquals(other.initialValues)) return false
+        if (!solutionValues.contentEquals(other.solutionValues)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = initialValues.contentHashCode()
+        result = 31 * result + solutionValues.contentHashCode()
+        return result
+    }
+}

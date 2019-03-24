@@ -12,29 +12,22 @@ import android.graphics.drawable.AnimatedVectorDrawable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
 import android.widget.TextView;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.*;
-import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.drive.Drive;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.GamesClient;
 import com.google.android.gms.games.Player;
 import com.google.android.gms.games.PlayersClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.sigma.sudokuworld.audio.SoundPlayer;
-import com.sigma.sudokuworld.masterdetail.SetListFragment;
 import com.sigma.sudokuworld.persistence.db.entities.Game;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 import com.sigma.sudokuworld.sudoku.AudioSudokuActivity;
-import com.sigma.sudokuworld.sudoku.MultiPlayerActivity;
+import com.sigma.sudokuworld.sudoku.MultiplayerActivity;
 import com.sigma.sudokuworld.sudoku.VocabSudokuActivity;
 import com.sigma.sudokuworld.viewmodels.MenuViewModel;
 
@@ -162,7 +155,7 @@ public class MenuActivity extends AppCompatActivity {
 
     public void startMultiplayerGame() {
 
-        Intent intent = new Intent(getBaseContext(), MultiPlayerActivity.class);
+        Intent intent = new Intent(getBaseContext(), MultiplayerActivity.class);
         intent.putExtra(KeyConstants.SAVE_ID_KEY, mMenuViewModel.generateNewGameWithStoredSettings());
         startActivity(intent);
     }

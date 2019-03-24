@@ -13,32 +13,45 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesCallbackStatusCodes;
+import com.google.android.gms.games.PlayersClient;
 import com.google.android.gms.games.RealTimeMultiplayerClient;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.*;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.sigma.sudokuworld.R;
-import com.sigma.sudokuworld.SettingsFragment;
+import com.sigma.sudokuworld.game.GameDifficulty;
+import com.sigma.sudokuworld.game.gen.PuzzleGenerator;
+import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 import com.sigma.sudokuworld.viewmodels.RealtimeProtocol;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MultiPlayerActivity extends SudokuActivity {
+public class MultiplayerActivity extends SudokuActivity {
     private static final String TAG = "Mutiplayer";
     private static final int RC_WAITING_ROOM = 276;
 
     private static final int MIN_PLAYER_COUNT = 2;
 
-    private GoogleSignInAccount mAccount;
-    private RealTimeMultiplayerClient mMultiplayerClient;
+    //Clients
+    private RealTimeMultiplayerClient mRealTimeMultiplayerClient;
+    private PlayersClient mPlayersClient;
+
+    //My account
+    private GoogleSignInAccount mGoogleSignInAccount;
+    private String mMyPlayerID;
+
+    //Room
+    private String mRoomID;
     private RoomConfig mRoomConfig;
     private ArrayList<Participant> mParticipants;
 
-    private String mRoomID;
-    private String mHostPlayerID;
-
+    //Game variables
+    private String mHostParticipantID;
+    private String mMyParticipantID;
     private boolean isGameStarted;
 
 
@@ -46,17 +59,18 @@ public class MultiPlayerActivity extends SudokuActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAccount = GoogleSignIn.getLastSignedInAccount(this);
+        GoogleSignInAccount mAccount = GoogleSignIn.getLastSignedInAccount(this);
         if (mAccount == null) {
             finish();
         }
+        onConnected(mAccount);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new LoadingSrceenFragment()).commit();
 
-        mMultiplayerClient = Games.getRealTimeMultiplayerClient(this, mAccount);
+        mRealTimeMultiplayerClient = Games.getRealTimeMultiplayerClient(this, mAccount);
         isGameStarted = false;
 
-        newQuickGame();
+        newAutoMatchRoom();
     }
 
     @Override
@@ -64,20 +78,6 @@ public class MultiPlayerActivity extends SudokuActivity {
         super.onStop();
 
         leaveRoom();
-    }
-
-    private void newQuickGame() {
-        Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(1, 1, 0);
-
-        mRoomConfig = RoomConfig.builder(mRoomUpdateCallback)
-                .setOnMessageReceivedListener(mMessageReceivedListener)
-                .setRoomStatusUpdateCallback(mRoomStatusUpdateCallback)
-                .setAutoMatchCriteria(autoMatchCriteria)
-                .build();
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        mMultiplayerClient.create(mRoomConfig);
     }
 
     @Override
@@ -94,17 +94,49 @@ public class MultiPlayerActivity extends SudokuActivity {
         }
     }
 
+    /*
+     *
+     * - Sign in / out -
+     *
+     * */
+
+    private void onConnected(GoogleSignInAccount account) {
+        Log.d(TAG, "onConnected: CONNECTED TO GOOGLE");
+
+        mGoogleSignInAccount = account;
+        mRealTimeMultiplayerClient = Games.getRealTimeMultiplayerClient(this, account);
+
+        mPlayersClient = Games.getPlayersClient(this, account);
+        mPlayersClient.getCurrentPlayerId().addOnCompleteListener(new OnCompleteListener<String>() {
+            @Override
+            public void onComplete(@NonNull Task<String> task) {
+                mMyPlayerID = task.getResult();
+            }
+        });
+    }
+
+
+    /*
+     *
+     * - Game Logic -
+     *
+     * */
+
+    /**
+     * Called when all players have connected
+     */
     private void startGame() {
         isGameStarted = true;
+        mHostParticipantID = chooseHost();
 
-        String[] ids = new String[mParticipants.size()];
-        for (int i = 0; i < mParticipants.size(); i++) {
-            ids[i] = mParticipants.get(i).getParticipantId();
+        if (isParticipantMe(mHostParticipantID)) {
+            performHostSetup();
+        } else {
+            //Wait for game start;
         }
 
-        Arrays.sort(ids);
-        mHostPlayerID = ids[0];
 
+        //Observe when cells are changed and broadcast to opponent
         mSudokuViewModel.getLastCellChanged().observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(@Nullable Integer integer) {
@@ -119,9 +151,74 @@ public class MultiPlayerActivity extends SudokuActivity {
         });
     }
 
-    private void showGameError(String msg) {
-        Log.d(TAG, msg);
-        new AlertDialog.Builder(this).setMessage(msg).setNeutralButton("ok", null).create();
+    /**
+     * Logic for if we should cancel the game
+     * @param room game room
+     * @return should we cancel the game
+     */
+    private boolean shouldCancelGame(Room room) {
+        if (isGameStarted) {
+            int playerCount = 0;
+
+            for (Participant p : mParticipants) {
+                if (p.isConnectedToRoom()) playerCount++;
+            }
+
+            return (playerCount < MIN_PLAYER_COUNT);
+        }
+
+        return false;
+    }
+
+    /**
+     * Chooses a host for the game.
+     * All clients will have the same host
+     * @return host participantID
+     */
+    private String chooseHost() {
+
+        //Sorts the id's and choose the first one
+        String[] ids = new String[mParticipants.size()];
+        for (int i = 0; i < mParticipants.size(); i++) {
+            ids[i] = mParticipants.get(i).getParticipantId();
+        }
+        Arrays.sort(ids);
+
+        return ids[0];
+    }
+
+    /**
+     * Host creates then uploads the puzzle to FireBase and broadcasts the puzzle location to peers
+     */
+    private void performHostSetup() {
+        Log.d(TAG, "performHostSetup: I AM HOST");
+
+        Bundle puzzle = new PuzzleGenerator(3).generatePuzzle(GameDifficulty.EASY);
+
+        int[] initialCells = puzzle.getIntArray(KeyConstants.CELL_VALUES_KEY);
+        int[] solution = puzzle.getIntArray(KeyConstants.SOLUTION_VALUES_KEY);
+
+        broadcastPuzzle(initialCells, solution);
+    }
+
+    /*
+     *
+     * - Room Session -
+     *
+     * */
+
+    private void newAutoMatchRoom() {
+        Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(1, 1, 0);
+
+        mRoomConfig = RoomConfig.builder(mRoomUpdateCallback)
+                .setOnMessageReceivedListener(mMessageReceivedListener)
+                .setRoomStatusUpdateCallback(mRoomStatusUpdateCallback)
+                .setAutoMatchCriteria(autoMatchCriteria)
+                .build();
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        mRealTimeMultiplayerClient.create(mRoomConfig);
     }
 
     RoomUpdateCallback mRoomUpdateCallback = new RoomUpdateCallback() {
@@ -132,9 +229,7 @@ public class MultiPlayerActivity extends SudokuActivity {
             if (statusCode != GamesCallbackStatusCodes.OK)
                 showGameError("OnRoomCreate: ERROR CODE  " + GamesCallbackStatusCodes.getStatusCodeString(statusCode));
 
-            mRoomID = room.getRoomId();
-
-            mMultiplayerClient.getWaitingRoomIntent(room, 2)
+            mRealTimeMultiplayerClient.getWaitingRoomIntent(room, 2)
                     .addOnSuccessListener(new OnSuccessListener<Intent>() {
                         @Override
                         public void onSuccess(Intent intent) {
@@ -168,8 +263,9 @@ public class MultiPlayerActivity extends SudokuActivity {
             if (statusCode != GamesCallbackStatusCodes.OK)
                 showGameError("OnRoomConnected: ERROR CODE  " + GamesCallbackStatusCodes.getStatusCodeString(statusCode));
 
-            mRoomID = room.getRoomId();
             updateRoom(room);
+            mRoomID = room.getRoomId();
+            mMyParticipantID = room.getParticipantId(mMyPlayerID);
         }
     };
 
@@ -251,29 +347,24 @@ public class MultiPlayerActivity extends SudokuActivity {
         }
     }
 
-    private boolean shouldCancelGame(Room room) {
-        if (isGameStarted) {
-            int playerCount = 0;
-
-            for (Participant p : mParticipants) {
-                if (p.isConnectedToRoom()) playerCount++;
-            }
-
-            return (playerCount < MIN_PLAYER_COUNT);
-        }
-
-        return false;
-    }
-
+    /**
+     * Leave the room gracefully and return to the menu
+     */
     private void leaveRoom() {
         Log.d(TAG, "leaveRoom: LEAVING ROOM");
 
         if (mRoomID != null) {
-            mMultiplayerClient.leave(mRoomConfig, mRoomID);
+            mRealTimeMultiplayerClient.leave(mRoomConfig, mRoomID);
         }
 
         finish();
     }
+
+    /*
+    *
+    * - Communication -
+    *
+    * */
 
     OnRealTimeMessageReceivedListener mMessageReceivedListener = new OnRealTimeMessageReceivedListener() {
         @Override
@@ -287,8 +378,65 @@ public class MultiPlayerActivity extends SudokuActivity {
             else if (bytes[0] == RealtimeProtocol.UNFILL_SQUARE) {
                  mSudokuViewModel.setCompetitorFilledCell(bytes[1], false);
             }
+
+            else if (bytes[0] == RealtimeProtocol.PUZZLE) {
+                Log.d(TAG, "onRealTimeMessageReceived: PUZZLE RECEIVED");
+
+                int size = bytes[1];
+
+                int[] initialCells = new int[size];
+                int[] solution = new int[size];
+
+                int bytePosition = 2;
+                for (int i = 0; i < size; i++, bytePosition++) {
+                    initialCells[i] = bytes[bytePosition];
+                }
+
+                for (int i = 0; i < size; i++, bytePosition++) {
+                    solution[i] = bytes[bytePosition];
+                }
+            }
         }
     };
+
+    public void broadcastPuzzle(int[] initial, int[] solution) {
+
+        int bytePosition = 0;
+        byte[] bytes = new byte[2 + initial.length + solution.length];
+
+
+        bytes[bytePosition] = RealtimeProtocol.PUZZLE;
+        bytePosition++;
+
+        //Puzzle length
+        bytes[bytePosition] = (byte) initial.length;
+        bytePosition++;
+
+        //TODO loop unrolling?
+        for (int i = 0; i < initial.length; i++, bytePosition++) {
+            bytes[bytePosition] = (byte) initial[i];
+        }
+
+        for (int i = 0; i < solution.length; i++, bytePosition++) {
+            bytes[bytePosition] = (byte) solution[i];
+        }
+
+        for (Participant p : mParticipants) {
+            if (isParticipantMe(p.getParticipantId())) continue;
+
+            mRealTimeMultiplayerClient.sendReliableMessage(
+                    bytes,
+                    mRoomID,
+                    p.getParticipantId(),
+                    null)
+                    .addOnSuccessListener(new OnSuccessListener<Integer>() {
+                @Override
+                public void onSuccess(Integer integer) {
+                    Log.d(TAG, "onSuccess: PUZZLE SUCCESSFULLY DELIVERED");
+                }
+            });
+        }
+    }
 
     public void broadcastMove(int cellNumber, boolean isFilled) {
         byte[] bytes = new byte[2];
@@ -296,6 +444,21 @@ public class MultiPlayerActivity extends SudokuActivity {
         bytes[0] = (isFilled ? RealtimeProtocol.FILL_SQUARE : RealtimeProtocol.UNFILL_SQUARE);
         bytes[1] = (byte) cellNumber;
 
-        mMultiplayerClient.sendUnreliableMessageToOthers(bytes, mRoomID); //TODO: reliable msg?
+        mRealTimeMultiplayerClient.sendUnreliableMessageToOthers(bytes, mRoomID); //TODO: reliable msg?
+    }
+
+    /*
+     *
+     * - Misc -
+     *
+     * */
+
+    private boolean isParticipantMe(String participantID) {
+        return mMyParticipantID.equals(participantID);
+    }
+
+    private void showGameError(String msg) {
+        Log.d(TAG, msg);
+        new AlertDialog.Builder(this).setMessage(msg).setNeutralButton("ok", null).create();
     }
 }

@@ -31,7 +31,7 @@
             android:theme="@style/AppTheme.MenuText"/>
         <activity android:name=".sudoku.VocabSudokuActivity" />
         <activity android:name=".sudoku.AudioSudokuActivity" />
-        <activity android:name=".sudoku.MultiPlayerActivity" />
+        <activity android:name=".sudoku.MultiplayerActivity" />
 
         <!--Set builder-->
         <activity
