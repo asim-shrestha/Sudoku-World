@@ -13,6 +13,7 @@ import com.sigma.sudokuworld.persistence.WordSetRepository;
 import com.sigma.sudokuworld.persistence.db.entities.Game;
 import com.sigma.sudokuworld.persistence.db.views.WordPair;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
+import com.sigma.sudokuworld.sudoku.SudokuGridView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +25,9 @@ public class SudokuViewModel extends BaseSettingsViewModel {
 
     private MutableLiveData<List<String>> cellLabelsLiveData;
     private MutableLiveData<List<String>> buttonLabelsLiveData;
+    private MutableLiveData<Integer> lastCellChanged;
 
-    private List<String> labels;
+    protected List<String> labels;
     private List<String> buttonLabels;
 
     private SparseArray<String> nativeWordsMap;
@@ -60,6 +62,10 @@ public class SudokuViewModel extends BaseSettingsViewModel {
 
     public LiveData<List<String>> getButtonLabels() {
         return buttonLabelsLiveData;
+    }
+
+    public LiveData<Integer> getLastCellChanged() {
+        return lastCellChanged;
     }
 
     public String getMappedString(int value, GameMode mode) {
@@ -111,10 +117,18 @@ public class SudokuViewModel extends BaseSettingsViewModel {
     private void updateCellLabel(int cellNumber, int value) {
         GameMode gameMode = mGame.getGameMode();
         labels.set(cellNumber, valueToMappedLabel(value, gameMode));
+        lastCellChanged.setValue(cellNumber);
+        updateLiveLabels();
+    }
+
+    protected void updateLiveLabels() {
         cellLabelsLiveData.setValue(labels); //TODO: Don't run on main thread
     }
 
     private void init() {
+        lastCellChanged = new MutableLiveData<>();
+        lastCellChanged.setValue(null);
+
         initializeWordMaps();
         initCellLabelsLiveData();
         initButtonLabelsLiveData();
@@ -185,5 +199,40 @@ public class SudokuViewModel extends BaseSettingsViewModel {
         return label;
     }
 
+    /* Multiplayer methods */
+
+    /**
+     * Update the labels to show if the competitor has filled a cell or not
+     * @param cellNumber cell number
+     * @param filledByCompetitor add or remove fill flag
+     */
+    public void setCompetitorFilledCell(int cellNumber, boolean filledByCompetitor) {
+        if (filledByCompetitor && !isFilledByCompetitor(cellNumber)) {
+            //Add the cell fill flag
+            String label = labels.get(cellNumber);
+            label = SudokuGridView.COMPETITOR_FILLED_FLAG + label;
+            labels.set(cellNumber, label);
+            updateLiveLabels();
+        } else if (!filledByCompetitor && isFilledByCompetitor(cellNumber)) {
+            //Remove the cell fill flag
+            String label = labels.get(cellNumber);
+            label = label.substring(1);
+            labels.set(cellNumber, label);
+            updateLiveLabels();
+        }
+    }
+
+    /**
+     * Check if the cell is filled by the competitor
+     * @param cellNumber cell number
+     * @return is the cell filled by the competitor
+     */
+    public boolean isFilledByCompetitor(int cellNumber) {
+        String label = labels.get(cellNumber);
+
+        if (label.isEmpty()) return false;
+
+        return label.charAt(0) == SudokuGridView.COMPETITOR_FILLED_FLAG;
+    }
 }
 

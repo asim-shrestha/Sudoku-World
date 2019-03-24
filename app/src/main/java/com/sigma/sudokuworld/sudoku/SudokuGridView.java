@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SudokuGridView extends View {
-    private static final char COMPETITOR_FILLED_FLAG = '^';
+    public static final char COMPETITOR_FILLED_FLAG = '^';
 
     private static final int SUDOKU_SIZE = 9;
     private static final int SUDOKU_ROOT_SIZE = 3;
@@ -267,19 +267,20 @@ public class SudokuGridView extends View {
 
             //If the cell has a label
             String label = mCellLabels[i];
-            if (!label.equals("")) {
 
-                //Draws the cell fill for squares that cant be edited
-                if (label.charAt(0) == KeyConstants.CELL_LOCKED_FLAG) {
-                    drawCellHighlight(canvas, mLockedFillPaint, i);
-                    label = label.substring(1);
-                }
+            //Draws the cell fill for squares are filled by other player
+            if (!label.isEmpty() && label.charAt(0) == COMPETITOR_FILLED_FLAG) {
+                drawCellHighlight(canvas, mCompetitorFillPaint, i);
+                label = label.substring(1);
+            }
 
-                //Draws the cell fill for squares are filled by other player
-                else if (label.charAt(0) == COMPETITOR_FILLED_FLAG) {
-                    drawCellHighlight(canvas, mCompetitorFillPaint, i);
-                    label = label.substring(1);
-                }
+            //Draws the cell fill for squares that cant be edited
+            if (!label.isEmpty() && label.charAt(0) == KeyConstants.CELL_LOCKED_FLAG) {
+                drawCellHighlight(canvas, mLockedFillPaint, i);
+                label = label.substring(1);
+            }
+
+            if (!label.isEmpty()) {
 
                 //Measure the width of the label and draw it in the cell
                 float textWidth = mTextPaint.measureText(label);

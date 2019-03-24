@@ -29,7 +29,8 @@ public abstract class SudokuActivity extends AppCompatActivity {
     protected SudokuViewModel mSudokuViewModel;
     protected Button[] mInputButtons;
     private SoundPlayer mSoundPlayer;
-    private long mSaveID = 0;
+
+    protected long mSaveID = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
