@@ -137,7 +137,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
             //Loop through all our possible buttons to see which button is clicked
             //Set buttonValue to the corresponding button
-            for (int buttonIndex = 0; buttonIndex < 9; buttonIndex++) {
+            for (int buttonIndex = 0; buttonIndex < mInputButtons.length; buttonIndex++) {
                 if (button == mInputButtons[buttonIndex]){
                     buttonValue = buttonIndex + 1;
                     break;
@@ -276,9 +276,6 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
                 //Background
                 mInputButtons[buttonIndex].setBackground(getResources().getDrawable( R.drawable.red_button ));
-
-                //Text
-                mInputButtons[buttonIndex].setText("");
 
                 //Text Color
                 mInputButtons[buttonIndex].setTextColor(getResources().getColor( R.color.colorWhite));
