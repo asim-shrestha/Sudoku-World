@@ -165,8 +165,9 @@ public class SudokuViewModel extends BaseSettingsViewModel {
 
         GameMode gameMode = mGame.getGameMode();
         gameMode = GameMode.opposite(gameMode);
+        int boardLength = getBoardLength();
 
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < boardLength; i++) {
             String label = "";
             label += valueToMappedLabel(i + 1, GameMode.opposite(gameMode));
 
@@ -180,7 +181,8 @@ public class SudokuViewModel extends BaseSettingsViewModel {
         String label = "";
 
         if (value != 0) {
-            if (gameMode == GameMode.NUMBERS) label = Integer.toString(value);
+            if (gameMode == GameMode.NUMBERS || (nativeWordsMap.size() <= value)) //TODO: Remove or once set sizes >= 12
+                label = Integer.toString(value);
             else if (gameMode == GameMode.NATIVE) label = nativeWordsMap.valueAt(value);
             else if (gameMode == GameMode.FOREIGN) label = foreignWordsMap.valueAt(value);
         }

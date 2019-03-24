@@ -257,7 +257,6 @@ public abstract class SudokuActivity extends AppCompatActivity {
             //Initializes each sub linear layout
             mLinearLayouts[i] = new LinearLayout(this);
             mLinearLayouts[i].setLayoutParams( myParameters );
-
             mLinearLayouts[i].setOrientation(LinearLayout.HORIZONTAL);
 
             for (int j = 0; j < rowSize; j++) {
@@ -269,8 +268,6 @@ public abstract class SudokuActivity extends AppCompatActivity {
                 mInputButtons[buttonIndex] = new Button(this);
                 mInputButtons[buttonIndex].setId(getResources().getIdentifier("button" + (buttonIndex + 1), "id",
                         this.getPackageName()));
-
-                //Layout parameters
                 myParameters.weight =1;
                 mInputButtons[buttonIndex].setLayoutParams( myParameters );
 
@@ -291,18 +288,16 @@ public abstract class SudokuActivity extends AppCompatActivity {
         }
     }
 
+
     private void setButtonLabels(List<String> buttonLabels) {
         int labelLength = buttonLabels.size();
-
         for(int i = 0; i < mInputButtons.length; i++) {
+            //TODO: Maybe remove the else case when set size minimum increased to 12
+
             //Place the value of of buttonLabel in button if it exists
-            if (labelLength > i) {
-                mInputButtons[i].setText(buttonLabels.get(i));
-            }
+            if (labelLength > i) { mInputButtons[i].setText(buttonLabels.get(i)); }
             //buttonLabel does not exist at i so put the value of i in button
-            else {
-                mInputButtons[i].setText(String.valueOf(i + 1));
-            }
+            else { mInputButtons[i].setText(String.valueOf(i + 1)); }
         }
     }
 }
