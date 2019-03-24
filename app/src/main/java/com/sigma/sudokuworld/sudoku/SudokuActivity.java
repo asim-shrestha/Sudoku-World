@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 
 
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
@@ -27,6 +28,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
     protected SudokuGridView mSudokuGridView;
     protected int cellTouched;
     protected SudokuViewModel mSudokuViewModel;
+    protected LinearLayout[] mLinearLayouts;
     protected Button[] mInputButtons;
     private SoundPlayer mSoundPlayer;
 
@@ -136,7 +138,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
             //Loop through all our possible buttons to see which button is clicked
             //Set buttonValue to the corresponding button
-            for (int buttonIndex = 0; buttonIndex < 9; buttonIndex++) {
+            for (int buttonIndex = 0; buttonIndex < mInputButtons.length; buttonIndex++) {
                 if (button == mInputButtons[buttonIndex]){
                     buttonValue = buttonIndex + 1;
                     break;
@@ -231,27 +233,62 @@ public abstract class SudokuActivity extends AppCompatActivity {
     }
 
     /**
-     * Sets up the 9 input buttons
+     * Sets up the input buttons
      */
     private void initButtons() {
+        int boardLength = mSudokuViewModel.getBoardLength();
+        int rowSize = (int) Math.floor( Math.sqrt(boardLength) );
+        int columnSize = (int) Math.ceil( Math.sqrt(boardLength) );
 
-        //Initializing buttons
-        mInputButtons = new Button[9];
-        for(int i = 0; i < mInputButtons.length; i++)
-        {
-            //Sets the button array at index to have id button + the current index number
-            //One is added because the number 0 is skipped
-            mInputButtons[i] = findViewById(getResources().getIdentifier("button" + (i+1), "id",
-                    this.getPackageName()));
+        //Get the parent layout everything resides in
+        LinearLayout parent = findViewById(R.id.gameLayout);
 
-            //Gets and sets the string the button should display
-//            String buttonText = mVocabGame.getButtonString(i + 1);
-          //  mInputButtons[i].setText(i + 1);
+        //Initialize linear layouts for each button
+        mLinearLayouts = new LinearLayout[columnSize];
 
-            //Links the listener to the button
-            mInputButtons[i].setOnClickListener(onButtonClickListener);
+        //Initialize layout parameters
+        LinearLayout.LayoutParams  myParameters=
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        //Initializing button array
+        mInputButtons = new Button[boardLength];
+
+
+        for(int i = 0; i < columnSize; i++) {
+            //Initializes each sub linear layout
+            mLinearLayouts[i] = new LinearLayout(this);
+            mLinearLayouts[i].setLayoutParams( myParameters );
+            mLinearLayouts[i].setOrientation(LinearLayout.HORIZONTAL);
+
+            for (int j = 0; j < rowSize; j++) {
+                int buttonIndex = i*rowSize + j;
+                //Initializes the buttons for each linear layout row
+
+                //Sets the button array at index to have id button + the current index number
+                //One is added because the number 0 is skipped
+                mInputButtons[buttonIndex] = new Button(this);
+                mInputButtons[buttonIndex].setId(getResources().getIdentifier("button" + (buttonIndex + 1), "id",
+                        this.getPackageName()));
+                myParameters.weight =1;
+                mInputButtons[buttonIndex].setLayoutParams( myParameters );
+
+                //Background
+                mInputButtons[buttonIndex].setBackground(getResources().getDrawable( R.drawable.red_button ));
+
+                //Text Color
+                mInputButtons[buttonIndex].setTextColor(getResources().getColor( R.color.colorWhite));
+
+                //Links the listener to the button
+                mInputButtons[buttonIndex].setOnClickListener(onButtonClickListener);
+
+                //Links the button to the linear layout
+                mLinearLayouts[i].addView(mInputButtons[buttonIndex]);
+            }
+            //Links the linear layout to the overall view
+            parent.addView(mLinearLayouts[i]);
         }
     }
+
 
     private void setButtonLabels(List<String> buttonLabels) {
         for(int i = 0; i < mInputButtons.length; i++) {

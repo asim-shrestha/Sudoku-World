@@ -21,10 +21,10 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SudokuGridView extends View {
+    private int mBoardLength = 9;
+    private int mSubsectionHeight = 3;
+    private int mSubsectionWidth = 3;
     public static final char COMPETITOR_FILLED_FLAG = '^';
-
-    private static final int SUDOKU_SIZE = 9;
-    private static final int SUDOKU_ROOT_SIZE = 3;
 
     private int mXOrigin;
     private int mYOrigin;
@@ -61,9 +61,7 @@ public class SudokuGridView extends View {
         super(context, attrs);
         initPaint(context, attrs);
 
-        mCellLabels = new String[SUDOKU_SIZE*SUDOKU_SIZE];
         mRectangleCells = false;
-        Arrays.fill(mCellLabels, "");
     }
 
     private void initPaint(Context context, AttributeSet attrs) {
@@ -126,13 +124,18 @@ public class SudokuGridView extends View {
     }
 
     public void lazySetLockedCellsLabels(boolean[] lockedCells) {
-        for (int i = 0; i < lockedCells.length; i++) {
-            if (lockedCells[i]) mCellLabels[i] = Character.toString(KeyConstants.CELL_LOCKED_FLAG);
+        int labelSize = lockedCells.length;
+        //Initialize mCellLabels with the proper size
+        mCellLabels = new String[ labelSize ];
+
+        for (int i = 0; i < labelSize; i++) {
+            if (lockedCells[i]) { mCellLabels[i] = Character.toString(KeyConstants.CELL_LOCKED_FLAG); }
+            else { mCellLabels[i] = ""; }
         }
         invalidate();
     }
 
-    @Override   //This is for accessibility (REQUIRED BY ANDRIOD STUDIO)
+    @Override   //This is for accessibility (REQUIRED BY ANDROID STUDIO)
     public boolean performClick() {
         return super.performClick();
     }
@@ -145,6 +148,11 @@ public class SudokuGridView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
+        //Recalculate grid sizes
+        mBoardLength = (int) Math.sqrt( mCellLabels.length );
+        mSubsectionHeight = (int) Math.floor(Math.sqrt(mBoardLength));
+        mSubsectionWidth = (int) Math.ceil(Math.sqrt(mBoardLength));
+
         mXOrigin = getPaddingLeft();
         mYOrigin = getPaddingTop();
 
@@ -154,17 +162,17 @@ public class SudokuGridView extends View {
 
         if (!mRectangleCells) {
             int squareSize = Math.min(w - maxPad, h - maxPad);
-            int cellSize = squareSize / SUDOKU_SIZE;
-            squareSize = cellSize * SUDOKU_SIZE; //Guard against for floating point errors
+            int cellSize = squareSize / mBoardLength;
+            squareSize = cellSize * mBoardLength; //Guard against for floating point errors
             mCellHeight = cellSize;
             mCellWidth = cellSize;
             mSquareHeight = squareSize;
             mSquareWidth = squareSize;
         } else {
             mSquareWidth = (w - maxPad);
-            mCellWidth = mSquareWidth / SUDOKU_SIZE;
+            mCellWidth = mSquareWidth / mBoardLength;
             mSquareHeight = (h - maxPad);
-            mCellHeight = mSquareHeight / SUDOKU_SIZE;
+            mCellHeight = mSquareHeight / mBoardLength;
         }
 
         mGridBoundingRect = new Rect(
@@ -212,10 +220,10 @@ public class SudokuGridView extends View {
     private void drawGrid(Canvas canvas) {
 
         //Horizontal Lines
-        for(int i = 0; i <= SUDOKU_SIZE; i++) {
+        for(int i = 0; i <= mBoardLength; i++) {
 
             //Either bold or not bold
-            if (i % SUDOKU_ROOT_SIZE == 0) {
+            if (i % mSubsectionHeight == 0) {
                 canvas.drawLine(
                         mXOrigin,mYOrigin + (i * mCellHeight),
                         mSquareWidth + mXOrigin, mYOrigin + (i * mCellHeight),
@@ -229,10 +237,10 @@ public class SudokuGridView extends View {
         }
 
         //Vertical Lines
-        for(int i = 0; i <= SUDOKU_SIZE; i++) {
+        for(int i = 0; i <= mBoardLength; i++) {
 
             //Either bold or not bold
-            if (i % SUDOKU_ROOT_SIZE == 0) {
+            if (i % mSubsectionWidth == 0) {
                 canvas.drawLine(
                         mXOrigin + (i * mCellWidth), mYOrigin,
                         mXOrigin + (i * mCellWidth), mSquareHeight + mYOrigin,
@@ -252,8 +260,8 @@ public class SudokuGridView extends View {
      */
     private void drawCellFill(Canvas canvas) {
         for (int i = 0; i < mCellLabels.length; i++) {
-            int cx = i % SUDOKU_SIZE;   //x cell pos
-            int cy = i / SUDOKU_SIZE;   //y cell pos
+            int cx = i % mBoardLength;   //x cell pos
+            int cy = i / mBoardLength;   //y cell pos
 
             // If its the cell that's currently INCORRECT, draw its highlight
             if(i == mIncorrectCell) {
@@ -310,18 +318,18 @@ public class SudokuGridView extends View {
         //No cell is highlighted
         if(mHighlightedCell == -1 ) {return;}
 
-        int row = (mHighlightedCell / SUDOKU_SIZE);
-        int column = (mHighlightedCell % SUDOKU_SIZE);
-        int subsectionRow = SUDOKU_SIZE * SUDOKU_ROOT_SIZE * (row / SUDOKU_ROOT_SIZE);
-        int subsectionColumn = SUDOKU_ROOT_SIZE * (column / SUDOKU_ROOT_SIZE);
+        int row = (mHighlightedCell / mBoardLength);
+        int column = (mHighlightedCell % mBoardLength);
+        int subsectionRow = mBoardLength * mSubsectionHeight * (row / mSubsectionHeight);
+        int subsectionColumn = mSubsectionWidth * (column / mSubsectionWidth);
         int i;
         List<Integer> visitedList = new ArrayList<>();
         visitedList.add(mHighlightedCell);
 
         //Draw row and column highlights
-        for(i = 0; i < SUDOKU_SIZE; i++) {
+        for(i = 0; i < mBoardLength; i++) {
             //Row
-            int cellNumber = SUDOKU_SIZE * row + i;
+            int cellNumber = mBoardLength * row + i;
             if (cellNumber != mHighlightedCell)
             {
                 drawCellHighlight(canvas, mNeighboursFillPaint, cellNumber);
@@ -329,7 +337,7 @@ public class SudokuGridView extends View {
             }
 
             //Column
-            cellNumber = column + i * SUDOKU_SIZE;
+            cellNumber = column + i * mBoardLength;
             if (cellNumber != mHighlightedCell)
             {
                 drawCellHighlight(canvas, mNeighboursFillPaint, cellNumber);
@@ -338,10 +346,10 @@ public class SudokuGridView extends View {
         }
 
         //Draw subsection highlights
-        for(i = 0; i < SUDOKU_ROOT_SIZE; i++){
-            for (int j = 0; j < SUDOKU_ROOT_SIZE; j++)
+        for(i = 0; i < mSubsectionHeight; i++){
+            for (int j = 0; j < mSubsectionWidth; j++)
             {
-                int cellNumber = subsectionRow + SUDOKU_SIZE * i + subsectionColumn + j;
+                int cellNumber = subsectionRow + mBoardLength * i + subsectionColumn + j;
                 if (!visitedList.contains(cellNumber)) {
                     drawCellHighlight(canvas, mNeighboursFillPaint, cellNumber);
                 }
@@ -352,8 +360,8 @@ public class SudokuGridView extends View {
     private void drawCellHighlight(Canvas canvas, Paint paint, int cellNumber) {
         //Draws the individual highlight of a cell
 
-        int cx = cellNumber % SUDOKU_SIZE;   //x cell pos
-        int cy = cellNumber / SUDOKU_SIZE;   //y cell pos
+        int cx = cellNumber % mBoardLength;   //x cell pos
+        int cy = cellNumber / mBoardLength;   //y cell pos
 
         Rect cellRect = new Rect(
                 mXOrigin + (cx * mCellWidth),
@@ -382,7 +390,7 @@ public class SudokuGridView extends View {
         y -= mYOrigin;
         x /= mCellWidth;
         y /= mCellHeight;
-        return (y * SUDOKU_SIZE) + x;
+        return (y * mBoardLength) + x;
     }
 
     public int getHighlightedCell() {

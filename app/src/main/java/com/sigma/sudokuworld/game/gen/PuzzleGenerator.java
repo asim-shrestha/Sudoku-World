@@ -13,15 +13,18 @@ import java.lang.Math;
 //and check whether or not a given solution is the correct solution
 public class PuzzleGenerator {
     private SudokuCell[][] mSudokuCells;
-    private int mSudokuSubsectionSize;
+    private int mSubsectionHeight;
+    private int mSubsectionWidth;
     private int mBoardLength;
     private int mBoardSize;
     private int[] mSolutionValues;
 
     //Constructor
-    public PuzzleGenerator(int sudokuSubsectionSize) {
-        mSudokuSubsectionSize = sudokuSubsectionSize;
-        mBoardLength = sudokuSubsectionSize * sudokuSubsectionSize;
+    public PuzzleGenerator(int boardLength) {
+        mBoardLength = boardLength;
+        //Figure out what two numbers make up each subsection
+        mSubsectionHeight = (int) Math.floor(Math.sqrt(boardLength));
+        mSubsectionWidth = (int) Math.ceil(Math.sqrt(boardLength));
         mBoardSize = (mBoardLength) * (mBoardLength);
         mSolutionValues = new int[mBoardSize];
     }
@@ -55,7 +58,7 @@ public class PuzzleGenerator {
         //Loops through and puts a cell in each index of the 2D Sudoku cell array
         for (int row = 0; row < mBoardLength; row++) {
             for (int column = 0; column < mBoardLength; column++) {
-                mSudokuCells[row][column] = new SudokuCell(mSudokuSubsectionSize);
+                mSudokuCells[row][column] = new SudokuCell(mBoardLength);
             }
         }
     }
@@ -85,7 +88,7 @@ public class PuzzleGenerator {
 
     private void clearBoard() {
         //Reset solution array
-        for (int i = 0; i < mBoardLength; i++){
+        for (int i = 0; i < mBoardSize; i++){
             mSolutionValues[i] = 0;
         }
 
@@ -93,7 +96,6 @@ public class PuzzleGenerator {
         for (int row = 0; row < mBoardLength; row++) {
             for (int column = 0; column < mBoardLength; column++) {
                 mSudokuCells[row][column].clearCurrValue();
-                mSudokuCells[row][column].changeLockValue(false);
             }
         }
     }
@@ -112,10 +114,10 @@ public class PuzzleGenerator {
 
         //Remove pre-existing sub-section values
         //The below calculations will be coordinates for the top left index of each sub-section
-        int subSectionRow = mSudokuSubsectionSize*(row / mSudokuSubsectionSize);
-        int subSectionColumn = mSudokuSubsectionSize*(column / mSudokuSubsectionSize);
-        for ( int i = 0; i < mSudokuSubsectionSize; i++) {
-            for (int j =0; j < mSudokuSubsectionSize; j++) {
+        int subSectionRow = mSubsectionHeight*(row / mSubsectionHeight);
+        int subSectionColumn = mSubsectionWidth*(column / mSubsectionWidth);
+        for ( int i = 0; i < mSubsectionHeight; i++) {
+            for (int j =0; j < mSubsectionWidth; j++) {
                 cell.removeCandidate(mSudokuCells[subSectionRow + i][subSectionColumn + j].getCurrValue());
             }
         }

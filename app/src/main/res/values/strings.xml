@@ -34,6 +34,11 @@
     <string name="difficultyEasy">Easy</string>
     <string name="difficultyMedium">Medium</string>
     <string name="difficultyHard">Hard</string>
+    <string name="boardSizeLabel">Board Size</string>
+    <string name="boardSize0">4x4</string>
+    <string name="boardSize1">6x6</string>
+    <string name="boardSize2">9x9</string>
+    <string name="boardSize3">12x12</string>
     <string name="audioMode">Listening Comprehension Mode</string>
     <string name="soundMode">Sound</string>
     <string name="hintsMode">Hints</string>

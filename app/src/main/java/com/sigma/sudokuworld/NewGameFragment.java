@@ -25,6 +25,7 @@ public class NewGameFragment extends Fragment {
     private MenuViewModel mMenuViewModel;
     private View mView;
     private SeekBar mDifficultySeekBar;
+    private SeekBar mBoardSizeSeekBar;
     private RadioGroup mGameModeRadioGroup;
     private View mSetLayout;
     private TextView mSetTitle;
@@ -46,6 +47,7 @@ public class NewGameFragment extends Fragment {
         mView = inflater.inflate(R.layout.fragment_new_game, container, false);
         mGameModeRadioGroup = mView.findViewById(R.id.gameModeRadioGroup);
         mDifficultySeekBar = mView.findViewById(R.id.difficultyBar);
+        mBoardSizeSeekBar = mView.findViewById(R.id.boardSizeBar);
         mSetLayout = mView.findViewById(R.id.setViewLayout);
         mSetTitle = mView.findViewById(R.id.setTitle);
 
@@ -130,6 +132,18 @@ public class NewGameFragment extends Fragment {
             mDifficultySeekBar.setProgress(2);
         }
 
+        int boardLength = mMenuViewModel.getSelectedBoardLength();
+        if (boardLength == 4) {
+            mBoardSizeSeekBar.setProgress(0);
+        } else if (boardLength == 6) {
+            mBoardSizeSeekBar.setProgress(1);
+        } else if (boardLength == 9) {
+            mBoardSizeSeekBar.setProgress(2);
+        } else {
+            mBoardSizeSeekBar.setProgress(3);
+        }
+
+
         GameMode mode = mMenuViewModel.getSelectedGameMode();
         if (mode == GameMode.NATIVE) {
             mGameModeRadioGroup.check(R.id.nativeModeRadioButton);
@@ -156,13 +170,25 @@ public class NewGameFragment extends Fragment {
         }
 
         //Checking Difficulty
-        int pos = mDifficultySeekBar.getProgress();
-        if (pos == 0) {
+        int difficultyPos = mDifficultySeekBar.getProgress();
+        if (difficultyPos == 0) {
             mMenuViewModel.setSelectedGameDifficulty(GameDifficulty.EASY);
-        } else if (pos == 1) {
+        } else if (difficultyPos == 1) {
             mMenuViewModel.setSelectedGameDifficulty(GameDifficulty.MEDIUM);
         } else {
             mMenuViewModel.setSelectedGameDifficulty(GameDifficulty.HARD);
+        }
+
+        //Checking Board Length
+        int boardLengthPos = mBoardSizeSeekBar.getProgress();
+        if (boardLengthPos == 0) {
+            mMenuViewModel.setSelectedBoardLength(4);
+        } else if (boardLengthPos == 1) {
+            mMenuViewModel.setSelectedBoardLength(6);
+        } else if (boardLengthPos == 2){
+            mMenuViewModel.setSelectedBoardLength(9);
+        } else {
+            mMenuViewModel.setSelectedBoardLength(12);
         }
     }
 }

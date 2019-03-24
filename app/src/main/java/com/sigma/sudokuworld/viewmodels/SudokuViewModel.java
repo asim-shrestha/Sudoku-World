@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SudokuViewModel extends BaseSettingsViewModel {
-    private final int SUDOKU_SIZE;
+    private final int BOARD_SIZE;
+    private final int BOARD_LENGTH;
     private GameRepository mGameRepository;
     private Game mGame;
 
@@ -46,7 +47,8 @@ public class SudokuViewModel extends BaseSettingsViewModel {
             Log.wtf(TAG, "Tried loading game save that doesn't exit");
         }
 
-        SUDOKU_SIZE = mGame.getCellValues().length;
+        BOARD_SIZE = mGame.getCellValues().length;
+        BOARD_LENGTH = (int) Math.sqrt(BOARD_SIZE);
         init();
     }
 
@@ -70,6 +72,10 @@ public class SudokuViewModel extends BaseSettingsViewModel {
 
     public String getMappedString(int value, GameMode mode) {
         return valueToMappedLabel(value, mode);
+    }
+
+    public int getBoardLength(){
+        return BOARD_LENGTH;
     }
 
     public int getCellValue(int cellNumber) {
@@ -106,7 +112,7 @@ public class SudokuViewModel extends BaseSettingsViewModel {
     }
 
     public int getIncorrectCellNumber() {
-        for (int i = 0; i < SUDOKU_SIZE; i++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
             if (mGame.getCellValue(i) != mGame.getSolutionValue(i)) return i;
         }
 
@@ -155,7 +161,7 @@ public class SudokuViewModel extends BaseSettingsViewModel {
         labels = new ArrayList<>();
 
         GameMode gameMode = mGame.getGameMode();
-        for (int i = 0; i < SUDOKU_SIZE; i++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
             String label = "";
             if (mGame.isLocked(i)) {
                 label += KeyConstants.CELL_LOCKED_FLAG;
@@ -177,7 +183,7 @@ public class SudokuViewModel extends BaseSettingsViewModel {
         GameMode gameMode = mGame.getGameMode();
         gameMode = GameMode.opposite(gameMode);
 
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < BOARD_LENGTH; i++) {
             String label = "";
             label += valueToMappedLabel(i + 1, GameMode.opposite(gameMode));
 
@@ -191,7 +197,8 @@ public class SudokuViewModel extends BaseSettingsViewModel {
         String label = "";
 
         if (value != 0) {
-            if (gameMode == GameMode.NUMBERS) label = Integer.toString(value);
+            if (gameMode == GameMode.NUMBERS || (nativeWordsMap.size() <= value)) //TODO: Remove OR CASE once set sizes >= 12
+                label = Integer.toString(value);
             else if (gameMode == GameMode.NATIVE) label = nativeWordsMap.valueAt(value);
             else if (gameMode == GameMode.FOREIGN) label = foreignWordsMap.valueAt(value);
         }
