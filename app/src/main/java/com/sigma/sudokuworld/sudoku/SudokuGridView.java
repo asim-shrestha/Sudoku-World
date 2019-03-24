@@ -56,15 +56,7 @@ public class SudokuGridView extends View {
         super(context, attrs);
         initPaint(context, attrs);
 
-        mCellLabels = new String[mBoardLength*mBoardLength];
         mRectangleCells = false;
-        Arrays.fill(mCellLabels, "");
-    }
-
-    public void setGridSize(int boardLength) {
-        mBoardLength = boardLength;
-        mSubsectionHeight = (int) Math.floor(Math.sqrt(boardLength));
-        mSubsectionWidth = (int) Math.ceil(Math.sqrt(boardLength));
     }
 
     private void initPaint(Context context, AttributeSet attrs) {
@@ -134,6 +126,11 @@ public class SudokuGridView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+
+        //Recalculate grid sizes
+        mBoardLength = (int) Math.sqrt( mCellLabels.length );
+        mSubsectionHeight = (int) Math.floor(Math.sqrt(mBoardLength));
+        mSubsectionWidth = (int) Math.ceil(Math.sqrt(mBoardLength));
 
         mXOrigin = getPaddingLeft();
         mYOrigin = getPaddingTop();

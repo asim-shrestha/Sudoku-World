@@ -58,9 +58,8 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
         //Initializing Sudoku grid
         mSudokuGridView = findViewById(R.id.sudokuGrid_view);
-        mSudokuGridView.setGridSize( mSudokuViewModel.getBoardLength() );
-        mSudokuGridView.setOnTouchListener(onSudokuGridTouchListener);
         mSudokuGridView.setCellLabels(this, mSudokuViewModel.getCellLabels());
+        mSudokuGridView.setOnTouchListener(onSudokuGridTouchListener);
         mSudokuGridView.setRectangleMode(PersistenceService.loadRectangleModeEnabledSetting(this));
 
         mSoundPlayer = new SoundPlayer(this);
