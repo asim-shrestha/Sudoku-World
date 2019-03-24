@@ -66,6 +66,9 @@ public class SudokuViewModel extends BaseSettingsViewModel {
         return valueToMappedLabel(value, mode);
     }
 
+    public int getBoardLength(){
+        return (int) Math.sqrt(BOARD_SIZE);
+    }
     public int getCellValue(int cellNumber) {
         return mGame.getCellValue(cellNumber);
     }
