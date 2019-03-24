@@ -9,35 +9,31 @@ import java.util.Random;
 //Cell may hold a restricted value. This is for checking what nodes to delete (-1 if no restriction)
 class SudokuCell {
     private int mCurrValue;  //0 if no value is placed
-    private int mSudokuSubsectionSize;
+    private int mBoardLength;
     private int mRestrictedValue; //-1 if no restriction placed
     private boolean mLockValue;
     //Shrinking list of possible values the cell may take
     private List<Integer> mCandidatesList;
 
-
     //Constructor
-    SudokuCell(int sudokuSubsectionSize) {
+    SudokuCell(int boardLength) {
         mCurrValue = 0;
         mLockValue = false;
-        mRestrictedValue = -1;
-        mSudokuSubsectionSize = sudokuSubsectionSize;
+        mRestrictedValue = -1;  //-1 No restriction on value
+        mBoardLength = boardLength;
         mCandidatesList = new ArrayList<>();
         resetCandidateList();
     }
 
-
     private void createBaseCandidateList() {
         //Creates the list of candidates from 0 to N where N is the max number allowed
-        //N is determined by the SUDOKU_ROOT_SIZE
-        //If the board is 9x9, the SUDOKU_ROOT_SIZE = 3
-        int maxNumber = mSudokuSubsectionSize * mSudokuSubsectionSize;
-
+        int maxNumber = mBoardLength;
         for (int i = 1; i <= maxNumber; i++) {
             mCandidatesList.add(i);
         }
 
     }
+
     boolean pickCandidate() {
         //Randomly gets a possible candidate and removes it from the candidate list
         //If there are no possible candidates it returns 0
@@ -58,19 +54,21 @@ class SudokuCell {
 
         return true;
     }
+
     void removeCandidate(int value) {
         mCandidatesList.remove((Integer) value);
     }
+
     void resetCandidateList() {
         //Clears the candidate list and sets it to the base candidate list
         mCandidatesList.clear();
         createBaseCandidateList();
     }
 
-
     boolean isLocked() {
         return mLockValue;
     }
+
     void changeLockValue(boolean lockValue) {
         mLockValue = lockValue;
     }
@@ -85,9 +83,11 @@ class SudokuCell {
         mCurrValue = 0;
         changeLockValue(false);
     }
+
     int getCurrValue() {
         return mCurrValue;
     }
+
     void changeCurrValue(int value) {
         mCurrValue = value;
         mLockValue = true;
