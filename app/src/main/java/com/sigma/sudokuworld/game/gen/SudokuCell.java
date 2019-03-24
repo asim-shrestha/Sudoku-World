@@ -16,11 +16,11 @@ class SudokuCell {
     private List<Integer> mCandidatesList;
 
     //Constructor
-    SudokuCell(int mBoardLength) {
+    SudokuCell(int boardLength) {
         mCurrValue = 0;
         mLockValue = false;
         mRestrictedValue = -1;  //-1 No restriction on value
-        mBoardLength = mBoardLength;
+        mBoardLength = boardLength;
         mCandidatesList = new ArrayList<>();
         resetCandidateList();
     }
@@ -28,7 +28,6 @@ class SudokuCell {
     private void createBaseCandidateList() {
         //Creates the list of candidates from 0 to N where N is the max number allowed
         int maxNumber = mBoardLength;
-
         for (int i = 1; i <= maxNumber; i++) {
             mCandidatesList.add(i);
         }
