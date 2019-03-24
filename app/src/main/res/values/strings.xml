@@ -18,6 +18,10 @@
     <string name="settingsHeader">Settings</string>
     <string name="newGameHeader">New Game</string>
     <string name="continueGameHeader">Select Game</string>
+    <string name="multiplayerHeader">Multiplayer</string>
+
+    <string name="signedIn">Signed in as: </string>
+    <string name="signedOut">Signed out</string>
 
     <string name="wordListHeader">Word List</string>
     <string name="nativeWords">Native Words</string>

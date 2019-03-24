@@ -33,6 +33,10 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.google.firebase:firebase-database:16.0.1'
+
+    implementation 'com.google.android.gms:play-services-games:17.0.0'
+    implementation "com.google.android.gms:play-services-auth:16.0.1"
+
     testImplementation 'junit:junit:4.12'
 
     //Room db dependencies
