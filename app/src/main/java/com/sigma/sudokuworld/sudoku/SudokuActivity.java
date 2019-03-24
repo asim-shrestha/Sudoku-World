@@ -38,8 +38,6 @@ public abstract class SudokuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sudoku);
 
-
-
         mGameViewModel = null;
 
         //Initializing Sudoku grid

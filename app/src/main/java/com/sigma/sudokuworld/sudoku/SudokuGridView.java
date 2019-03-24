@@ -148,8 +148,11 @@ public class SudokuGridView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
+        int length = 1;
+        if (mCellLabels != null) length = mCellLabels.length;
+
         //Recalculate grid sizes
-        mBoardLength = (int) Math.sqrt( mCellLabels.length );
+        mBoardLength = (int) Math.sqrt(length);
         mSubsectionHeight = (int) Math.floor(Math.sqrt(mBoardLength));
         mSubsectionWidth = (int) Math.ceil(Math.sqrt(mBoardLength));
 
@@ -208,9 +211,11 @@ public class SudokuGridView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        drawCellFill(canvas);
-        drawGrid(canvas);
-        highlightNeighbours(canvas);
+        if (mCellLabels != null) {
+            drawCellFill(canvas);
+            drawGrid(canvas);
+            highlightNeighbours(canvas);
+        }
     }
 
     /**

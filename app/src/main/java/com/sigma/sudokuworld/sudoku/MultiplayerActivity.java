@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.WindowManager;
@@ -54,6 +55,8 @@ public class MultiplayerActivity extends SudokuActivity {
 
     //Game
     private MultiplayerViewModel mMultiplayerViewModel;
+    private FragmentManager mFragmentManager;
+
     private String mHostParticipantID;
     private String mMyParticipantID;
     private boolean isGameStarted;
@@ -62,13 +65,16 @@ public class MultiplayerActivity extends SudokuActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //TODO make rotation compatible, Currently boots you out of game on rotate. Put in view model?
+
         GoogleSignInAccount mAccount = GoogleSignIn.getLastSignedInAccount(this);
         if (mAccount == null) {
             finish();
         }
         onConnected(mAccount);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new LoadingSrceenFragment()).commit();
+        mFragmentManager = getSupportFragmentManager();
+        mFragmentManager.beginTransaction().replace(R.id.fragment_container, new LoadingSrceenFragment()).commit();
 
         mRealTimeMultiplayerClient = Games.getRealTimeMultiplayerClient(this, mAccount);
         isGameStarted = false;
@@ -159,6 +165,9 @@ public class MultiplayerActivity extends SudokuActivity {
                 }
             }
         });
+
+
+        mFragmentManager.beginTransaction().remove(mFragmentManager.findFragmentById(R.id.fragment_container)).commit();
     }
 
     /**
@@ -203,7 +212,7 @@ public class MultiplayerActivity extends SudokuActivity {
     private void performHostSetup() {
         Log.d(TAG, "performHostSetup: I AM HOST");
 
-        Bundle puzzle = new PuzzleGenerator(3).generatePuzzle(GameDifficulty.EASY);
+        Bundle puzzle = new PuzzleGenerator(9).generatePuzzle(GameDifficulty.EASY);
 
         int[] initialCells = puzzle.getIntArray(KeyConstants.CELL_VALUES_KEY);
         int[] solution = puzzle.getIntArray(KeyConstants.SOLUTION_VALUES_KEY);
@@ -422,7 +431,7 @@ public class MultiplayerActivity extends SudokuActivity {
         }
     };
 
-    public void broadcastPuzzle(int[] initial, int[] solution) {
+    public void broadcastPuzzle(final int[] initial, final int[] solution) {
 
         int bytePosition = 0;
         byte[] bytes = new byte[2 + initial.length + solution.length];
@@ -456,6 +465,7 @@ public class MultiplayerActivity extends SudokuActivity {
                 @Override
                 public void onSuccess(Integer integer) {
                     Log.d(TAG, "onSuccess: PUZZLE SUCCESSFULLY DELIVERED");
+                    startGame(initial, solution);
                 }
             });
         }
