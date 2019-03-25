@@ -22,10 +22,10 @@ public class PuzzleGenerator {
     //Constructor
     public PuzzleGenerator(int boardLength) {
         mBoardLength = boardLength;
+        mBoardSize = (mBoardLength) * (mBoardLength);
         //Figure out what two numbers make up each subsection
         mSubsectionHeight = (int) Math.floor(Math.sqrt(boardLength));
         mSubsectionWidth = (int) Math.ceil(Math.sqrt(boardLength));
-        mBoardSize = (mBoardLength) * (mBoardLength);
         mSolutionValues = new int[mBoardSize];
     }
 
@@ -71,17 +71,21 @@ public class PuzzleGenerator {
 
         //Check a different number of nodes in generatePlayableBoard
         //based on the selected difficulty setting
+        //We use a propriotary formula to generate how many nodes to potentially delete
         int nodesToCheck = 0;
         switch (difficulty){
             case EASY:
-                nodesToCheck = 20;
+                nodesToCheck = (mBoardSize + mBoardLength)/6;
                 break;
             case MEDIUM:
-                nodesToCheck = 35;
+                nodesToCheck = (mBoardSize + mBoardLength)*2 /6;
                 break;
             case HARD:
-                nodesToCheck = 60;
+                nodesToCheck = (mBoardSize + mBoardLength)*4 / 5;
         }
+
+        //Cap nodesToCheck at 100 so that the computations don't get too big
+        nodesToCheck = Math.min(nodesToCheck, 65);
         generatePlayableBoard(nodesToCheck);
     }
 
