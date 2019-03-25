@@ -24,7 +24,9 @@ public class SudokuGridView extends View {
     private int mBoardLength = 9;
     private int mSubsectionHeight = 3;
     private int mSubsectionWidth = 3;
+
     public static final char COMPETITOR_FILLED_FLAG = '^';
+    public static final char LOCKED_CELL_FLAG = '~';
 
     private int mXOrigin;
     private int mYOrigin;
@@ -129,7 +131,7 @@ public class SudokuGridView extends View {
         mCellLabels = new String[ labelSize ];
 
         for (int i = 0; i < labelSize; i++) {
-            if (lockedCells[i]) { mCellLabels[i] = Character.toString(KeyConstants.CELL_LOCKED_FLAG); }
+            if (lockedCells[i]) { mCellLabels[i] = Character.toString(LOCKED_CELL_FLAG); }
             else { mCellLabels[i] = ""; }
         }
         invalidate();
@@ -148,7 +150,7 @@ public class SudokuGridView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        int length = 1;
+        int length = 81;    //TODO remove this (Jank bug fix to late init in Multiplayer Activity)
         if (mCellLabels != null) length = mCellLabels.length;
 
         //Recalculate grid sizes
@@ -288,7 +290,7 @@ public class SudokuGridView extends View {
             }
 
             //Draws the cell fill for squares that cant be edited
-            if (!label.isEmpty() && label.charAt(0) == KeyConstants.CELL_LOCKED_FLAG) {
+            if (!label.isEmpty() && label.charAt(0) == LOCKED_CELL_FLAG) {
                 drawCellHighlight(canvas, mLockedFillPaint, i);
                 label = label.substring(1);
             }

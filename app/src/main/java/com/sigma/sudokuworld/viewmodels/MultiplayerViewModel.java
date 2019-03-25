@@ -68,7 +68,7 @@ public class MultiplayerViewModel extends GameViewModel {
      * @param cellNumber cell number
      * @return is the cell filled by the competitor
      */
-    public boolean isFilledByCompetitor(int cellNumber) {
+    private boolean isFilledByCompetitor(int cellNumber) {
         String label = labels.get(cellNumber);
 
         if (label.isEmpty()) return false;

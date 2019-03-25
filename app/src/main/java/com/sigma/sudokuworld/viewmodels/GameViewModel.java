@@ -11,6 +11,7 @@ import com.sigma.sudokuworld.persistence.WordSetRepository;
 import com.sigma.sudokuworld.persistence.db.entities.Game;
 import com.sigma.sudokuworld.persistence.db.views.WordPair;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
+import com.sigma.sudokuworld.sudoku.SudokuGridView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,11 +106,19 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
 
     protected void updateCellLabel(int cellNumber, int value) {
         GameMode gameMode = mGame.getGameMode();
-        labels.set(cellNumber, valueToMappedLabel(value, gameMode));
+
+        String flags = "";
+        String label = labels.get(cellNumber);
+
+        if (!label.isEmpty() && label.charAt(0) == SudokuGridView.COMPETITOR_FILLED_FLAG) {
+            flags += SudokuGridView.COMPETITOR_FILLED_FLAG;
+        }
+
+        labels.set(cellNumber, flags + valueToMappedLabel(value, gameMode));
         updateLiveLabels();
     }
 
-    protected void updateLiveLabels() {
+    void updateLiveLabels() {
         cellLabelsLiveData.setValue(labels); //TODO: Don't run on main thread
     }
 
