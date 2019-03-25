@@ -35,6 +35,11 @@ public class ConnectionViewModel extends AndroidViewModel {
     private static final String TAG = "Mutiplayer";
     private static final int MIN_PLAYER_COUNT = 2;
 
+    //Protocol
+    private static byte FILL_SQUARE_PROTOCOL = 1;
+    private static byte EMPTY_SQUARE_PROTOCOL = 2;
+    private static byte PUZZLE_PROTOCOL = 3;
+
     //Clients
     private RealTimeMultiplayerClient mRealTimeMultiplayerClient;
     private PlayersClient mPlayersClient;
@@ -348,16 +353,16 @@ public class ConnectionViewModel extends AndroidViewModel {
         public void onRealTimeMessageReceived(@NonNull RealTimeMessage realTimeMessage) {
             byte[] bytes = realTimeMessage.getMessageData();
 
-            if (bytes[0] == RealtimeProtocol.FILL_SQUARE) {
+            if (bytes[0] == FILL_SQUARE_PROTOCOL) {
                 mCompetitorFilledCell.setValue(((int) bytes[1]));
             }
 
-            else if (bytes[0] == RealtimeProtocol.UNFILL_SQUARE) {
+            else if (bytes[0] == EMPTY_SQUARE_PROTOCOL) {
                 mCompetitorEmptiedCell.setValue((int) bytes[1]);
             }
 
-            else if (bytes[0] == RealtimeProtocol.PUZZLE) {
-                Log.d(TAG, "onRealTimeMessageReceived: PUZZLE RECEIVED");
+            else if (bytes[0] == PUZZLE_PROTOCOL) {
+                Log.d(TAG, "onRealTimeMessageReceived: PUZZLE_PROTOCOL RECEIVED");
 
                 int size = bytes[1];
 
@@ -389,7 +394,7 @@ public class ConnectionViewModel extends AndroidViewModel {
         byte[] bytes = new byte[2 + initial.length + solution.length];
 
 
-        bytes[bytePosition] = RealtimeProtocol.PUZZLE;
+        bytes[bytePosition] = PUZZLE_PROTOCOL;
         bytePosition++;
 
         //Puzzle length
@@ -415,7 +420,7 @@ public class ConnectionViewModel extends AndroidViewModel {
                     .addOnSuccessListener(new OnSuccessListener<Integer>() {
                         @Override
                         public void onSuccess(Integer integer) {
-                            Log.d(TAG, "onSuccess: PUZZLE SUCCESSFULLY DELIVERED");
+                            Log.d(TAG, "onSuccess: PUZZLE_PROTOCOL SUCCESSFULLY DELIVERED");
                             startGame(initial, solution);
                         }
                     });
@@ -430,7 +435,7 @@ public class ConnectionViewModel extends AndroidViewModel {
     public void broadcastMove(int cellNumber, boolean isFilled) {
         byte[] bytes = new byte[2];
 
-        bytes[0] = (isFilled ? RealtimeProtocol.FILL_SQUARE : RealtimeProtocol.UNFILL_SQUARE);
+        bytes[0] = (isFilled ? FILL_SQUARE_PROTOCOL : EMPTY_SQUARE_PROTOCOL);
         bytes[1] = (byte) cellNumber;
 
         mRealTimeMultiplayerClient.sendUnreliableMessageToOthers(bytes, mRoomID); //TODO: reliable msg?
