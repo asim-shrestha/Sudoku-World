@@ -150,7 +150,7 @@ public class SudokuGridView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
-        int length = 81;    //TODO remove this (Jank bug fix to late init in Multiplayer Activity)
+        int length = 36;    //TODO remove this (Jank bug fix to late init in Multiplayer Activity)
         if (mCellLabels != null) length = mCellLabels.length;
 
         //Recalculate grid sizes

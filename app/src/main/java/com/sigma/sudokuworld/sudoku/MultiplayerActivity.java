@@ -15,13 +15,14 @@ import com.sigma.sudokuworld.viewmodels.MultiplayerViewModel;
 import com.sigma.sudokuworld.viewmodels.MultiplayerViewModelFactory;
 
 public class MultiplayerActivity extends SudokuActivity {
-    private static final String TAG = "Mutiplayer";
+    private static final String TAG = "Multiplayer";
 
     private static final int RC_WAITING_ROOM = 276;
 
     private ConnectionViewModel mConnectionViewModel;
 
     private MultiplayerViewModel mMultiplayerViewModel;
+    private LoadingSrceenFragment mLoadingSrceenFragment;
     private FragmentManager mFragmentManager;
 
     @Override
@@ -33,6 +34,12 @@ public class MultiplayerActivity extends SudokuActivity {
         mConnectionViewModel.getGameStateLiveData().observe(this, mGameStateObserver);
 
         mFragmentManager = getSupportFragmentManager();
+        mLoadingSrceenFragment = new LoadingSrceenFragment();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
     }
 
@@ -43,6 +50,12 @@ public class MultiplayerActivity extends SudokuActivity {
         if (requestCode == RC_WAITING_ROOM) {
             mConnectionViewModel.setWaitingRoomResult(resultCode);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mConnectionViewModel.leaveGameRoom();
     }
 
     Observer<ConnectionViewModel.GameState> mGameStateObserver = new Observer<ConnectionViewModel.GameState>() {
@@ -67,7 +80,7 @@ public class MultiplayerActivity extends SudokuActivity {
                     finish();
                     break;
                 case PEER_LEFT:
-                    displayDisconnectDialog();
+                    displayDisconnectDialog("Opponent Left");
                     break;
                 case ERROR:
                     displayErrorDialog("An Error has occurred");
@@ -86,9 +99,9 @@ public class MultiplayerActivity extends SudokuActivity {
                 .show();
     }
 
-    void displayDisconnectDialog() {
+    void displayDisconnectDialog(String message) {
         new AlertDialog.Builder(this)
-                .setMessage("An Error has occurred")
+                .setMessage(message)
                 .setNeutralButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -104,7 +117,11 @@ public class MultiplayerActivity extends SudokuActivity {
     }
 
     void displayLoadingScreen() {
-        mFragmentManager.beginTransaction().replace(R.id.fragment_container, new LoadingSrceenFragment()).commit();
+        mFragmentManager
+                .beginTransaction()
+                .replace(R.id.fragment_container, mLoadingSrceenFragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     void displayGame() {
@@ -148,6 +165,6 @@ public class MultiplayerActivity extends SudokuActivity {
             }
         });
 
-        mFragmentManager.beginTransaction().remove(mFragmentManager.findFragmentById(R.id.fragment_container)).commit();
+        mFragmentManager.popBackStack();
     }
 }

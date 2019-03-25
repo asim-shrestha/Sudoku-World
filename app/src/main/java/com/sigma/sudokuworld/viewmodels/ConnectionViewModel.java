@@ -11,10 +11,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.GamesCallbackStatusCodes;
-import com.google.android.gms.games.PlayersClient;
-import com.google.android.gms.games.RealTimeMultiplayerClient;
+import com.google.android.gms.games.*;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.*;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,7 +29,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class ConnectionViewModel extends AndroidViewModel {
 
-    private static final String TAG = "Mutiplayer";
+    private static final String TAG = "Multiplayer";
     private static final int MIN_PLAYER_COUNT = 2;
 
     //Protocol
@@ -91,9 +88,7 @@ public class ConnectionViewModel extends AndroidViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
-
-        leaveRoom();
-    }
+   }
 
 
     /**
@@ -162,7 +157,7 @@ public class ConnectionViewModel extends AndroidViewModel {
     private void performHostSetup() {
         Log.d(TAG, "performHostSetup: I AM HOST");
 
-        Bundle puzzle = new PuzzleGenerator(9).generatePuzzle(GameDifficulty.EASY);
+        Bundle puzzle = new PuzzleGenerator(6).generatePuzzle(GameDifficulty.EASY);
 
         int[] initial = puzzle.getIntArray(KeyConstants.CELL_VALUES_KEY);
         int[] solution = puzzle.getIntArray(KeyConstants.SOLUTION_VALUES_KEY);
@@ -280,12 +275,15 @@ public class ConnectionViewModel extends AndroidViewModel {
 
         @Override
         public void onPeerJoined(@Nullable Room room, @NonNull List<String> list) {
+            Log.d(TAG, "onPeerJoined: PEER JOINED ROOM");
             updateRoom(room);
         }
 
         @Override
         public void onPeerLeft(@Nullable Room room, @NonNull List<String> list) {
+            Log.d(TAG, "onPeerLeft: PEER LEFT ROOM");
             updateRoom(room);
+            updateGameState(GameState.PEER_LEFT);
         }
 
         @Override
@@ -321,10 +319,6 @@ public class ConnectionViewModel extends AndroidViewModel {
 
     private void updateRoom(Room room) {
         if (room != null) mParticipants = room.getParticipants();
-
-        if (shouldCancelGame()) {
-            updateGameState(GameState.PEER_LEFT);
-        }
     }
 
     /**
@@ -481,6 +475,10 @@ public class ConnectionViewModel extends AndroidViewModel {
         return mCompetitorEmptiedCell;
     }
 
+    public void leaveGameRoom() {
+        leaveRoom();
+    }
+
     public Intent getWaitingRoomIntent() {
         return mWaitingRoomIntent;
     }
@@ -488,7 +486,7 @@ public class ConnectionViewModel extends AndroidViewModel {
     public void setWaitingRoomResult(int resultCode) {
         if (resultCode == RESULT_OK) {
             setupGame();
-        } else {
+        } else if (resultCode == GamesActivityResultCodes.RESULT_LEFT_ROOM){
             leaveRoom();
         }
     }
