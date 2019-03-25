@@ -6,13 +6,13 @@ import android.widget.Toast;
 
 import com.sigma.sudokuworld.game.GameMode;
 
-public class VocabSudokuActivity extends SudokuActivity {
+public class VocabSudokuActivity extends SinglePlayerActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (mSudokuViewModel.getGameMode() != GameMode.NUMBERS) {
+        if (mSinglePlayerViewModel.getGameMode() != GameMode.NUMBERS) {
             super.mSudokuGridView.setOnLongClickListener(onLongClickListener);
         }
     }
@@ -20,10 +20,10 @@ public class VocabSudokuActivity extends SudokuActivity {
     View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
-            if (mSudokuViewModel.isLockedCell(cellTouched)) {
-                String text = mSudokuViewModel.getMappedString(
-                        mSudokuViewModel.getCellValue(cellTouched),
-                        GameMode.opposite(mSudokuViewModel.getGameMode())
+            if (mSinglePlayerViewModel.isLockedCell(cellTouched)) {
+                String text = mSinglePlayerViewModel.getMappedString(
+                        mSinglePlayerViewModel.getCellValue(cellTouched),
+                        GameMode.opposite(mSinglePlayerViewModel.getGameMode())
                 );
                 Toast.makeText(getBaseContext(), text, Toast.LENGTH_SHORT).show();
                 return true;

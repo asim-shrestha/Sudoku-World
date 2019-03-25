@@ -190,7 +190,9 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Player> task) {
                 if (task.isSuccessful()) {
-                    mPlayerLabel.setText(task.getResult().getDisplayName());
+                    if (task.getResult() != null) {
+                        mPlayerLabel.setText(task.getResult().getDisplayName());
+                    }
                 }
             }
         });
