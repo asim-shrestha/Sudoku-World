@@ -139,8 +139,10 @@ public class NewGameFragment extends Fragment {
             mBoardSizeSeekBar.setProgress(1);
         } else if (boardLength == 9) {
             mBoardSizeSeekBar.setProgress(2);
-        } else {
+        } else if (boardLength == 12) {
             mBoardSizeSeekBar.setProgress(3);
+        } else {
+            mBoardSizeSeekBar.setProgress(4);
         }
 
 
@@ -187,8 +189,10 @@ public class NewGameFragment extends Fragment {
             mMenuViewModel.setSelectedBoardLength(6);
         } else if (boardLengthPos == 2){
             mMenuViewModel.setSelectedBoardLength(9);
-        } else {
+        } else if (boardLengthPos == 3){
             mMenuViewModel.setSelectedBoardLength(12);
+        } else {
+            mMenuViewModel.setSelectedBoardLength(16);
         }
     }
 }

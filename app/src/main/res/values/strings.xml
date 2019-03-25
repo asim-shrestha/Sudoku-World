@@ -39,6 +39,7 @@
     <string name="boardSize1">6x6</string>
     <string name="boardSize2">9x9</string>
     <string name="boardSize3">12x12</string>
+    <string name="boardSize4">16x16</string>
     <string name="audioMode">Listening Comprehension Mode</string>
     <string name="soundMode">Sound</string>
     <string name="hintsMode">Hints</string>
