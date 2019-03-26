@@ -22,6 +22,7 @@ import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.audio.SoundPlayer;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class SudokuActivity extends AppCompatActivity {
@@ -96,8 +97,8 @@ public abstract class SudokuActivity extends AppCompatActivity {
                         cellTouched = cellNum;
 
                         //If we have selected the incorrect cell, un highlight it
-                        if (cellNum == mSudokuGridView.getIncorrectCell()) {
-                            mSudokuGridView.clearIncorrectCell();
+                        if (mSudokuGridView.IsIncorrectCell(cellNum)) {
+                            mSudokuGridView.clearIncorrectCell(cellNum);
                         }
 
                         //Set new highlighted cell if its not a locked cell
@@ -142,11 +143,11 @@ public abstract class SudokuActivity extends AppCompatActivity {
                 if (mGameViewModel.isCorrectValue(cellNumber, buttonValue) || !mGameViewModel.isHintsEnabled()) {
                     //Correct number is placed in cell
                     mSudokuGridView.clearHighlightedCell();
-                    mSudokuGridView.clearIncorrectCell();
+                    mSudokuGridView.clearIncorrectCell(cellNumber);
                     mSoundPlayer.playPlaceCellSound();
                 } else {
                     //Incorrect value has been placed in cell
-                    mSudokuGridView.setIncorrectCell(cellNumber);
+                    mSudokuGridView.addIncorrectCell(cellNumber);
                     mSoundPlayer.playWrongSound();
                 }
 
@@ -175,7 +176,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
             //Cell is wrong
             else {
-                mSudokuGridView.setIncorrectCell(highlightedCell);
+                mSudokuGridView.addIncorrectCell(highlightedCell);
                 mSoundPlayer.playWrongSound();
 
             }
@@ -184,12 +185,12 @@ public abstract class SudokuActivity extends AppCompatActivity {
         }
 
         //Checks if the answers are right and displays the first wrong cell (if any)
-        int potentialIndex = mGameViewModel.getIncorrectCellNumber();
+        ArrayList<Integer> incorrectCells= mGameViewModel.getIncorrectCells();
         //Clear highlights / what cell is selected for input
         mSudokuGridView.clearHighlightedCell();
 
         //Case where answer is correct
-        if (potentialIndex == -1) {
+        if (incorrectCells.size() == 0) {
             mSoundPlayer.playCorrectSound();
             Toast.makeText(getBaseContext(),
                     "Congratulations, You've Won!",
@@ -198,8 +199,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
         //Case where answer is incorrect
         else {
-            mSudokuGridView.setIncorrectCell(potentialIndex);
-            mSudokuGridView.setHighlightedCell(potentialIndex);
+            mSudokuGridView.setIncorrectCells(incorrectCells);
             mSoundPlayer.playWrongSound();
         }
 
@@ -218,7 +218,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
         } else {
             mGameViewModel.setCellValue(cellNumber, 0);
             mSudokuGridView.clearHighlightedCell();
-            mSudokuGridView.clearIncorrectCell();
+            mSudokuGridView.clearIncorrectCell(cellNumber);
             mSoundPlayer.playClearCellSound();
             mSudokuGridView.invalidate();
         }

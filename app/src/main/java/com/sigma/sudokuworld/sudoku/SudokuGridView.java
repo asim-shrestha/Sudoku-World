@@ -39,7 +39,6 @@ public class SudokuGridView extends View {
 
     private Paint mGridPaint;
     private Paint mBoldPaint;
-
     private Paint mHighlightFillPaint;
     private Paint mIncorrectFillPaint;
     private Paint mLockedFillPaint;
@@ -47,12 +46,13 @@ public class SudokuGridView extends View {
     private Paint mNeighboursFillPaint;
 
     private Paint mTextPaint;
+    private Paint mLockedTextPaint;
 
     private Float mTextPaintTextHeight;
 
     private Boolean mRectangleCells;
     private String[] mCellLabels;       //Labels for every cell in grid
-    private int mIncorrectCell = -1;    //Points to first incorrect cell to highlight. -1 = no cell
+    private ArrayList<Integer> mIncorrectCells;    //Points to first incorrect cell to highlight. -1 = no cell
     private int mHighlightedCell = -1;  //Points to cell to draw highlight in. -1 = no cell
 
     public SudokuGridView(Context context) {
@@ -62,7 +62,7 @@ public class SudokuGridView extends View {
     public SudokuGridView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         initPaint(context, attrs);
-
+        mIncorrectCells = new ArrayList<>();
         mRectangleCells = false;
     }
 
@@ -75,6 +75,7 @@ public class SudokuGridView extends View {
         mCompetitorFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mNeighboursFillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mLockedTextPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         //Get styling from activity_sudoku.xml
         TypedArray a = context.getTheme().obtainStyledAttributes(
@@ -188,8 +189,10 @@ public class SudokuGridView extends View {
         );
 
         mTextPaint.setTextSize(mCellWidth / 2f);
+        mLockedTextPaint.setTextSize(mCellWidth / 2f);
         Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
         mTextPaintTextHeight = fontMetrics.descent - fontMetrics.ascent;
+
     }
 
     /**
@@ -214,6 +217,7 @@ public class SudokuGridView extends View {
         super.onDraw(canvas);
 
         if (mCellLabels != null) {
+            drawIncorrectCellFill(canvas);
             drawCellFill(canvas);
             drawGrid(canvas);
             highlightNeighbours(canvas);
@@ -266,17 +270,13 @@ public class SudokuGridView extends View {
      * @param canvas canvas
      */
     private void drawCellFill(Canvas canvas) {
+        Paint textPaint;
         for (int i = 0; i < mCellLabels.length; i++) {
             int cx = i % mBoardLength;   //x cell pos
             int cy = i / mBoardLength;   //y cell pos
 
-            // If its the cell that's currently INCORRECT, draw its highlight
-            if(i == mIncorrectCell) {
-                drawCellHighlight(canvas, mIncorrectFillPaint, i);
-            }
-
             //If its the cell that's currently highlighted draw the highlight
-            else if (i == mHighlightedCell) {
+            if (i == mHighlightedCell) {
                 drawCellHighlight(canvas, mHighlightFillPaint, i);
             }
 
@@ -289,32 +289,39 @@ public class SudokuGridView extends View {
                 label = label.substring(1);
             }
 
-            //Draws the cell fill for squares that cant be edited
-            if (!label.isEmpty() && label.charAt(0) == LOCKED_CELL_FLAG) {
-                drawCellHighlight(canvas, mLockedFillPaint, i);
-                label = label.substring(1);
-            }
-
             if (!label.isEmpty()) {
+                //Get proper text colour
+                if ( label.charAt(0) == LOCKED_CELL_FLAG) {
+                    label = label.substring(1);
+                    textPaint = mLockedTextPaint;
+                }
+                else textPaint = mTextPaint;
 
                 //Measure the width of the label and draw it in the cell
-                float textWidth = mTextPaint.measureText(label);
-
+                float textWidth = textPaint.measureText(label);
                 //Text too big for cell decrease size
-                float defaultTextSize = mTextPaint.getTextSize();
+                float defaultTextSize = textPaint.getTextSize();
                 while (textWidth > mCellWidth) {
-                    mTextPaint.setTextSize(mTextPaint.getTextSize() - 1);
-                    textWidth = mTextPaint.measureText(label);
+                    textPaint.setTextSize(textPaint.getTextSize() - 1);
+                    textWidth = textPaint.measureText(label);
                 }
 
                 canvas.drawText(label,
                         mXOrigin + (cx * mCellWidth) + (mCellWidth / 2f) - (textWidth / 2),
                         mYOrigin + (cy * mCellHeight) + (mCellHeight / 2f) + (mTextPaintTextHeight / 2) - 10,
-                        mTextPaint);
+                        textPaint);
 
                 //Reset text paint size
-                mTextPaint.setTextSize(defaultTextSize);
+                textPaint.setTextSize(defaultTextSize);
             }
+        }
+    }
+
+    private void drawIncorrectCellFill(Canvas canvas) {
+        // If its the cell that's currently INCORRECT, draw its highlight
+        int incorrectCellsLen = mIncorrectCells.size();
+        for (int i = 0; i < incorrectCellsLen; i++){
+            drawCellHighlight(canvas, mIncorrectFillPaint, mIncorrectCells.get(i));
         }
     }
 
@@ -413,13 +420,18 @@ public class SudokuGridView extends View {
         mRectangleCells = isEnabled;
         invalidate();
     }
-    public int getIncorrectCell(){
-        return mIncorrectCell;
+    public boolean IsIncorrectCell(int cellNumber){
+        return mIncorrectCells.contains(cellNumber);
     }
-    public void setIncorrectCell(int cellNumber) {
-        mIncorrectCell = cellNumber;
+    public void setIncorrectCells(ArrayList<Integer> incorrectCells) {
+        mIncorrectCells.clear();
+        mIncorrectCells.addAll(incorrectCells);
     }
-    public void clearIncorrectCell() {
-        mIncorrectCell = -1;
+    public void addIncorrectCell(int cellNumber) {
+        if(!mIncorrectCells.contains(cellNumber))
+            mIncorrectCells.add(cellNumber);
+    }
+    public void clearIncorrectCell(int cellNumber) {
+        mIncorrectCells.remove(mIncorrectCells.indexOf(cellNumber));
     }
 }
