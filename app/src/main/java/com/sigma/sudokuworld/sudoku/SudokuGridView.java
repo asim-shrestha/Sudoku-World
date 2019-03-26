@@ -233,7 +233,6 @@ public class SudokuGridView extends View {
         );
 
         mTextPaint.setTextSize(mCellWidth / 2f);
-        mLockedTextPaint.setTextSize(mCellWidth / 2f);
         Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
         mTextPaintTextHeight = fontMetrics.descent - fontMetrics.ascent;
     }
