@@ -101,10 +101,11 @@ public abstract class SudokuActivity extends AppCompatActivity {
                             mSudokuGridView.clearIncorrectCell(cellNum);
                         }
 
-                        //Set new highlighted cell if its not a locked cell
-                        if (!mGameViewModel.isLockedCell(cellNum)) {
-                            mSudokuGridView.setHighlightedCell(cellNum);
+                        //Set new highlighted cell
+                        mSudokuGridView.setHighlightedCell(cellNum);
 
+                        //Check if we highlighted an editable cell
+                        if (!mGameViewModel.isLockedCell(cellNum)) {
                             //No long press
                             touchHandled = true;
                         }
@@ -136,10 +137,13 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
             int cellNumber = mSudokuGridView.getHighlightedCell();
 
-            //No cell is highlighted
-            if (cellNumber == -1){
+            //No cell is highlighted or a locked cell is highlighted
+            if (cellNumber == -1 || mGameViewModel.isLockedCell(cellNumber)){
+                mSudokuGridView.clearHighlightedCell();
                 mSoundPlayer.playEmptyButtonSound();
-            } else {
+            }
+
+            else {
                 if (mGameViewModel.isCorrectValue(cellNumber, buttonValue) || !mGameViewModel.isHintsEnabled()) {
                     //Correct number is placed in cell
                     mSudokuGridView.clearHighlightedCell();
@@ -153,6 +157,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
                 mGameViewModel.setCellValue(cellNumber, buttonValue);
             }
+            mSudokuGridView.invalidate();
         }
     };
 
@@ -164,8 +169,17 @@ public abstract class SudokuActivity extends AppCompatActivity {
         int highlightedCell = mSudokuGridView.getHighlightedCell();
         if (highlightedCell != -1)
         {
+            //Cell is a locked cell
+            if (mGameViewModel.isLockedCell(highlightedCell)){
+                mSudokuGridView.clearHighlightedCell();
+                mSoundPlayer.playWrongSound();
+            }
+
             //Cell is right
-            if (mGameViewModel.isCellCorrect(highlightedCell)){
+            else if (
+                    mGameViewModel.isCellCorrect(highlightedCell)
+                    && !mGameViewModel.isLockedCell(highlightedCell)
+            ){
                 mSudokuGridView.clearHighlightedCell();
                 mSudokuGridView.invalidate();
                 mSoundPlayer.playCorrectSound();
