@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.*;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.Player;
 import com.google.android.gms.games.PlayersClient;
@@ -71,9 +72,16 @@ public class MenuActivity extends AppCompatActivity {
 
 
         mSoundPlayer = new SoundPlayer(this);
-        mPlayerLabel = findViewById(R.id.userLabel);
-        ImageView imageView = findViewById(R.id.menuAVD);
 
+        mPlayerLabel = findViewById(R.id.userLabel);
+        mPlayerLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signOut();
+            }
+        });
+
+        ImageView imageView = findViewById(R.id.menuAVD);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             AnimatedVectorDrawable animatedVectorDrawable = (AnimatedVectorDrawable) imageView.getDrawable();
             animatedVectorDrawable.start();
@@ -202,6 +210,20 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
+    private void signOut() {
+        if (isSignedIn()) {
+            GoogleSignInOptions signInOptions = GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN;
+            GoogleSignInClient signInClient = GoogleSignIn.getClient(this, signInOptions);
+
+            signInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    onDisconnected();
+                }
+            });
+        }
+    }
+
     /**
      * Sets up the players data
      * @param googleSignInAccount player
@@ -219,6 +241,11 @@ public class MenuActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void onDisconnected() {
+        mPlayersClient = null;
+        mPlayerLabel.setText(R.string.signedOut);
     }
 }
 
