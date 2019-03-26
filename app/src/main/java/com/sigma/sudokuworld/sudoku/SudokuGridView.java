@@ -26,6 +26,7 @@ public class SudokuGridView extends View {
     private int mSubsectionWidth = 3;
 
     public static final char COMPETITOR_FILLED_FLAG = '^';
+    public static final char SETTINGS_FILLED_FLAG = '♀';
     public static final char LOCKED_CELL_FLAG = '~';
 
     private int mXOrigin;
@@ -129,12 +130,12 @@ public class SudokuGridView extends View {
     }
 
     public void lazySetLockedCellsLabels(boolean[] lockedCells) {
-        int labelSize = lockedCells.length;
         //Initialize mCellLabels with the proper size
+        int labelSize = lockedCells.length;
         mCellLabels = new String[ labelSize ];
 
         for (int i = 0; i < labelSize; i++) {
-            if (lockedCells[i]) { mCellLabels[i] = Character.toString(LOCKED_CELL_FLAG); }
+            if (lockedCells[i]) { mCellLabels[i] = Character.toString(SETTINGS_FILLED_FLAG); }
             else { mCellLabels[i] = ""; }
         }
         invalidate();
@@ -150,6 +151,7 @@ public class SudokuGridView extends View {
      *  Gets called when the view size changes.
      */
     @Override
+
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
 
@@ -272,7 +274,7 @@ public class SudokuGridView extends View {
      * @param canvas canvas
      */
     private void drawCellFill(Canvas canvas) {
-        Paint textPaint;
+        Paint textPaint = mTextPaint;
         for (int i = 0; i < mCellLabels.length; i++) {
             int cx = i % mBoardLength;   //x cell pos
             int cy = i / mBoardLength;   //y cell pos
@@ -285,19 +287,30 @@ public class SudokuGridView extends View {
             //If the cell has a label
             String label = mCellLabels[i];
 
-            //Draws the cell fill for squares are filled by other player
-            if (!label.isEmpty() && label.charAt(0) == COMPETITOR_FILLED_FLAG) {
-                drawCellHighlight(canvas, mCompetitorFillPaint, i);
-                label = label.substring(1);
-            }
 
             if (!label.isEmpty()) {
-                //Get proper text colour
-                if ( label.charAt(0) == LOCKED_CELL_FLAG) {
-                    label = label.substring(1);
-                    textPaint = mLockedTextPaint;
+                switch (label.charAt(0)){
+                    case COMPETITOR_FILLED_FLAG:
+                        //Draws the cell fill for squares are filled by other player
+                        drawCellHighlight(canvas, mCompetitorFillPaint, i);
+                        label = label.substring(1);
+                        break;
+                    case SETTINGS_FILLED_FLAG:
+                        //Draws the cell fill for locked squares in continue game
+                        drawCellHighlight(canvas, mIncorrectFillPaint, i);
+                        label = label.substring(1);
+                        break;
+                    case LOCKED_CELL_FLAG:
+                        //Sets the text color for locked cells to be blue
+                        label = label.substring(1);
+                        textPaint = mLockedTextPaint;
+                        break;
+                    default:
+                        //Sets the text colour to the default color
+                        textPaint = mTextPaint;
+                        break;
                 }
-                else textPaint = mTextPaint;
+
 
                 //Measure the width of the label and draw it in the cell
                 float textWidth = textPaint.measureText(label);
@@ -306,7 +319,7 @@ public class SudokuGridView extends View {
                 while (textWidth > mCellWidth) {
                     textPaint.setTextSize(textPaint.getTextSize() - 1);
                     textWidth = textPaint.measureText(label);
-                }
+                    }
 
                 canvas.drawText(label,
                         mXOrigin + (cx * mCellWidth) + (mCellWidth / 2f) - (textWidth / 2),
