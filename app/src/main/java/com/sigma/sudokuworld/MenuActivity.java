@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.*;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.Player;
 import com.google.android.gms.games.PlayersClient;
@@ -131,23 +130,11 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult: REQUEST CODE " + requestCode);
+        Log.d(TAG, "onActivityResult: RESULT CODE " + resultCode);
 
-        //Returning from the sign in intent
         if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            Log.d(TAG, "onActivityResult: SIGN IN RESULT: " + result.getStatus().getStatusMessage());
-            Log.d(TAG, "onActivityResult: SIGN IN RESULT CODE: " + GoogleSignInStatusCodes.getStatusCodeString(requestCode));
-
-            if (result.isSuccess()) {
-
-                //Logged in. Setting up player data
-                onConnected(result.getSignInAccount());
-
-            } else {
-                String message = "An error has occurred";
-                new AlertDialog.Builder(this).setMessage(message)
-                        .setNeutralButton("ok", null).show();
-            }
+            interactiveSignInResult(data);
         }
     }
 
@@ -207,6 +194,22 @@ public class MenuActivity extends AppCompatActivity {
                     }
                 }
             });
+        }
+    }
+
+    private void interactiveSignInResult(Intent data) {
+        GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+        Log.d(TAG, "interactiveSignInResult: SIGN IN RESULT CODE" + GoogleSignInStatusCodes.getStatusCodeString(result.getStatus().getStatusCode()));
+
+        if (result.isSuccess()) {
+
+            //Logged in. Setting up player data
+            onConnected(result.getSignInAccount());
+
+        } else {
+            String message = "An error has occurred";
+            new AlertDialog.Builder(this).setMessage(message)
+                    .setNeutralButton("ok", null).show();
         }
     }
 
