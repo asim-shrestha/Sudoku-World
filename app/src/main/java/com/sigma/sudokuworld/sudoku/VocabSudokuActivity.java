@@ -22,6 +22,7 @@ public class VocabSudokuActivity extends SinglePlayerActivity {
                         mSinglePlayerViewModel.getCellValue(cellTouched),
                         GameMode.opposite(mSinglePlayerViewModel.getGameMode())
                 );
+                if (mSinglePlayerViewModel.getGameMode() != GameMode.NUMBERS && mCellHeld)
                 Toast.makeText(getBaseContext(), text, Toast.LENGTH_SHORT).show();
             }
             return true;

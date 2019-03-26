@@ -34,6 +34,8 @@ public abstract class SudokuActivity extends AppCompatActivity {
     protected Button[] mInputButtons;
     private SoundPlayer mSoundPlayer;
 
+    protected boolean mCellHeld;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,44 +83,66 @@ public abstract class SudokuActivity extends AppCompatActivity {
             //Through looking at every case, we can move the highlight to where our finger moves to
             switch (eventAction) {
                 case MotionEvent.ACTION_MOVE:
-                case MotionEvent.ACTION_UP:
-                case MotionEvent.ACTION_DOWN:
                     int x = (int) event.getX();
                     int y = (int) event.getY();
-
-                    //If touch in the bound of the grid
-                    if (mSudokuGridView.getGridBounds().contains(x, y)) {
-
-                        //Clear previous highlighted cell
-                        mSudokuGridView.clearHighlightedCell();
-
-                        //Cell that was touched
+                    if(mSudokuGridView.getGridBounds().contains(x, y)){
                         int cellNum = mSudokuGridView.getCellNumberFromCoordinates(x, y);
-                        cellTouched = cellNum;
+                        int highlightedCell = mSudokuGridView.getHighlightedCell();
 
-                        //If we have selected the incorrect cell, un highlight it
-                        if (mSudokuGridView.IsIncorrectCell(cellNum)) {
-                            mSudokuGridView.clearIncorrectCell(cellNum);
-                        }
-
-                        //Set new highlighted cell
-                        mSudokuGridView.setHighlightedCell(cellNum);
-
-                        //Check if we highlighted an editable cell
-                        if (!mGameViewModel.isLockedCell(cellNum)) {
-                            //No long press
-                            touchHandled = true;
-                        }
-
-                        //Force redraw view
-                        mSudokuGridView.invalidate();
-                        mSudokuGridView.performClick();
+                        if (cellNum != highlightedCell) { mCellHeld = false; }
                     }
+                    touchHandled = handleGridEvent(event);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    mCellHeld = true;
+                    touchHandled = handleGridEvent(event);
+                    break;
+                case MotionEvent.ACTION_DOWN:
+                    mCellHeld = true;
+                    touchHandled = handleGridEvent(event);
+                    break;
             }
 
             return touchHandled;
         }
     };
+
+    private boolean handleGridEvent(MotionEvent event){
+        boolean touchHandled = false;
+        int x = (int) event.getX();
+        int y = (int) event.getY();
+
+        //If touch in the bound of the grid
+        if (mSudokuGridView.getGridBounds().contains(x, y)) {
+
+            //Clear previous highlighted cell
+            mSudokuGridView.clearHighlightedCell();
+
+            //Cell that was touched
+            int cellNum = mSudokuGridView.getCellNumberFromCoordinates(x, y);
+            cellTouched = cellNum;
+
+            //If we have selected the incorrect cell, un highlight it
+            if (mSudokuGridView.IsIncorrectCell(cellNum)) {
+                mSudokuGridView.clearIncorrectCell(cellNum);
+            }
+
+            //Set new highlighted cell
+            mSudokuGridView.setHighlightedCell(cellNum);
+
+            //Check if we highlighted an editable cell
+            if (!mGameViewModel.isLockedCell(cellNum)) {
+                //No long press
+                touchHandled = true;
+            }
+
+            //Force redraw view
+            mSudokuGridView.invalidate();
+            mSudokuGridView.performClick();
+        }
+
+        return touchHandled;
+    }
 
     private View.OnClickListener onButtonClickListener = new View.OnClickListener() {
         @Override

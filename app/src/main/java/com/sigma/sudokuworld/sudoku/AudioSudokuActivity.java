@@ -42,7 +42,10 @@ public class AudioSudokuActivity extends SinglePlayerActivity {
                         mSinglePlayerViewModel.getCellValue(cellTouched),
                         GameMode.opposite(mSinglePlayerViewModel.getGameMode())
                 );
-                mTTS.speak(text,TextToSpeech.QUEUE_FLUSH,null,null);
+                if (mCellHeld) {
+                    mTTS.speak(text,TextToSpeech.QUEUE_FLUSH,null,null);
+                    mCellHeld = false;
+                }
             }
             return true;
         }
