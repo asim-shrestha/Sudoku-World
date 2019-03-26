@@ -11,10 +11,7 @@ public class VocabSudokuActivity extends SinglePlayerActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (mSinglePlayerViewModel.getGameMode() != GameMode.NUMBERS) {
-            super.mSudokuGridView.setOnLongClickListener(onLongClickListener);
-        }
+        super.mSudokuGridView.setOnLongClickListener(onLongClickListener);
     }
 
     View.OnLongClickListener onLongClickListener = new View.OnLongClickListener() {
@@ -26,10 +23,8 @@ public class VocabSudokuActivity extends SinglePlayerActivity {
                         GameMode.opposite(mSinglePlayerViewModel.getGameMode())
                 );
                 Toast.makeText(getBaseContext(), text, Toast.LENGTH_SHORT).show();
-                return true;
             }
-
-            return false;
+            return true;
         }
     };
 }
