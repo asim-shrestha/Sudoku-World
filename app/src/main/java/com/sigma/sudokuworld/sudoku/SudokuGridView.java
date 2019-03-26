@@ -94,6 +94,7 @@ public class SudokuGridView extends View {
             mHighlightFillPaint.setColor(a.getColor(R.styleable.SudokuGridView_highlightedCellColour, Color.YELLOW));
             mLockedFillPaint.setColor(a.getColor(R.styleable.SudokuGridView_lockedCellColour, Color.GRAY));
             mIncorrectFillPaint.setColor(a.getColor(R.styleable.SudokuGridView_incorrectCellColour, Color.RED));
+            mLockedTextPaint.setColor(a.getColor(R.styleable.SudokuGridView_lockedCellColour, Color.BLUE));
         } finally {
             a.recycle();
         }
@@ -106,6 +107,7 @@ public class SudokuGridView extends View {
         mIncorrectFillPaint.setStyle(Paint.Style.FILL);
 
         //TODO add to attrs
+
         mCompetitorFillPaint.setStyle(Paint.Style.FILL);
         mCompetitorFillPaint.setColor(Color.MAGENTA);
         mCompetitorFillPaint.setAlpha(50);
@@ -432,6 +434,7 @@ public class SudokuGridView extends View {
             mIncorrectCells.add(cellNumber);
     }
     public void clearIncorrectCell(int cellNumber) {
-        mIncorrectCells.remove(mIncorrectCells.indexOf(cellNumber));
+        int index = mIncorrectCells.indexOf(cellNumber);
+        if (index != -1) { mIncorrectCells.remove(mIncorrectCells.indexOf(cellNumber)); }
     }
 }

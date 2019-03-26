@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#F04A57</color>
     <color name="colorGrid">#000000</color>
-    <color name="colorLockedCell">#50aed6f1</color>
+    <color name="colorLockedCell">#11429F</color>
     <color name="colorHighlight">#503498db</color>
     <color name="colorSplashScreenAVD">#f88195</color>
     <color name="colorIncorrect">#FFB3B3</color>
@@ -16,6 +16,7 @@
     <color name="colorLogoLightBlue">#aed6f1</color>
     <color name="colorLogoMiddleBlue">#3498db</color>
 
+    <color name="colorLocked">#3498db</color>
 
     <!-- Buttons -->
     <color name="colorButtonText">#ffffff</color>
