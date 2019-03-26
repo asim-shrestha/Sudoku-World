@@ -80,69 +80,53 @@ public abstract class SudokuActivity extends AppCompatActivity {
             int eventAction = event.getAction();
             boolean touchHandled = false;
 
-            //Through looking at every case, we can move the highlight to where our finger moves to
+            //Through looking at every action case, we can move the highlight to where our finger moves to
             switch (eventAction) {
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_DOWN:
+                    mCellHeld = true;
                 case MotionEvent.ACTION_MOVE:
                     int x = (int) event.getX();
                     int y = (int) event.getY();
-                    if(mSudokuGridView.getGridBounds().contains(x, y)){
+
+                    //If touch in the bounds of the grid
+                    if (mSudokuGridView.getGridBounds().contains(x, y)) {
+
+                        //Figure out which cell was touched
                         int cellNum = mSudokuGridView.getCellNumberFromCoordinates(x, y);
-                        int highlightedCell = mSudokuGridView.getHighlightedCell();
+                        cellTouched = cellNum;
 
-                        if (cellNum != highlightedCell) { mCellHeld = false; }
+                        //Check if the cell has been held down or not
+                        if (mSudokuGridView.getHighlightedCell() >= 0 && event.getAction() == MotionEvent.ACTION_MOVE){
+                            if (cellTouched != mSudokuGridView.getHighlightedCell()) { mCellHeld = false; }
+                            }
+
+                        //Clear previous highlighted cell
+                        mSudokuGridView.clearHighlightedCell();
+
+                        //If we have selected a cell with an "incorrect" cell highlight , un highlight it
+                        if (mSudokuGridView.IsIncorrectCell(cellNum)) {
+                            mSudokuGridView.clearIncorrectCell(cellNum);
+                        }
+
+                        //Set highlight on the currently touched cell
+                        mSudokuGridView.setHighlightedCell(cellNum);
+
+                        //Check if we highlighted an editable cell
+                        if (!mGameViewModel.isLockedCell(cellNum)) {
+                            //No long press if the cell since the cell is NOT locked
+                            touchHandled = true;
+                        }
+
+                        //Force redraw view
+                        mSudokuGridView.invalidate();
+                        mSudokuGridView.performClick();
                     }
-                    touchHandled = handleGridEvent(event);
-                    break;
-                case MotionEvent.ACTION_UP:
-                    mCellHeld = true;
-                    touchHandled = handleGridEvent(event);
-                    break;
-                case MotionEvent.ACTION_DOWN:
-                    mCellHeld = true;
-                    touchHandled = handleGridEvent(event);
-                    break;
             }
-
-            return touchHandled;
+            return touchHandled; 
         }
     };
 
-    private boolean handleGridEvent(MotionEvent event){
-        boolean touchHandled = false;
-        int x = (int) event.getX();
-        int y = (int) event.getY();
-
-        //If touch in the bound of the grid
-        if (mSudokuGridView.getGridBounds().contains(x, y)) {
-
-            //Clear previous highlighted cell
-            mSudokuGridView.clearHighlightedCell();
-
-            //Cell that was touched
-            int cellNum = mSudokuGridView.getCellNumberFromCoordinates(x, y);
-            cellTouched = cellNum;
-
-            //If we have selected the incorrect cell, un highlight it
-            if (mSudokuGridView.IsIncorrectCell(cellNum)) {
-                mSudokuGridView.clearIncorrectCell(cellNum);
-            }
-
-            //Set new highlighted cell
-            mSudokuGridView.setHighlightedCell(cellNum);
-
-            //Check if we highlighted an editable cell
-            if (!mGameViewModel.isLockedCell(cellNum)) {
-                //No long press
-                touchHandled = true;
-            }
-
-            //Force redraw view
-            mSudokuGridView.invalidate();
-            mSudokuGridView.performClick();
-        }
-
-        return touchHandled;
-    }
 
     private View.OnClickListener onButtonClickListener = new View.OnClickListener() {
         @Override
