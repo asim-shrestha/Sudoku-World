@@ -1,4 +1,4 @@
-package com.sigma.sudokuworld.sudoku;
+package com.sigma.sudokuworld.sudoku.singleplayer;
 
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.Button;
 
 import com.sigma.sudokuworld.game.GameMode;
-import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
 
 import java.util.Locale;
 

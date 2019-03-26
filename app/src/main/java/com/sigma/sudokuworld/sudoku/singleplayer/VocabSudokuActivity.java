@@ -1,4 +1,4 @@
-package com.sigma.sudokuworld.sudoku;
+package com.sigma.sudokuworld.sudoku.singleplayer;
 
 import android.os.Bundle;
 import android.view.View;

@@ -26,9 +26,9 @@ import com.google.android.gms.tasks.Task;
 import com.sigma.sudokuworld.audio.SoundPlayer;
 import com.sigma.sudokuworld.persistence.db.entities.Game;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
-import com.sigma.sudokuworld.sudoku.AudioSudokuActivity;
-import com.sigma.sudokuworld.sudoku.MultiplayerActivity;
-import com.sigma.sudokuworld.sudoku.VocabSudokuActivity;
+import com.sigma.sudokuworld.sudoku.multiplayer.MultiplayerActivity;
+import com.sigma.sudokuworld.sudoku.singleplayer.AudioSudokuActivity;
+import com.sigma.sudokuworld.sudoku.singleplayer.VocabSudokuActivity;
 import com.sigma.sudokuworld.viewmodels.MenuViewModel;
 
 import java.util.List;
