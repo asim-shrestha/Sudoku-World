@@ -70,6 +70,7 @@ public class NewGameFragment extends Fragment {
         });
 
         initStoredSettings();
+        initLabelListeners();
         return mView;
     }
 
@@ -157,6 +158,65 @@ public class NewGameFragment extends Fragment {
             //Numbers mode selected hide set layout
             mSetLayout.setVisibility(View.GONE);
         }
+    }
+
+    private void initLabelListeners() {
+
+        mView.findViewById(R.id.easyLabel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDifficultySeekBar.setProgress(0);
+            }
+        });
+
+        mView.findViewById(R.id.mediumLabel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDifficultySeekBar.setProgress(1);
+            }
+        });
+
+        mView.findViewById(R.id.hardLabel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDifficultySeekBar.setProgress(2);
+            }
+        });
+
+        mView.findViewById(R.id.tinyLabel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBoardSizeSeekBar.setProgress(0);
+            }
+        });
+
+        mView.findViewById(R.id.smallLabel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBoardSizeSeekBar.setProgress(1);
+            }
+        });
+
+        mView.findViewById(R.id.normalLabel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBoardSizeSeekBar.setProgress(2);
+            }
+        });
+
+        mView.findViewById(R.id.largeLabel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBoardSizeSeekBar.setProgress(3);
+            }
+        });
+
+        mView.findViewById(R.id.hugeLabel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mBoardSizeSeekBar.setProgress(4);
+            }
+        });
     }
 
     private void saveSettings(){
