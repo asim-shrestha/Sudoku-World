@@ -26,7 +26,7 @@ public class SudokuGridView extends View {
     private int mSubsectionWidth = 3;
 
     public static final char COMPETITOR_FILLED_FLAG = '^';
-    public static final char SETTINGS_FILLED_FLAG = '♀';
+    public static final char SETTINGS_FILL_FLAG = '♀';
     public static final char LOCKED_CELL_FLAG = '~';
 
     private int mXOrigin;
@@ -135,7 +135,7 @@ public class SudokuGridView extends View {
         mCellLabels = new String[ labelSize ];
 
         for (int i = 0; i < labelSize; i++) {
-            if (lockedCells[i]) { mCellLabels[i] = Character.toString(SETTINGS_FILLED_FLAG); }
+            if (lockedCells[i]) { mCellLabels[i] = Character.toString(SETTINGS_FILL_FLAG); }
             else { mCellLabels[i] = ""; }
         }
         invalidate();
@@ -295,9 +295,9 @@ public class SudokuGridView extends View {
                         drawCellHighlight(canvas, mCompetitorFillPaint, i);
                         label = label.substring(1);
                         break;
-                    case SETTINGS_FILLED_FLAG:
+                    case SETTINGS_FILL_FLAG:
                         //Draws the cell fill for locked squares in continue game
-                        drawCellHighlight(canvas, mIncorrectFillPaint, i);
+                        drawCellHighlight(canvas, mLockedFillPaint, i);
                         label = label.substring(1);
                         break;
                     case LOCKED_CELL_FLAG:
