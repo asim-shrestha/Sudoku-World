@@ -172,7 +172,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
             //Cell is a locked cell
             if (mGameViewModel.isLockedCell(highlightedCell)){
                 mSudokuGridView.clearHighlightedCell();
-                mSoundPlayer.playWrongSound();
+                mSoundPlayer.playEmptyButtonSound();
             }
 
             //Cell is right
