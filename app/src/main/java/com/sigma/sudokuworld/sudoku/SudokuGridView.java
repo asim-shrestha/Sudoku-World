@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
+import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -21,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SudokuGridView extends View {
+
+    //Will change after proper values are received from controller
     private int mBoardLength = 9;
     private int mSubsectionHeight = 3;
     private int mSubsectionWidth = 3;
@@ -35,6 +38,10 @@ public class SudokuGridView extends View {
     private int mSquareHeight;
     private int mCellWidth;
     private int mCellHeight;
+
+    //Dimensions for the largest string
+    private float mMaxTextSize;
+    private float mMaxTextWidth;
 
     private Rect mGridBoundingRect;
 
@@ -129,6 +136,37 @@ public class SudokuGridView extends View {
         labelsLiveData.observe(owner, cellLabelsObserver);
     }
 
+    private void setTextDimensions(){
+
+        //Get the length of the maximum label so that every cell is drawn at that size
+        int cellLabelsLen = 0;
+        if (mCellLabels != null) {
+            cellLabelsLen = mCellLabels.length; }
+
+        String largestLabel = "";
+
+        //Loop through cell labels and find the largest label
+        for (int i = 0; i < cellLabelsLen; i++ ) {
+            if (mCellLabels[i].length() > largestLabel.length()) {
+                largestLabel = mCellLabels[i];
+            }
+        }
+
+        //Set the maximum text width based on the largest label
+        Paint textPaint = mTextPaint;
+        float textWidth = textPaint.measureText(largestLabel);
+
+        //Lower dimensions until text fits in cell
+        while (textWidth > mCellWidth) {
+            textPaint.setTextSize(textPaint.getTextSize() - 1);
+            textWidth = textPaint.measureText(largestLabel);
+        }
+
+        //Update member variables
+        mMaxTextSize = textPaint.getTextSize();
+        mMaxTextWidth = textWidth;
+    }
+
     public void lazySetLockedCellsLabels(boolean[] lockedCells) {
         //Initialize mCellLabels with the proper size
         int labelSize = lockedCells.length;
@@ -138,6 +176,8 @@ public class SudokuGridView extends View {
             if (lockedCells[i]) { mCellLabels[i] = Character.toString(SETTINGS_FILL_FLAG); }
             else { mCellLabels[i] = ""; }
         }
+        mMaxTextSize = 0;
+        mMaxTextWidth = 0;
         invalidate();
     }
 
@@ -196,7 +236,6 @@ public class SudokuGridView extends View {
         mLockedTextPaint.setTextSize(mCellWidth / 2f);
         Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
         mTextPaintTextHeight = fontMetrics.descent - fontMetrics.ascent;
-
     }
 
     /**
@@ -275,6 +314,9 @@ public class SudokuGridView extends View {
      */
     private void drawCellFill(Canvas canvas) {
         Paint textPaint = mTextPaint;
+        setTextDimensions(); //TODO: Run only one time when cell labels is fully initialized
+
+        //Loop through every cell
         for (int i = 0; i < mCellLabels.length; i++) {
             int cx = i % mBoardLength;   //x cell pos
             int cy = i / mBoardLength;   //y cell pos
@@ -284,11 +326,11 @@ public class SudokuGridView extends View {
                 drawCellHighlight(canvas, mHighlightFillPaint, i);
             }
 
-            //If the cell has a label
+            //Grab the cell label
             String label = mCellLabels[i];
 
-
             if (!label.isEmpty()) {
+                //Determine what kind of cell it is
                 switch (label.charAt(0)){
                     case COMPETITOR_FILLED_FLAG:
                         //Draws the cell fill for squares are filled by other player
@@ -311,26 +353,17 @@ public class SudokuGridView extends View {
                         break;
                 }
 
-
-                //Measure the width of the label and draw it in the cell
-                float textWidth = textPaint.measureText(label);
-                //Text too big for cell decrease size
-                float defaultTextSize = textPaint.getTextSize();
-                while (textWidth > mCellWidth) {
-                    textPaint.setTextSize(textPaint.getTextSize() - 1);
-                    textWidth = textPaint.measureText(label);
-                    }
-
+                //Draws cell text if possible
+                textPaint.setTextSize( mMaxTextSize );
+                float textWidth = textPaint.measureText( label );
                 canvas.drawText(label,
                         mXOrigin + (cx * mCellWidth) + (mCellWidth / 2f) - (textWidth / 2),
                         mYOrigin + (cy * mCellHeight) + (mCellHeight / 2f) + (mTextPaintTextHeight / 2) - 10,
                         textPaint);
-
-                //Reset text paint size
-                textPaint.setTextSize(defaultTextSize);
             }
         }
     }
+
 
     private void drawIncorrectCellFill(Canvas canvas) {
         // If its the cell that's currently INCORRECT, draw its highlight
