@@ -154,9 +154,7 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void startMultiplayerGame() {
-
         Intent intent = new Intent(getBaseContext(), MultiplayerActivity.class);
-        intent.putExtra(KeyConstants.SAVE_ID_KEY, mMenuViewModel.generateNewGameWithStoredSettings());
         startActivity(intent);
     }
 
