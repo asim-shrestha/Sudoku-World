@@ -1,9 +1,10 @@
-package com.sigma.sudokuworld.sudoku;
+package com.sigma.sudokuworld.sudoku.singleplayer;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
+import com.sigma.sudokuworld.sudoku.SudokuActivity;
 import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
 import com.sigma.sudokuworld.viewmodels.SingleplayerViewModelFactory;
 

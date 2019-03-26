@@ -29,9 +29,9 @@
         </activity>
         <activity android:name=".MenuActivity"
             android:theme="@style/AppTheme.MenuText"/>
-        <activity android:name=".sudoku.VocabSudokuActivity" />
-        <activity android:name=".sudoku.AudioSudokuActivity" />
-        <activity android:name=".sudoku.MultiplayerActivity" />
+        <activity android:name=".sudoku.singleplayer.VocabSudokuActivity" />
+        <activity android:name=".sudoku.singleplayer.AudioSudokuActivity" />
+        <activity android:name=".sudoku.multiplayer.MultiplayerActivity" />
 
         <!--Set builder-->
         <activity

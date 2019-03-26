@@ -36,6 +36,7 @@ public class ConnectionViewModel extends AndroidViewModel {
     private static byte FILL_SQUARE_PROTOCOL = 1;
     private static byte EMPTY_SQUARE_PROTOCOL = 2;
     private static byte PUZZLE_PROTOCOL = 3;
+    private static byte WINNER_PROTOCOL = 4;
 
     //Clients
     private RealTimeMultiplayerClient mRealTimeMultiplayerClient;
@@ -157,12 +158,22 @@ public class ConnectionViewModel extends AndroidViewModel {
     private void performHostSetup() {
         Log.d(TAG, "performHostSetup: I AM HOST");
 
-        Bundle puzzle = new PuzzleGenerator(6).generatePuzzle(GameDifficulty.EASY);
+        Bundle puzzle = new PuzzleGenerator(4).generatePuzzle(GameDifficulty.EASY);
 
         int[] initial = puzzle.getIntArray(KeyConstants.CELL_VALUES_KEY);
         int[] solution = puzzle.getIntArray(KeyConstants.SOLUTION_VALUES_KEY);
 
         broadcastPuzzle(initial, solution);
+    }
+
+    public void claimWin() {
+        broadcastWin();
+    }
+
+    private void endGame() {
+        //TODO leave lobby gracefully
+
+        updateGameState(GameState.OVER);
     }
 
     /**
@@ -343,8 +354,8 @@ public class ConnectionViewModel extends AndroidViewModel {
      * Listener for incoming messages
      */
     private OnRealTimeMessageReceivedListener mMessageReceivedListener = new OnRealTimeMessageReceivedListener() {
-        @Override
-        public void onRealTimeMessageReceived(@NonNull RealTimeMessage realTimeMessage) {
+            @Override
+            public void onRealTimeMessageReceived(@NonNull RealTimeMessage realTimeMessage) {
             byte[] bytes = realTimeMessage.getMessageData();
 
             if (bytes[0] == FILL_SQUARE_PROTOCOL) {
@@ -373,6 +384,10 @@ public class ConnectionViewModel extends AndroidViewModel {
                 }
 
                 startGame(initialCells, solution);
+            }
+
+            else if (bytes[0] == WINNER_PROTOCOL) {
+                endGame();
             }
         }
     };
@@ -415,7 +430,7 @@ public class ConnectionViewModel extends AndroidViewModel {
                         @Override
                         public void onSuccess(Integer integer) {
                             Log.d(TAG, "onSuccess: PUZZLE_PROTOCOL SUCCESSFULLY DELIVERED");
-                            startGame(initial, solution);
+                            startGame(initial, solution);   //TODO wont work with more players. Should only start once all of them have won;
                         }
                     });
         }
@@ -433,6 +448,26 @@ public class ConnectionViewModel extends AndroidViewModel {
         bytes[1] = (byte) cellNumber;
 
         mRealTimeMultiplayerClient.sendUnreliableMessageToOthers(bytes, mRoomID); //TODO: reliable msg?
+    }
+
+    private void broadcastWin() {
+        for (Participant p : mParticipants) {
+            if (isParticipantMe(p.getParticipantId())) continue;
+            byte[] bytes = { WINNER_PROTOCOL };
+
+            mRealTimeMultiplayerClient.sendReliableMessage(
+                    bytes,
+                    mRoomID,
+                    p.getParticipantId(),
+                    null)
+                    .addOnSuccessListener(new OnSuccessListener<Integer>() {
+                        @Override
+                        public void onSuccess(Integer integer) {
+                            Log.d(TAG, "onSuccess: PUZZLE_PROTOCOL SUCCESSFULLY DELIVERED");
+                            endGame();
+                        }
+                    });
+        }
     }
 
     /*
@@ -492,6 +527,6 @@ public class ConnectionViewModel extends AndroidViewModel {
     }
 
     public enum GameState {
-        NEW, LOBBY, SETUP, PLAYING, ERROR, LEAVE, PEER_LEFT, SINGED_OUT
+        NEW, LOBBY, SETUP, PLAYING, OVER, ERROR, LEAVE, PEER_LEFT, SINGED_OUT
     }
 }

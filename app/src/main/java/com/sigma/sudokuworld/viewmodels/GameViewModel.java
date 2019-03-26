@@ -14,6 +14,7 @@ import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 import com.sigma.sudokuworld.sudoku.SudokuGridView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class GameViewModel extends BaseSettingsViewModel {
@@ -23,6 +24,7 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
 
     private MutableLiveData<List<String>> cellLabelsLiveData;
     private MutableLiveData<List<String>> buttonLabelsLiveData;
+    private MutableLiveData<Boolean> gameWonLiveData;
 
     List<String> labels;
     private List<String> buttonLabels;
@@ -54,6 +56,10 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
         return buttonLabelsLiveData;
     }
 
+    public LiveData<Boolean> isGameWon() {
+        return gameWonLiveData;
+    }
+
     public String getMappedString(int value, GameMode mode) {
         return valueToMappedLabel(value, mode);
     }
@@ -77,6 +83,7 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
 
         mGame.setCellValue(cellNumber, value);
         updateCellLabel(cellNumber, value);
+        checkForGameWin();
     }
 
     public GameMode getGameMode() {
@@ -122,10 +129,22 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
         cellLabelsLiveData.setValue(labels); //TODO: Don't run on main thread
     }
 
+    /**
+     * If the game is won updates the live data
+     */
+    private void checkForGameWin() {
+        if (Arrays.equals(mGame.getCellValues(), mGame.getSolutionValues())) {
+            gameWonLiveData.setValue(true);
+        }
+    }
+
     private void init() {
         initializeWordMaps();
         initCellLabelsLiveData();
         initButtonLabelsLiveData();
+
+        gameWonLiveData = new MutableLiveData<>();
+        gameWonLiveData.setValue(false);
     }
 
     private void initializeWordMaps() {
