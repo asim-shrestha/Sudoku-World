@@ -7,7 +7,6 @@ apply plugin: 'com.google.gms.google-services'
 android {
     signingConfigs {
         debug {
-
             keyAlias 'upload'
             keyPassword 'SigmaGroup'
             storeFile file('./debug-keystore.jks')
@@ -27,6 +26,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
         debug {
             signingConfig signingConfigs.debug
