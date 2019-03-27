@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "202154014754-1i2fc647fd2rqhc7fsernitokccnbbb4.apps.googleusercontent.com",
+          "client_id": "202154014754-fiefvkp0rksloo1f55uq7osnpae82h8e.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.sigma.sudokuworld",
-            "certificate_hash": "b0d9dd20c11352b57937372fd9336aef9437ef9a"
+            "certificate_hash": "d763f8a9727e7eb3e23d22c11e367f400316e736"
           }
         },
         {
