@@ -1,4 +1,4 @@
-package com.sigma.sudokuworld.sudoku;
+package com.sigma.sudokuworld.sudoku.multiplayer;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.sigma.sudokuworld.R;
 
-public class LoadingSrceenFragment extends Fragment {
+public class LoadingScreenFragment extends Fragment {
 
     @Nullable
     @Override

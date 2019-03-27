@@ -5,6 +5,14 @@ apply plugin: "kotlin-kapt"
 apply plugin: 'com.google.gms.google-services'
 
 android {
+    signingConfigs {
+        debug {
+            keyAlias 'upload'
+            keyPassword 'SigmaGroup'
+            storeFile file('./debug-keystore.jks')
+            storePassword 'SigmaGroup'
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.sigma.sudokuworld"
@@ -18,6 +26,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+        debug {
+            signingConfig signingConfigs.debug
         }
     }
     testOptions {
@@ -26,31 +38,26 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.google.firebase:firebase-database:16.0.1'
-
     implementation 'com.google.android.gms:play-services-games:17.0.0'
-    implementation "com.google.android.gms:play-services-auth:16.0.1"
-
+    implementation 'com.google.android.gms:play-services-auth:16.0.1'
     testImplementation 'junit:junit:4.12'
-
     //Room db dependencies
     def room_version = "1.1.1"
     implementation "android.arch.persistence.room:runtime:$room_version"
     kapt "android.arch.persistence.room:compiler:$room_version"
     testImplementation "android.arch.persistence.room:testing:$room_version"
-
     //LiveData dependencies
     def lifecycle_version = "1.1.1"
     implementation "android.arch.lifecycle:extensions:$lifecycle_version"
     annotationProcessor "android.arch.lifecycle:compiler:$lifecycle_version"
     testImplementation "android.arch.core:core-testing:$lifecycle_version"
-
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

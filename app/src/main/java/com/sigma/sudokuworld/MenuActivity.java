@@ -12,6 +12,7 @@ import android.graphics.drawable.AnimatedVectorDrawable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -26,22 +27,23 @@ import com.google.android.gms.tasks.Task;
 import com.sigma.sudokuworld.audio.SoundPlayer;
 import com.sigma.sudokuworld.persistence.db.entities.Game;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
-import com.sigma.sudokuworld.sudoku.MultiplayerActivity;
+import com.sigma.sudokuworld.sudoku.multiplayer.MultiplayerActivity;
+import com.sigma.sudokuworld.sudoku.singleplayer.AudioSudokuActivity;
+import com.sigma.sudokuworld.sudoku.singleplayer.VocabSudokuActivity;
 import com.sigma.sudokuworld.viewmodels.MenuViewModel;
 
 import java.util.List;
 
 public class MenuActivity extends AppCompatActivity {
+    private static final String TAG = "MENU";
+    private static final int RC_SIGN_IN = 1337;
+
     private MenuViewModel mMenuViewModel;
     private SoundPlayer mSoundPlayer;
     private FragmentManager mFragmentManager;
-
-    private GoogleSignInClient mSignInClient;
     private PlayersClient mPlayersClient;
 
     private TextView mPlayerLabel;
-
-    private int RC_SIGN_IN = 1337;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -69,16 +71,25 @@ public class MenuActivity extends AppCompatActivity {
 
 
         mSoundPlayer = new SoundPlayer(this);
-        mPlayerLabel = findViewById(R.id.userLabel);
-        ImageView imageView = findViewById(R.id.menuAVD);
 
+        mPlayerLabel = findViewById(R.id.userLabel);
+        mPlayerLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signOut();
+            }
+        });
+
+        ImageView imageView = findViewById(R.id.menuAVD);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             AnimatedVectorDrawable animatedVectorDrawable = (AnimatedVectorDrawable) imageView.getDrawable();
             animatedVectorDrawable.start();
         }
+    }
 
-        mSignInClient = GoogleSignIn.getClient(this, new GoogleSignInOptions
-                .Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN).build());
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (account != null) {
@@ -110,7 +121,7 @@ public class MenuActivity extends AppCompatActivity {
     public void onMultiPlayerPressed(View v) {
         if (!isSignedIn()) {
             //Not signed in
-            startActivityForResult(mSignInClient.getSignInIntent(), RC_SIGN_IN);
+            signIn();
         } else {
             showFragment(new MultiplayerFragment());
         }
@@ -119,21 +130,11 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult: REQUEST CODE " + requestCode);
+        Log.d(TAG, "onActivityResult: RESULT CODE " + resultCode);
 
-        //Returning from the sign in intent
         if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-
-            if (result.isSuccess()) {
-
-                //Logged in. Setting up player data
-                onConnected(result.getSignInAccount());
-
-            } else {
-                String message = "An error has occurred";
-                new AlertDialog.Builder(this).setMessage(message)
-                        .setNeutralButton("ok", null).show();
-            }
+            interactiveSignInResult(data);
         }
     }
 
@@ -152,9 +153,7 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void startMultiplayerGame() {
-
         Intent intent = new Intent(getBaseContext(), MultiplayerActivity.class);
-        intent.putExtra(KeyConstants.SAVE_ID_KEY, mMenuViewModel.generateNewGameWithStoredSettings());
         startActivity(intent);
     }
 
@@ -177,6 +176,58 @@ public class MenuActivity extends AppCompatActivity {
         return GoogleSignIn.getLastSignedInAccount(this) != null;
     }
 
+    private void signIn() {
+        GoogleSignInOptions signInOptions = GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN;
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+
+        if (GoogleSignIn.hasPermissions(account, signInOptions.getScopeArray())) {
+            // Stub already signed
+        } else {
+            final GoogleSignInClient signInClient = GoogleSignIn.getClient(this, signInOptions);
+            signInClient.silentSignIn().addOnCompleteListener(this, new OnCompleteListener<GoogleSignInAccount>() {
+                @Override
+                public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
+                    if (task.isSuccessful()) {
+                        onConnected(task.getResult());
+                    } else {
+                        startActivityForResult(signInClient.getSignInIntent(), RC_SIGN_IN);
+                    }
+                }
+            });
+        }
+    }
+
+    private void interactiveSignInResult(Intent data) {
+        GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+        Log.d(TAG, "interactiveSignInResult: SIGN IN RESULT CODE" + GoogleSignInStatusCodes.getStatusCodeString(result.getStatus().getStatusCode()));
+
+
+        if (result.isSuccess()) {
+
+            //Logged in. Setting up player data
+            onConnected(result.getSignInAccount());
+
+        } else {
+            String message = "An error has occurred";
+            new AlertDialog.Builder(this).setMessage(message)
+                    .setNeutralButton("ok", null).show();
+        }
+    }
+
+    private void signOut() {
+        if (isSignedIn()) {
+            GoogleSignInOptions signInOptions = GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN;
+            GoogleSignInClient signInClient = GoogleSignIn.getClient(this, signInOptions);
+
+            signInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    onDisconnected();
+                }
+            });
+        }
+    }
+
     /**
      * Sets up the players data
      * @param googleSignInAccount player
@@ -194,6 +245,11 @@ public class MenuActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void onDisconnected() {
+        mPlayersClient = null;
+        mPlayerLabel.setText(R.string.signedOut);
     }
 }
 

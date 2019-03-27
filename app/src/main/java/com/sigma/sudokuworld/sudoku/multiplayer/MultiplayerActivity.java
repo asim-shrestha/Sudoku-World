@@ -1,4 +1,4 @@
-package com.sigma.sudokuworld.sudoku;
+package com.sigma.sudokuworld.sudoku.multiplayer;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import com.sigma.sudokuworld.R;
+import com.sigma.sudokuworld.sudoku.SudokuActivity;
 import com.sigma.sudokuworld.viewmodels.ConnectionViewModel;
 import com.sigma.sudokuworld.viewmodels.MultiplayerViewModel;
 import com.sigma.sudokuworld.viewmodels.MultiplayerViewModelFactory;
@@ -22,7 +23,7 @@ public class MultiplayerActivity extends SudokuActivity {
     private ConnectionViewModel mConnectionViewModel;
 
     private MultiplayerViewModel mMultiplayerViewModel;
-    private LoadingSrceenFragment mLoadingSrceenFragment;
+    private LoadingScreenFragment mLoadingScreenFragment;
     private FragmentManager mFragmentManager;
 
     @Override
@@ -34,7 +35,7 @@ public class MultiplayerActivity extends SudokuActivity {
         mConnectionViewModel.getGameStateLiveData().observe(this, mGameStateObserver);
 
         mFragmentManager = getSupportFragmentManager();
-        mLoadingSrceenFragment = new LoadingSrceenFragment();
+        mLoadingScreenFragment = new LoadingScreenFragment();
     }
 
     @Override
@@ -76,6 +77,11 @@ public class MultiplayerActivity extends SudokuActivity {
                 case PLAYING:
                     displayGame();
                     break;
+                case OVER:
+                    displayGameOverScreen();
+                    break;
+
+                //Disconnect cases
                 case LEAVE:
                     finish();
                     break;
@@ -119,7 +125,7 @@ public class MultiplayerActivity extends SudokuActivity {
     void displayLoadingScreen() {
         mFragmentManager
                 .beginTransaction()
-                .replace(R.id.fragment_container, mLoadingSrceenFragment)
+                .replace(R.id.fragment_container, mLoadingScreenFragment)
                 .addToBackStack(null)
                 .commit();
     }
@@ -134,6 +140,7 @@ public class MultiplayerActivity extends SudokuActivity {
         mMultiplayerViewModel = ViewModelProviders.of(this, factory).get(MultiplayerViewModel.class);
         super.setGameViewModel(mMultiplayerViewModel);
 
+        // Watch for my most recent move and send to others
         mMultiplayerViewModel.getLastCellChanged().observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(@Nullable Integer integer) {
@@ -143,6 +150,16 @@ public class MultiplayerActivity extends SudokuActivity {
                     } else {
                         mConnectionViewModel.broadcastMove(integer, false);
                     }
+                }
+            }
+        });
+
+        // Watch to see if i've won the game
+        mMultiplayerViewModel.isGameWon().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean isGameWon) {
+                if (isGameWon != null && isGameWon) {
+                    mConnectionViewModel.claimWin();
                 }
             }
         });
@@ -166,5 +183,15 @@ public class MultiplayerActivity extends SudokuActivity {
         });
 
         mFragmentManager.popBackStack();
+    }
+
+    private void displayGameOverScreen() {
+        GameOverFragment gameOverFragment = GameOverFragment.newInstance("FIX ME", true);
+
+        mFragmentManager
+                .beginTransaction()
+                .replace(R.id.fragment_container, gameOverFragment)
+                .addToBackStack(null)
+                .commit();
     }
 }
