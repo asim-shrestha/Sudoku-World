@@ -5,11 +5,16 @@ import android.support.design.widget.TextInputEditText;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import com.google.cloud.translate.Translate;
+import com.google.cloud.translate.TranslateOptions;
+import com.google.cloud.translate.Translation;
 import com.sigma.sudokuworld.R;
 
 public class AddPairFragment extends AbstractDrillDownFragment {
     private TextInputEditText mNativeWordInput;
     private TextInputEditText mForeignWordInput;
+    private Button mTranslateButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -23,6 +28,24 @@ public class AddPairFragment extends AbstractDrillDownFragment {
         mAppBarLayout.setTitle("Add Word Pair");
         mNativeWordInput = view.findViewById(R.id.nativeInput);
         mForeignWordInput = view.findViewById(R.id.foreignInput);
+        mTranslateButton = view.findViewById(R.id.translateButton);
+
+        final Translate translate = TranslateOptions.getDefaultInstance().getService();
+
+        mTranslateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nativeWord = mNativeWordInput.getText().toString();
+
+                if (!nativeWord.isEmpty()) {
+                    Translation translation = translate.translate(nativeWord,
+                            Translate.TranslateOption.sourceLanguage("en"),
+                            Translate.TranslateOption.targetLanguage("fr"));
+
+                    mForeignWordInput.setText(translation.getTranslatedText());
+                }
+            }
+        });
 
         return view;
     }
