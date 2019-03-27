@@ -201,6 +201,7 @@ public class MenuActivity extends AppCompatActivity {
         GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
         Log.d(TAG, "interactiveSignInResult: SIGN IN RESULT CODE" + GoogleSignInStatusCodes.getStatusCodeString(result.getStatus().getStatusCode()));
 
+
         if (result.isSuccess()) {
 
             //Logged in. Setting up player data
