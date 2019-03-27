@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "202154014754-1i2fc647fd2rqhc7fsernitokccnbbb4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sigma.sudokuworld",
+            "certificate_hash": "b0d9dd20c11352b57937372fd9336aef9437ef9a"
+          }
+        },
+        {
           "client_id": "202154014754-pfaojak55g0gehb4nlp1ecjsqqoecscl.apps.googleusercontent.com",
           "client_type": 3
         }
