@@ -233,8 +233,6 @@ public class SudokuGridView extends View {
         );
 
         mTextPaint.setTextSize(mCellWidth / 2f);
-        Paint.FontMetrics fontMetrics = mTextPaint.getFontMetrics();
-        mTextPaintTextHeight = fontMetrics.descent - fontMetrics.ascent;
     }
 
     /**
@@ -357,7 +355,8 @@ public class SudokuGridView extends View {
                 float textWidth = textPaint.measureText( label );
                 canvas.drawText(label,
                         mXOrigin + (cx * mCellWidth) + (mCellWidth / 2f) - (textWidth / 2),
-                        mYOrigin + (cy * mCellHeight) + (mCellHeight / 2f) + (mTextPaintTextHeight / 2) - 10,
+                        mYOrigin + (cy * mCellHeight)+(mCellHeight + mMaxTextSize)/2f,
+///CENTERS NUMBERS ONLY   mYOrigin + (cy * mCellHeight)+(mCellHeight/2f)+ (mCellHeight - mTextPaintTextHeight)/2f,
                         textPaint);
             }
         }
