@@ -1,15 +1,21 @@
 package com.sigma.sudokuworld.masterdetail.detail;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import com.google.android.gms.common.api.GoogleApi;
 import com.google.cloud.translate.Translate;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
 import com.sigma.sudokuworld.R;
+
+import java.sql.Array;
 
 public class AddPairFragment extends AbstractDrillDownFragment {
     private TextInputEditText mNativeWordInput;
@@ -30,20 +36,11 @@ public class AddPairFragment extends AbstractDrillDownFragment {
         mForeignWordInput = view.findViewById(R.id.foreignInput);
         mTranslateButton = view.findViewById(R.id.translateButton);
 
-        final Translate translate = TranslateOptions.getDefaultInstance().getService();
-
         mTranslateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nativeWord = mNativeWordInput.getText().toString();
-
-                if (!nativeWord.isEmpty()) {
-                    Translation translation = translate.translate(nativeWord,
-                            Translate.TranslateOption.sourceLanguage("en"),
-                            Translate.TranslateOption.targetLanguage("fr"));
-
-                    mForeignWordInput.setText(translation.getTranslatedText());
-                }
+                String text = mNativeWordInput.getText().toString();
+                new TranslationService().execute(text);
             }
         });
 
@@ -56,6 +53,30 @@ public class AddPairFragment extends AbstractDrillDownFragment {
 
     public String getForeignWord() {
         return mForeignWordInput.getText().toString();
+    }
+
+    private class TranslationService extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            if (!strings[0].isEmpty()) {
+                Translate translate = TranslateOptions.getDefaultInstance().getService();
+
+                Translation translation = translate.translate(strings[0],
+                        Translate.TranslateOption.sourceLanguage("en"),
+                        Translate.TranslateOption.targetLanguage("fr"));
+
+                return translation.getTranslatedText();
+            }
+
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            mForeignWordInput.setText(s);
+        }
     }
 }
 

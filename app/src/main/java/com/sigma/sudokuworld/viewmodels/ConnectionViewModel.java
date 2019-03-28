@@ -158,7 +158,7 @@ public class ConnectionViewModel extends AndroidViewModel {
     private void performHostSetup() {
         Log.d(TAG, "performHostSetup: I AM HOST");
 
-        Bundle puzzle = new PuzzleGenerator(9).generatePuzzle(GameDifficulty.HARD);
+        Bundle puzzle = new PuzzleGenerator(4).generatePuzzle(GameDifficulty.HARD);
 
         int[] initial = puzzle.getIntArray(KeyConstants.CELL_VALUES_KEY);
         int[] solution = puzzle.getIntArray(KeyConstants.SOLUTION_VALUES_KEY);
