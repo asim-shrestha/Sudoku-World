@@ -6,8 +6,10 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.sigma.sudokuworld.persistence.LanguageRepository;
 import com.sigma.sudokuworld.persistence.WordPairRepository;
 import com.sigma.sudokuworld.persistence.WordSetRepository;
+import com.sigma.sudokuworld.persistence.db.entities.Language;
 import com.sigma.sudokuworld.persistence.db.entities.Set;
 import com.sigma.sudokuworld.persistence.db.entities.Word;
 import com.sigma.sudokuworld.persistence.db.views.WordPair;
@@ -20,6 +22,8 @@ import java.util.List;
 public class MasterDetailViewModel extends BaseSettingsViewModel {
     private WordSetRepository mWordSetRepository;
     private WordPairRepository mWordPairRepository;
+    private LanguageRepository mLanguageRepository;
+
     private LiveData<List<Set>> mAllSets;
     private LiveData<List<FireBaseSet>> mOnlineSets;
     private LiveData<List<WordPair>> mAllWordPairs;
@@ -40,6 +44,7 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         super(application);
         mWordSetRepository = new WordSetRepository(mApplication);
         mWordPairRepository = new WordPairRepository(mApplication);
+        mLanguageRepository = new LanguageRepository(mApplication);
 
         mAllSets = mWordSetRepository.getAllSets();
         mAllWordPairs = mWordPairRepository.getAllWordPairs();
@@ -104,6 +109,10 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
 
     public LiveData<List<WordPair>> getFilteredWordPairs() {
         return mFilteredWordPairs;
+    }
+
+    public List<Language> getAllLanguages() {
+        return mLanguageRepository.getAllLanguages();
     }
 
     public void filterWordPairs(String query) {

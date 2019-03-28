@@ -12,11 +12,15 @@ abstract class DatabaseInitializer {
         fun initLanguages(db: AppDatabase) {
             val english = Language(0, "English", "en")
             val french = Language(0, "French", "fr")
+            val spanish = Language(0, "Spanish", "es")
+            val russian = Language(0, "Russian", "ru")
 
             val languageDao = db.getLanguageDao()
 
             if (languageDao.getLanguageByCode("en") == null) languageDao.insert(english)
             if (languageDao.getLanguageByCode("fr") == null) languageDao.insert(french)
+            if (languageDao.getLanguageByCode("es") == null) languageDao.insert(spanish)
+            if (languageDao.getLanguageByCode("ru") == null) languageDao.insert(russian)
 
         }
 

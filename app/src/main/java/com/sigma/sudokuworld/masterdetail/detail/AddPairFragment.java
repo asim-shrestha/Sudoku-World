@@ -1,26 +1,23 @@
 package com.sigma.sudokuworld.masterdetail.detail;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
-import com.google.android.gms.common.api.GoogleApi;
-import com.google.cloud.translate.Translate;
-import com.google.cloud.translate.TranslateOptions;
-import com.google.cloud.translate.Translation;
+import android.widget.Spinner;
 import com.sigma.sudokuworld.R;
+import com.sigma.sudokuworld.adapters.LanguageSpinnerAdapter;
+import com.sigma.sudokuworld.persistence.db.entities.Language;
 
-import java.sql.Array;
+import java.util.ArrayList;
 
 public class AddPairFragment extends AbstractDrillDownFragment {
     private TextInputEditText mNativeWordInput;
     private TextInputEditText mForeignWordInput;
-    private Button mTranslateButton;
+    private Spinner mNativeSpinner;
+    private Spinner mForeignSpinner;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,15 +31,14 @@ public class AddPairFragment extends AbstractDrillDownFragment {
         mAppBarLayout.setTitle("Add Word Pair");
         mNativeWordInput = view.findViewById(R.id.nativeInput);
         mForeignWordInput = view.findViewById(R.id.foreignInput);
-        mTranslateButton = view.findViewById(R.id.translateButton);
+        mNativeSpinner = view.findViewById(R.id.nativeSpinner);
+        mForeignSpinner = view.findViewById(R.id.foreignSpinner);
 
-        mTranslateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String text = mNativeWordInput.getText().toString();
-                new TranslationService().execute(text);
-            }
-        });
+        ArrayList<Language> languages = (ArrayList<Language>) mMasterDetailViewModel.getAllLanguages();
+        LanguageSpinnerAdapter adapter = new LanguageSpinnerAdapter(getContext(), languages);
+
+        mNativeSpinner.setAdapter(adapter);
+        mForeignSpinner.setAdapter(adapter);
 
         return view;
     }
@@ -53,30 +49,6 @@ public class AddPairFragment extends AbstractDrillDownFragment {
 
     public String getForeignWord() {
         return mForeignWordInput.getText().toString();
-    }
-
-    private class TranslationService extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... strings) {
-            if (!strings[0].isEmpty()) {
-                Translate translate = TranslateOptions.getDefaultInstance().getService();
-
-                Translation translation = translate.translate(strings[0],
-                        Translate.TranslateOption.sourceLanguage("en"),
-                        Translate.TranslateOption.targetLanguage("fr"));
-
-                return translation.getTranslatedText();
-            }
-
-            return "";
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-
-            mForeignWordInput.setText(s);
-        }
     }
 }
 
