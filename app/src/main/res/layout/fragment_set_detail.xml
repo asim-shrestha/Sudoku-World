@@ -1,38 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/set_detail"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:textIsSelectable="true"
-    tools:context=".masterdetail.detail.AbstractDrillDownActivity">
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:id="@+id/set_detail"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent"
+                                             android:textIsSelectable="true"
+                                             tools:context=".masterdetail.detail.AbstractDrillDownActivity">
 
-    <TextView
-        android:id="@+id/setName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="TextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayout"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="8dp">
 
-    <TextView
-        android:id="@+id/setDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="TextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/setName" />
+        <TextView
+                android:id="@+id/setName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Name"/>
+
+        <TextView
+                android:id="@+id/setDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/setName"
+                tools:text="Description"/>
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            <TextView
+                    android:text="@string/nativeLanguageLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView4"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/nativeLangName"
+                    android:layout_weight="1"
+                    android:textAlignment="center"
+                    tools:text="English"/>
+        </LinearLayout>
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            <TextView
+                    android:text="@string/foreignLanguageLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView5"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/foreignLangName"
+                    android:layout_weight="1"
+                    android:textAlignment="center"
+                    tools:text="French"/>
+        </LinearLayout>
+
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:id="@+id/recyclerView"
+            tools:listitem="Word Pair"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/setDescription"
-            android:id="@+id/recyclerView"/>
+            />
 
 </android.support.constraint.ConstraintLayout>
