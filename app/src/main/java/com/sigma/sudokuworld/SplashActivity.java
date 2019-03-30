@@ -30,7 +30,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 timer.cancel();
-                //startActivity(new Intent(SplashActivity.this, MenuActivity.class));
+                startActivity(new Intent(SplashActivity.this, MenuActivity.class));
                 finish();
             }
         });
@@ -72,6 +72,4 @@ public class SplashActivity extends AppCompatActivity {
         super.onPause();
         finish();
     }
-
-
 }

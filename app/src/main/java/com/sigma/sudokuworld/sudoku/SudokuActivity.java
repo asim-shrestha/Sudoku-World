@@ -1,8 +1,6 @@
 package com.sigma.sudokuworld.sudoku;
 
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -12,20 +10,13 @@ import android.view.View;
 import android.widget.Button;
 
 
-import android.widget.Chronometer;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.sigma.sudokuworld.game.GameMode;
-import com.sigma.sudokuworld.persistence.GameTimer;
-import com.sigma.sudokuworld.persistence.db.entities.Game;
 import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
 import com.sigma.sudokuworld.viewmodels.GameViewModel;
-import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
-import com.sigma.sudokuworld.viewmodels.SingleplayerViewModelFactory;
 import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.audio.SoundPlayer;
-import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +30,8 @@ public abstract class SudokuActivity extends AppCompatActivity {
     protected LinearLayout[] mLinearLayouts;
     protected Button[] mInputButtons;
     private SoundPlayer mSoundPlayer;
-    private Game mGame;
 
-    private Chronometer mGameTimer;
-    private long TimerInterval;
-
+    protected GameTimer mGameTimer;
     protected boolean mCellHeld;
 
     @Override
@@ -59,11 +47,9 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
         mSoundPlayer = new SoundPlayer(this);
 
-        //set gametimer
-        mGameTimer = new GameTimer(this);
-        mGameTimer = findViewById(R.id.gametimer);
+        //GameTimer
+        mGameTimer = findViewById(R.id.gameTimer);
         mGameTimer.setBase(SystemClock.elapsedRealtime());
-        mGameTimer.start();
     }
 
     public void setGameViewModel(GameViewModel viewModel) {
@@ -71,25 +57,37 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
         //Set up buttons
         initButtons();
-        final Observer<List<String>> buttonLabelsObserver = new Observer<List<String>>() {
+        mGameViewModel.getButtonLabels().observe(this, new Observer<List<String>>() {
             @Override
             public void onChanged(@Nullable List<String> strings) {
                 setButtonLabels(strings);
             }
-        };
-        mGameViewModel.getButtonLabels().observe(this, buttonLabelsObserver);
+        });
 
         mSudokuGridView.setOnTouchListener(onSudokuGridTouchListener);
         mSudokuGridView.setCellLabels(this, mGameViewModel.getCellLabels());
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mGameTimer.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        mGameTimer.pause();
+        mGameViewModel.setElapsedTime(mGameTimer.getElapsedTime());
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         finish();
-
-        //TIME PAUSE
-        pause();
     }
 
     //When sudoku grid is touched
@@ -327,15 +325,5 @@ public abstract class SudokuActivity extends AppCompatActivity {
             for (int i = 0; i < mInputButtons.length; i++) {
                 mInputButtons[i].setText(buttonLabels.get(i));
             }
-    }
-
-    public void pause(){
-        TimerInterval = SystemClock.elapsedRealtime() - mGameTimer.getBase();
-        mGameTimer.stop();
-    }
-
-    public void restart(){
-        mGameTimer.setBase(SystemClock.elapsedRealtime() - TimerInterval);
-        mGameTimer.start();
     }
 }

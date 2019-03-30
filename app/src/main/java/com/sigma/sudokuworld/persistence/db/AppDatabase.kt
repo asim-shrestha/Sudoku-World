@@ -17,7 +17,7 @@ import com.sigma.sudokuworld.persistence.db.utils.DatabaseInitializer
  * Written in kotlin
  */
 @Database(
-        version = 10,
+        version = 11,
         entities = [
             Language::class,
             Word::class,

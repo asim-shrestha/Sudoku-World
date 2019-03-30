@@ -86,6 +86,14 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
         checkForGameWin();
     }
 
+    public long getElapsedTime() {
+        return mGame.getTimeInterval();
+    }
+
+    public void setElapsedTime(long elapsedTime) {
+        mGame.setTimeInterval(elapsedTime);
+    }
+
     public GameMode getGameMode() {
         return mGame.getGameMode();
     }
@@ -212,15 +220,14 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
 
         return label;
     }
-    public String valueTospeak(int value, GameMode gameMode) {
+
+
+    public String valueToSpeak(int value, GameMode gameMode) {
         String label = "";
 
         if (value != 0) {
             if (gameMode == GameMode.NUMBERS || (nativeWordsMap.size() <= value))
                 label = foreignWordsMap.valueAt(value);
-            else{
-                //Not Listening comprehension mode
-            }
         }
 
         return label;
@@ -232,9 +239,6 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
         if (value != 0) {
             if (gameMode == GameMode.NUMBERS || (nativeWordsMap.size() <= value))
                 label = nativeWordsMap.valueAt(value);
-            else{
-                //Not Listening comprehension mode
-            }
         }
 
         return label;

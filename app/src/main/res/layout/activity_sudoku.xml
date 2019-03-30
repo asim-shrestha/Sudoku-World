@@ -56,11 +56,11 @@
                 android:background="@drawable/red_button"
                 android:textColor="@color/colorWhite"/>
 
-            <Chronometer
+            <com.sigma.sudokuworld.sudoku.GameTimer
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:id="@+id/gametimer"
+                android:id="@+id/gameTimer"
                 />
 
             <Button
