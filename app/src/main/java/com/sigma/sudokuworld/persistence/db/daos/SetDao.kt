@@ -16,6 +16,9 @@ interface SetDao {
     @Query("SELECT * FROM sets where setID = :setID")
     fun getSetByID(setID: Long): Set?
 
+    @Query("SELECT * FROM sets LIMIT 1")
+    fun getFirstSet(): Set?
+
     @Insert(onConflict = OnConflictStrategy.FAIL)
     fun insert(set: Set): Long
 

@@ -202,6 +202,10 @@ public class WordSetRepository {
         }
     }
 
+    public Set getFirstSet() {
+        return setDao.getFirstSet();
+    }
+
     public List<WordPair> getAllWordPairsInSet(long setID) {
         return mPairWithSetDao.getAllWordPairsInSet(setID);
     }

@@ -73,7 +73,7 @@ public abstract class PersistenceService {
         return getSettings(context).getBoolean(RECTANGLE_KEY, false);
     }
 
-    public static long loadSetSettingSetting(Context context) {
+    public static long loadSetSetting(Context context) {
         return getSettings(context).getLong(SET_ID_KEY, 1);
     }
 
