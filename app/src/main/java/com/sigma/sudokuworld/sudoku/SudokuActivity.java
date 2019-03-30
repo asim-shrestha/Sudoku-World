@@ -1,7 +1,9 @@
 package com.sigma.sudokuworld.sudoku;
 
 import android.arch.lifecycle.Observer;
+import android.media.MediaPlayer;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,6 +36,8 @@ public abstract class SudokuActivity extends AppCompatActivity {
     protected GameTimer mGameTimer;
     protected boolean mCellHeld;
 
+    MediaPlayer mBGM;
+    int position = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +54,13 @@ public abstract class SudokuActivity extends AppCompatActivity {
         //GameTimer
         mGameTimer = findViewById(R.id.gameTimer);
         mGameTimer.setBase(SystemClock.elapsedRealtime());
+
+        //Background music
+        if(position == 0)
+            mBGM = MediaPlayer.create(SudokuActivity.this,R.raw.backgroundmusic);
+        else
+            mBGM.seekTo(position);
+        mBGM.start();
     }
 
     public void setGameViewModel(GameViewModel viewModel) {
@@ -74,6 +85,8 @@ public abstract class SudokuActivity extends AppCompatActivity {
         super.onResume();
 
         mGameTimer.start();
+        mBGM.seekTo(position);
+        mBGM.start();
     }
 
     @Override
@@ -82,6 +95,17 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
         mGameTimer.pause();
         mGameViewModel.setElapsedTime(mGameTimer.getElapsedTime());
+
+        position = mBGM.getCurrentPosition();
+        mBGM.pause();
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        //Cleanup
+        if(mBGM != null)
+            mBGM.release();
     }
 
     @Override
