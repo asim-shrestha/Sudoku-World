@@ -115,26 +115,35 @@ public class MasterSelectActivity extends AppCompatActivity implements
 
     @Override
     public void onLongClickSetFragmentInteraction(View view, final Set set) {
-        new AlertDialog.Builder(this)
-                .setTitle(set.getName())
-                .setPositiveButton("Upload", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mMasterDetailViewModel.uploadSet(set);
-                    }
-                })
-                .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mMasterDetailViewModel.deleteSet(set);
-                    }
-                })
-                .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                }).show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(set.getName());
+        builder.setMessage(set.getDescription());
+        builder.setPositiveButton("Upload", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mMasterDetailViewModel.uploadSet(set);
+            }
+        });
+
+        builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        //User cannot delete the last remaining set
+        if(mMasterDetailViewModel.getNumberOfLocalSets() > 1) {
+            builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mMasterDetailViewModel.deleteSet(set);
+                }
+            });
+        }
+
+        builder.show();
     }
 
     //Pair fragment listeners

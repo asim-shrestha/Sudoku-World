@@ -26,6 +26,7 @@ public class WordSetRepository {
     private PairWithSetDao mPairWithSetDao;
     private FirebaseDatabase mFireBase;
     private SetDao setDao;
+
     private LiveData<List<Set>> mAllSets;
     private MutableLiveData<List<FireBaseSet>> mOnlineSets;
     private LanguageRepository mLanguageRepository;
@@ -45,53 +46,29 @@ public class WordSetRepository {
 
 
         mOnlineSets = new MutableLiveData<>();
-        mFireBase.getReference().child("sets").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                FireBaseSet newSet = dataSnapshot.getValue(FireBaseSet.class);
-                String key = dataSnapshot.getKey();
-
-                if (newSet != null && key != null) {
-                    newSet.setKey(dataSnapshot.getKey());
-
-                    List<FireBaseSet> sets = mOnlineSets.getValue();
-                    if (sets == null) sets = new LinkedList<>();
-                    sets.add(newSet);
-
-                    mOnlineSets.setValue(sets);
-                }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                FireBaseSet removedSet = dataSnapshot.getValue(FireBaseSet.class);
-
-                List<FireBaseSet> sets = mOnlineSets.getValue();
-                if (sets != null) {
-                    if (sets.contains(removedSet)) {
-                        sets.remove(removedSet);
-                        mOnlineSets.setValue(sets);
-                    }
-                }
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        mFireBase.getReference().child("sets").addChildEventListener(mFireBaseSetEventListener);
     }
 
+    /*
+        Live data
+     */
+
+    public LiveData<List<FireBaseSet>> getOnlineSets() {
+        return mOnlineSets;
+    }
+
+    public LiveData<List<Set>> getAllSets() {
+        return mAllSets;
+    }
+
+    /*
+        Fire Base
+     */
+
+    /**
+     * Gets a set from FireBase db and adds it to the local db
+     * @param fireBaseSet set to get
+     */
     public void downloadSet(FireBaseSet fireBaseSet) {
         mFireBase.getReference().child("sets").child(fireBaseSet.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
 
@@ -124,14 +101,10 @@ public class WordSetRepository {
         });
     }
 
-    public LiveData<List<FireBaseSet>> getOnlineSets() {
-        return mOnlineSets;
-    }
-
-    public LiveData<List<Set>> getAllSets() {
-        return mAllSets;
-    }
-
+    /**
+     * Inserts a set into the FireBase database
+     * @param set set to upload
+     */
     public void uploadSetToFireBase(Set set) {
 
         List<FireBaseWordPair> fireBaseWordPairs = new LinkedList<>();
@@ -150,9 +123,67 @@ public class WordSetRepository {
         mFireBase.getReference().child("sets").push().setValue(wordSet);
     }
 
+    /**
+     * Deletes a set from FireBase
+     * @param fireBaseSet set to delete
+     */
     public void deleteFireBaseSet(FireBaseSet fireBaseSet) {
         mFireBase.getReference().child("sets").child(fireBaseSet.getKey()).removeValue();
     }
+
+    /**
+     * Listens for whens sets are added and removed from FireBase
+     */
+    @SuppressWarnings("FieldCanBeLocal")
+    private ChildEventListener mFireBaseSetEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            FireBaseSet newSet = dataSnapshot.getValue(FireBaseSet.class);
+            String key = dataSnapshot.getKey();
+
+            if (newSet != null && key != null) {
+                newSet.setKey(dataSnapshot.getKey());
+
+                List<FireBaseSet> sets = mOnlineSets.getValue();
+                if (sets == null) sets = new LinkedList<>();
+                sets.add(newSet);
+
+                mOnlineSets.setValue(sets);
+            }
+        }
+
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            FireBaseSet removedSet = dataSnapshot.getValue(FireBaseSet.class);
+
+            List<FireBaseSet> sets = mOnlineSets.getValue();
+            if (sets != null) {
+                if (sets.contains(removedSet)) {
+                    sets.remove(removedSet);
+                    mOnlineSets.setValue(sets);
+                }
+            }
+        }
+
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    };
+
+    /*
+        Local sets
+     */
 
     public Set getSet(long setId) {
         return setDao.getSetByID(setId);
@@ -174,5 +205,4 @@ public class WordSetRepository {
     public List<WordPair> getAllWordPairsInSet(long setID) {
         return mPairWithSetDao.getAllWordPairsInSet(setID);
     }
-
 }
