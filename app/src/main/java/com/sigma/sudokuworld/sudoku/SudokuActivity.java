@@ -73,21 +73,6 @@ public abstract class SudokuActivity extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        mGameTimer.start();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        mGameTimer.pause();
-        mGameViewModel.setElapsedTime(mGameTimer.getElapsedTime());
-    }
-
-    @Override
     public void onBackPressed() {
         super.onBackPressed();
         finish();

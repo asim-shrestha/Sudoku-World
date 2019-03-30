@@ -38,8 +38,17 @@ public abstract class SinglePlayerActivity extends SudokuActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onResume() {
+        super.onResume();
+
+        mGameTimer.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        mGameTimer.pause();
         mSinglePlayerViewModel.setElapsedTime(mGameTimer.getElapsedTime());
     }
 }

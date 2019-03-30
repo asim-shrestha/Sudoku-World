@@ -9,6 +9,7 @@ public class MusicPlayer {
 
     public MusicPlayer(Context context) {
         mMediaPlayer = MediaPlayer.create(context, R.raw.backgroundmusic);
+        mMediaPlayer.setLooping(true);
     }
 
     public void start() {
