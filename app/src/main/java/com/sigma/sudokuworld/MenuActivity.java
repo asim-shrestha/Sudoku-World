@@ -109,6 +109,7 @@ public class MenuActivity extends AppCompatActivity {
      */
     public void onContinuePressed(View v) {
         showFragment(new SelectGameFragment());
+        //restart();
     }
 
     /**

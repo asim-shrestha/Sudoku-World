@@ -3,6 +3,7 @@ package com.sigma.sudokuworld.sudoku;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,9 +12,13 @@ import android.view.View;
 import android.widget.Button;
 
 
+import android.widget.Chronometer;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.sigma.sudokuworld.game.GameMode;
+import com.sigma.sudokuworld.persistence.GameTimer;
+import com.sigma.sudokuworld.persistence.db.entities.Game;
 import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
 import com.sigma.sudokuworld.viewmodels.GameViewModel;
 import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
@@ -25,6 +30,7 @@ import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public abstract class SudokuActivity extends AppCompatActivity {
 
     protected SudokuGridView mSudokuGridView;
@@ -33,6 +39,10 @@ public abstract class SudokuActivity extends AppCompatActivity {
     protected LinearLayout[] mLinearLayouts;
     protected Button[] mInputButtons;
     private SoundPlayer mSoundPlayer;
+    private Game mGame;
+
+    private Chronometer mGameTimer;
+    private long TimerInterval;
 
     protected boolean mCellHeld;
 
@@ -48,6 +58,12 @@ public abstract class SudokuActivity extends AppCompatActivity {
         mSudokuGridView.setRectangleMode(PersistenceService.loadRectangleModeEnabledSetting(this));
 
         mSoundPlayer = new SoundPlayer(this);
+
+        //set gametimer
+        mGameTimer = new GameTimer(this);
+        mGameTimer = findViewById(R.id.gametimer);
+        mGameTimer.setBase(SystemClock.elapsedRealtime());
+        mGameTimer.start();
     }
 
     public void setGameViewModel(GameViewModel viewModel) {
@@ -71,6 +87,9 @@ public abstract class SudokuActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+
+        //TIME PAUSE
+        pause();
     }
 
     //When sudoku grid is touched
@@ -305,8 +324,18 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
 
     private void setButtonLabels(List<String> buttonLabels) {
-        for(int i = 0; i < mInputButtons.length; i++) {
-            mInputButtons[i].setText(buttonLabels.get(i));
-        }
+            for (int i = 0; i < mInputButtons.length; i++) {
+                mInputButtons[i].setText(buttonLabels.get(i));
+            }
+    }
+
+    public void pause(){
+        TimerInterval = SystemClock.elapsedRealtime() - mGameTimer.getBase();
+        mGameTimer.stop();
+    }
+
+    public void restart(){
+        mGameTimer.setBase(SystemClock.elapsedRealtime() - TimerInterval);
+        mGameTimer.start();
     }
 }

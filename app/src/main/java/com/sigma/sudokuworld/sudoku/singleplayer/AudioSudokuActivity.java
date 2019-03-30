@@ -1,21 +1,29 @@
 package com.sigma.sudokuworld.sudoku.singleplayer;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Chronometer;
 
+import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.game.GameMode;
+import com.sigma.sudokuworld.persistence.GameTimer;
 
+import java.sql.Time;
 import java.util.Locale;
 
 public class AudioSudokuActivity extends SinglePlayerActivity {
 
     private TextToSpeech mTTS;
+    private Chronometer mGameTimer;
+    private long TimerInterval;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initTTS();
+
 
         super.mSudokuGridView.setOnLongClickListener(longClickListener);
 
@@ -37,7 +45,7 @@ public class AudioSudokuActivity extends SinglePlayerActivity {
         @Override
         public boolean onLongClick(View v) {
             if (mSinglePlayerViewModel.isLockedCell(cellTouched)) {
-                String text = mSinglePlayerViewModel.getMappedString(
+                String text = mSinglePlayerViewModel.valueTospeak(
                         mSinglePlayerViewModel.getCellValue(cellTouched),
                         GameMode.opposite(mSinglePlayerViewModel.getGameMode())
                 );

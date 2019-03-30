@@ -23,7 +23,9 @@ data class Game (
         var gameMode: GameMode,
         var cellValues: IntArray,
         var solutionValues: IntArray,
-        var lockedCells: BooleanArray
+        var lockedCells: BooleanArray,
+
+        var timeInterval: Long
 ) {
     fun setCellValue(cellNumber: Int, value: Int) = try {
         cellValues[cellNumber] = value
