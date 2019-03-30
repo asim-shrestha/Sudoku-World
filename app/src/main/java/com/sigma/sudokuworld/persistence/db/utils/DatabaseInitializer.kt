@@ -21,33 +21,46 @@ abstract class DatabaseInitializer {
             if (languageDao.getLanguageByCode("fr") == null) languageDao.insert(french)
             if (languageDao.getLanguageByCode("es") == null) languageDao.insert(spanish)
             if (languageDao.getLanguageByCode("ru") == null) languageDao.insert(russian)
-
         }
 
-        fun populateDatabase(db: AppDatabase) {
+        fun initDefaultSet(db: AppDatabase) {
+            val languageDao = db.getLanguageDao()
 
-            val english = Language(1, "English", "en")
-            val french = Language(2, "French", "fr")
+            if (db.getSetDao().getAll().isEmpty()) {
+
+                //Making sure we have a clean slate for insertion
+                db.getWordDao().deleteAll()
+
+                val english = languageDao.getLanguageByCode("en")
+                val french = languageDao.getLanguageByCode("fr")
+
+                if (english != null && french != null) {
+                    insertDefaultSet(db, english.languageID, french.languageID)
+                }
+            }
+        }
+
+        private fun insertDefaultSet(db: AppDatabase, nativeID: Long, foreignID: Long) {
 
             val words = arrayOf(
-                    Word(1, 1, "Red"),
-                    Word(2, 1, "Pink"),
-                    Word(3, 1, "Green"),
-                    Word(4, 1, "Purple"),
-                    Word(5, 1, "Yellow"),
-                    Word(6, 1, "White"),
-                    Word(7, 1, "Black"),
-                    Word(8, 1, "Brown"),
-                    Word(9, 1, "Blue"),
-                    Word(10, 2, "Rouge"),
-                    Word(11, 2, "Rose"),
-                    Word(12, 2, "Vert"),
-                    Word(13, 2, "Violet"),
-                    Word(14, 2, "Jaune"),
-                    Word(15, 2, "Blanc"),
-                    Word(16, 2, "Noir"),
-                    Word(17, 2, "Marron"),
-                    Word(18, 2, "Bleu")
+                    Word(1, nativeID, "Red"),
+                    Word(2, nativeID, "Pink"),
+                    Word(3, nativeID, "Green"),
+                    Word(4, nativeID, "Purple"),
+                    Word(5, nativeID, "Yellow"),
+                    Word(6, nativeID, "White"),
+                    Word(7, nativeID, "Black"),
+                    Word(8, nativeID, "Brown"),
+                    Word(9, nativeID, "Blue"),
+                    Word(10, foreignID, "Rouge"),
+                    Word(11, foreignID, "Rose"),
+                    Word(12, foreignID, "Vert"),
+                    Word(13, foreignID, "Violet"),
+                    Word(14, foreignID, "Jaune"),
+                    Word(15, foreignID, "Blanc"),
+                    Word(16, foreignID, "Noir"),
+                    Word(17, foreignID, "Marron"),
+                    Word(18, foreignID, "Bleu")
             )
 
             val pairs = arrayOf(
@@ -76,19 +89,10 @@ abstract class DatabaseInitializer {
                     PairWithSet(1, 9)
             )
 
-            db.getLanguageDao().insert(english, french)
             db.getWordDao().insert(*words)
             db.getPairDao().insert(*pairs)
             db.getSetDao().insert(set)
             db.getPairWithSetDao().insert(*pairsWithSet)
-        }
-
-        fun deleteAll(db: AppDatabase) {
-            db.getLanguageDao().deleteAll()
-            db.getWordDao().deleteAll()
-            db.getPairDao().deleteAll()
-            db.getSetDao().deleteAll()
-            db.getPairWithSetDao().deleteAll()
         }
     }
 }
