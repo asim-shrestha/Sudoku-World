@@ -58,7 +58,7 @@ public class PuzzleGenerator {
 
         //Check a different number of nodes in generatePlayableBoard
         //based on the selected difficulty setting
-        //We use a propriotary formula to generate how many nodes to potentially delete
+        //We use a proprietary formula to generate how many nodes to potentially delete
         int nodesToCheck = 0;
         switch (difficulty){
             case EASY:
@@ -71,7 +71,7 @@ public class PuzzleGenerator {
                 nodesToCheck = (mBoardSize + mBoardLength)*4 / 5;
         }
 
-        //Cap nodesToCheck at 100 so that the computations don't get too big
+        //Cap nodesToCheck so that the computations don't get too big
         nodesToCheck = Math.min(nodesToCheck, 65);
         generatePlayableBoard(nodesToCheck);
     }

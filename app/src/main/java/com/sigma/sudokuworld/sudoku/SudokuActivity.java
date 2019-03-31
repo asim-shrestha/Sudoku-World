@@ -1,22 +1,24 @@
 package com.sigma.sudokuworld.sudoku;
 
 import android.arch.lifecycle.Observer;
-import android.media.MediaPlayer;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
 
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.sigma.sudokuworld.BaseActivity;
+import com.sigma.sudokuworld.SettingsFragment;
+import com.sigma.sudokuworld.game.GameMode;
 import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
+import com.sigma.sudokuworld.sudoku.singleplayer.LongClickHandler;
 import com.sigma.sudokuworld.viewmodels.GameViewModel;
 import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.audio.SoundPlayer;
@@ -32,10 +34,14 @@ public abstract class SudokuActivity extends BaseActivity {
     private GameViewModel mGameViewModel;
     protected LinearLayout[] mLinearLayouts;
     protected Button[] mInputButtons;
+    protected ImageButton mBackButton;
+    protected ImageButton mSettingsButton;
     private SoundPlayer mSoundPlayer;
 
+
+    protected LongClickHandler mLongClickHandler;
+    protected FragmentManager mFragmentManager;
     protected GameTimer mGameTimer;
-    protected boolean mCellHeld;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,15 @@ public abstract class SudokuActivity extends BaseActivity {
         //Initializing Sudoku grid
         mSudokuGridView = findViewById(R.id.sudokuGrid_view);
         mSudokuGridView.setRectangleMode(PersistenceService.loadRectangleModeEnabledSetting(this));
+
+        //Initialize Buttons
+        mBackButton = findViewById(R.id.backButton);
+        mBackButton.setOnClickListener(onBackClickListener);
+
+        mSettingsButton = findViewById(R.id.settingsButton);
+        mSettingsButton.setOnClickListener(onSettingsClickListener);
+        mFragmentManager = getSupportFragmentManager();
+        mFragmentManager.addOnBackStackChangedListener(onBackStackChangedListener);
 
         mSoundPlayer = new SoundPlayer(this);
 
@@ -67,6 +82,8 @@ public abstract class SudokuActivity extends BaseActivity {
             }
         });
 
+        mLongClickHandler = new LongClickHandler(this, mGameViewModel.getGameMode());
+
         mSudokuGridView.setOnTouchListener(onSudokuGridTouchListener);
         mSudokuGridView.setCellLabels(this, mGameViewModel.getCellLabels());
 
@@ -78,76 +95,79 @@ public abstract class SudokuActivity extends BaseActivity {
         finish();
     }
 
-    //When sudoku grid is touched
+    //When Sudoku grid is touched
     private SudokuGridView.OnTouchListener onSudokuGridTouchListener = new SudokuGridView.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             int eventAction = event.getAction();
-            boolean touchHandled = false;
-
             //Through looking at every action case, we can move the highlight to where our finger moves to
             switch (eventAction) {
                 case MotionEvent.ACTION_UP:
+                    //Finger has been lifted so we cancel long click
+                    mLongClickHandler.cancelGridLongClick();
+                    break;
                 case MotionEvent.ACTION_DOWN:
-                    mCellHeld = true;
                 case MotionEvent.ACTION_MOVE:
                     int x = (int) event.getX();
                     int y = (int) event.getY();
 
                     //If touch in the bounds of the grid
                     if (mSudokuGridView.getGridBounds().contains(x, y)) {
-
                         //Figure out which cell was touched
                         int cellNum = mSudokuGridView.getCellNumberFromCoordinates(x, y);
                         cellTouched = cellNum;
 
-                        //Check if the cell has been held down or not
+                        //Check if the cell has been held down or not (If the last highlighted cell is the current cell)
                         if (mSudokuGridView.getHighlightedCell() >= 0 && event.getAction() == MotionEvent.ACTION_MOVE){
-                            if (cellTouched != mSudokuGridView.getHighlightedCell()) { mCellHeld = false; }
+                            if (cellTouched != mSudokuGridView.getHighlightedCell()) {
+                                //Finger moved to a new cell so we cancel long click
+                                mLongClickHandler.cancelGridLongClick();
                             }
+                        }
+
+                        //Handle a potential long click if it is a locked cell
+                        if (mGameViewModel.isLockedCell(cellNum)) {
+                            //Get cell string
+                            String cellText = mGameViewModel.getMappedString(
+                                    mGameViewModel.getCellValue(cellTouched),
+                                    GameMode.opposite(mGameViewModel.getGameMode()));
+
+                            mLongClickHandler.handleGridLongClick(cellText);
+                        }
 
                         //Clear previous highlighted cell
                         mSudokuGridView.clearHighlightedCell();
 
-                        //If we have selected a cell with an "incorrect" cell highlight , un highlight it
-                        if (mSudokuGridView.IsIncorrectCell(cellNum)) {
-                            mSudokuGridView.clearIncorrectCell(cellNum);
-                        }
-
                         //Set highlight on the currently touched cell
                         mSudokuGridView.setHighlightedCell(cellNum);
-
-                        //Check if we highlighted an editable cell
-                        if (!mGameViewModel.isLockedCell(cellNum)) {
-                            //No long press if the cell since the cell is NOT locked
-                            touchHandled = true;
-                        }
 
                         //Force redraw view
                         mSudokuGridView.invalidate();
                         mSudokuGridView.performClick();
                     }
             }
-            return touchHandled; 
+            return true;
         }
     };
 
+    private int getButtonValue(Button button){
+        //Loop through all our possible buttons to see which button is clicked
+        //Set buttonValue to the corresponding button
+        int buttonValue = 0;
+        for (int buttonIndex = 0; buttonIndex < mInputButtons.length; buttonIndex++) {
+            if (button == mInputButtons[buttonIndex]){
+                buttonValue = buttonIndex + 1;
+            }
+        }
+
+        return buttonValue;
+    }
 
     private View.OnClickListener onButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Button button = (Button) v;
-            int buttonValue = 0;
-
-            //Loop through all our possible buttons to see which button is clicked
-            //Set buttonValue to the corresponding button
-            for (int buttonIndex = 0; buttonIndex < mInputButtons.length; buttonIndex++) {
-                if (button == mInputButtons[buttonIndex]){
-                    buttonValue = buttonIndex + 1;
-                    break;
-                }
-            }
-
+            int buttonValue = getButtonValue(button);
             int cellNumber = mSudokuGridView.getHighlightedCell();
 
             //No cell is highlighted or a locked cell is highlighted
@@ -175,7 +195,7 @@ public abstract class SudokuActivity extends BaseActivity {
     };
 
     public void onCheckAnswerPressed(View v) {
-        if (mGameViewModel == null) return;
+        if (mGameViewModel == null) { return; }
 
         //Check if cell is selected
         //If a cell is selected, check if that cell is correct
@@ -188,7 +208,7 @@ public abstract class SudokuActivity extends BaseActivity {
                 mSoundPlayer.playEmptyButtonSound();
             }
 
-            //Cell is right
+            //Cell is correct
             else if (
                     mGameViewModel.isCellCorrect(highlightedCell)
                     && !mGameViewModel.isLockedCell(highlightedCell)
@@ -211,12 +231,12 @@ public abstract class SudokuActivity extends BaseActivity {
             return;
         }
 
-        //Checks if the answers are right and displays the first wrong cell (if any)
-        ArrayList<Integer> incorrectCells= mGameViewModel.getIncorrectCells();
-        //Clear highlights / what cell is selected for input
+        //Checks if the whole board is right and displays all of the wrong cells
+        ArrayList<Integer> incorrectCells = mGameViewModel.getIncorrectCells();
+        //Clear the selected cell highlight
         mSudokuGridView.clearHighlightedCell();
 
-        //Case where answer is correct
+        //The Sudoku board is correct
         if (incorrectCells.size() == 0) {
             mSoundPlayer.playCorrectSound();
             Toast.makeText(getBaseContext(),
@@ -224,7 +244,7 @@ public abstract class SudokuActivity extends BaseActivity {
                     Toast.LENGTH_LONG).show();
         }
 
-        //Case where answer is incorrect
+        //The Sudoku board is incorrect
         else {
             mSudokuGridView.setIncorrectCells(incorrectCells);
             mSoundPlayer.playWrongSound();
@@ -243,6 +263,7 @@ public abstract class SudokuActivity extends BaseActivity {
             //No cell is highlighted
             mSoundPlayer.playEmptyButtonSound();
         } else {
+            //Clear the cell
             mGameViewModel.setCellValue(cellNumber, 0);
             mSudokuGridView.clearHighlightedCell();
             mSudokuGridView.clearIncorrectCell(cellNumber);
@@ -260,7 +281,7 @@ public abstract class SudokuActivity extends BaseActivity {
         int columnSize = (int) Math.ceil( Math.sqrt(boardLength) );
 
         //Get the parent layout everything resides in
-        LinearLayout parent = findViewById(R.id.gameLayout);
+        LinearLayout parent = findViewById(R.id.buttonLayout);
 
         //Initialize linear layouts for each button
         mLinearLayouts = new LinearLayout[columnSize];
@@ -297,8 +318,9 @@ public abstract class SudokuActivity extends BaseActivity {
                 //Text Color
                 mInputButtons[buttonIndex].setTextColor(getResources().getColor( R.color.colorWhite));
 
-                //Links the listener to the button
+                //Links the listeners to the button
                 mInputButtons[buttonIndex].setOnClickListener(onButtonClickListener);
+                mInputButtons[buttonIndex].setOnLongClickListener(onButtonLongClickListener);
 
                 //Links the button to the linear layout
                 mLinearLayouts[i].addView(mInputButtons[buttonIndex]);
@@ -310,8 +332,57 @@ public abstract class SudokuActivity extends BaseActivity {
 
 
     private void setButtonLabels(List<String> buttonLabels) {
-            for (int i = 0; i < mInputButtons.length; i++) {
-                mInputButtons[i].setText(buttonLabels.get(i));
-            }
+        for(int i = 0; i < mInputButtons.length; i++) {
+            mInputButtons[i].setText(buttonLabels.get(i));
+        }
+    }
+
+    Button.OnLongClickListener onButtonLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            //Find which button it is
+            Button button = (Button) v;
+            int buttonValue = getButtonValue(button);
+
+            //Get button string
+            String buttonText = mGameViewModel.getMappedString(
+                    buttonValue,
+                    GameMode.opposite(mGameViewModel.getGameMode()));
+
+            return mLongClickHandler.handleButtonLongClick( buttonText );
+        }
+    };
+
+    private View.OnClickListener onBackClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mSoundPlayer.playPlaceCellSound();
+            finish();
+        }
+    };
+
+    private View.OnClickListener onSettingsClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new SettingsFragment())
+                    .addToBackStack(null)
+                    .commit();
+        }
+    };
+
+    //Play a sound every time the fragment is opened
+    private FragmentManager.OnBackStackChangedListener onBackStackChangedListener = new FragmentManager.OnBackStackChangedListener() {
+        @Override
+        public void onBackStackChanged() {
+            mSoundPlayer.playPlaceCellSound();
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mLongClickHandler.destroyLongTouchHandler();
     }
 }

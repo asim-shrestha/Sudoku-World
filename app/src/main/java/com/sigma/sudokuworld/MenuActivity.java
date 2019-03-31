@@ -28,8 +28,7 @@ import com.sigma.sudokuworld.audio.SoundPlayer;
 import com.sigma.sudokuworld.persistence.db.entities.Game;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 import com.sigma.sudokuworld.sudoku.multiplayer.MultiplayerActivity;
-import com.sigma.sudokuworld.sudoku.singleplayer.AudioSudokuActivity;
-import com.sigma.sudokuworld.sudoku.singleplayer.VocabSudokuActivity;
+import com.sigma.sudokuworld.sudoku.singleplayer.SinglePlayerActivity;
 import com.sigma.sudokuworld.viewmodels.MenuViewModel;
 
 import java.util.List;
@@ -141,12 +140,7 @@ public class MenuActivity extends BaseActivity {
 
     public void startGame(long saveID) {
         Intent intent;
-        if (mMenuViewModel.isAudioModeEnabled()) {
-            intent = new Intent(getBaseContext(), AudioSudokuActivity.class);
-        } else {
-            intent = new Intent(getBaseContext(), VocabSudokuActivity.class);
-        }
-
+        intent = new Intent(getBaseContext(), SinglePlayerActivity.class);
         intent.putExtra(KeyConstants.SAVE_ID_KEY, saveID);
 
         startActivity(intent);

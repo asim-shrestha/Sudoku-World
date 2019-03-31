@@ -14,65 +14,103 @@
         android:layout_gravity="start"
         android:padding="8dp"
         app:boldGridPaintColor="@color/colorGrid"
-
         app:boldGridPaintStrokeWidth="2dp"
         app:gridPaintColor="@color/colorGrid"
-
         app:gridPaintStrokeWidth="0.6dp"
         app:highlightedCellColour="@color/colorHighlight"
         app:incorrectCellColour="@color/colorIncorrect"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/gameLayout"
+        app:layout_constraintEnd_toStartOf="@+id/buttonLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:lockedCellColour="@color/colorLockedCell" />
 
     <LinearLayout
-        android:id="@+id/gameLayout"
+        android:id="@+id/buttonLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        app:layout_constraintRight_toRightOf="@id/sudokuGrid_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:id="@+id/clearCellButton"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_margin="0dp"
-                android:onClick="onClearCellPressed"
-                android:text="@string/clear_cell_button"
-                android:background="@drawable/red_button"
-                android:textColor="@color/colorWhite"/>
+                android:orientation="horizontal"
+                android:layout_gravity="end"
+                android:background="@drawable/game_header">
 
-            <com.sigma.sudokuworld.sudoku.GameTimer
+                <ImageButton
+                    android:id="@+id/backButton"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/backButton"
+                    android:background="@drawable/ic_back_button_icon" />
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:id="@+id/gameTimer"/>
+                    android:layout_weight="0.75"
+                    android:text="@string/app_name"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorWhite"
+                    android:textAlignment="center" />
+
+                <ImageButton
+                    android:id="@+id/settingsButton"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/settingsHeader"
+                    android:background="@drawable/ic_settings_icon"
+                    android:layout_gravity="end"/>
+
+        </LinearLayout>
+
+        <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
             <Button
-                android:id="@+id/checkAnswerButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|right"
-                android:layout_margin="0dp"
-                android:onClick="onCheckAnswerPressed"
-                android:text="@string/check_answer_button"
-                android:background="@drawable/red_button"
-                android:textColor="@color/colorWhite"/>
+            android:id="@+id/clearCellButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="0dp"
+            android:onClick="onClearCellPressed"
+            android:text="@string/clear_cell_button"
+            android:background="@drawable/red_button"
+            android:textColor="@color/colorWhite"/>
+
+
+            <Button
+            android:id="@+id/checkAnswerButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="0dp"
+            android:onClick="onCheckAnswerPressed"
+            android:text="@string/check_answer_button"
+            android:background="@drawable/red_button"
+            android:textColor="@color/colorWhite"/>
+
         </FrameLayout>
 
+        <com.sigma.sudokuworld.sudoku.GameTimer
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/gameTimer"/>
+
     </LinearLayout>
+
     <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/fragment_container">
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     </FrameLayout>
 </android.support.constraint.ConstraintLayout>

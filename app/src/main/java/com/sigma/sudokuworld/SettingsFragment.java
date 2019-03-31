@@ -42,17 +42,17 @@ public class SettingsFragment extends Fragment {
         mSaveButton = mView.findViewById(R.id.settingsSaveButton);
 
         mCancelButton.setOnClickListener( new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ((MenuActivity) getActivity()).closeFragment();
-                }
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+            }
         });
 
         mSaveButton.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 saveSettings();
-                ((MenuActivity) getActivity()).closeFragment();
+                getFragmentManager().popBackStack();
             }
         });
 
