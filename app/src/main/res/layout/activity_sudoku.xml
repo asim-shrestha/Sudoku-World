@@ -44,7 +44,13 @@
                 android:textAlignment="center"
                 />
 
-
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:contentDescription="@string/settingsHeader"
+                android:background="@drawable/ic_settings_icon"
+                android:layout_gravity="end"/>
 
         </LinearLayout>
 
