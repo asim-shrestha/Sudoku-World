@@ -103,7 +103,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
                         //Clear previous highlighted cell
                         mSudokuGridView.clearHighlightedCell();
-                        
+
                         //Set highlight on the currently touched cell
                         mSudokuGridView.setHighlightedCell(cellNum);
 
