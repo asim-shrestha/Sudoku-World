@@ -24,6 +24,7 @@
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:textSize="22sp"
+        android:textColor="@color/colorWhite"
         android:textStyle="bold"/>
 
     <ScrollView
@@ -100,7 +101,8 @@
                 android:background="@drawable/red_button"
                 android:elevation="0dp"
                 android:text="@string/cancel_button"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                android:textColor="@color/colorWhite"/>
 
             <Button
                 android:id="@+id/settingsSaveButton"
@@ -112,7 +114,8 @@
                 android:background="@drawable/red_button"
                 android:elevation="0dp"
                 android:text="@string/save_button"
-                android:textSize="15sp" />
+                android:textSize="15sp"
+                android:textColor="@color/colorWhite"/>
         </LinearLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
