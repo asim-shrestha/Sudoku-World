@@ -23,8 +23,8 @@ public abstract class BaseSettingsViewModel extends AndroidViewModel {
     }
 
     public void setMusicEnabled(boolean isEnabled) {
-        ((SudokuWorldApplication) mApplication).getMusicPlayer().setMusicEnabled(isEnabled);
         PersistenceService.saveMusicEnabledSetting(mApplication, isEnabled);
+        ((SudokuWorldApplication) mApplication).getMusicPlayer().setMusicEnabled(isEnabled);
     }
 
     public void setHintsEnabled(boolean isEnabled) {

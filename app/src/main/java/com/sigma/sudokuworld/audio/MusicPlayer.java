@@ -14,11 +14,15 @@ public class MusicPlayer {
         mMediaPlayer = MediaPlayer.create(context, R.raw.backgroundmusic);
         mMediaPlayer.setLooping(true);
 
+        //Must start the thread here
+        mMediaPlayer.start();
+        mMediaPlayer.pause();
+
         mShouldPlayMusic = PersistenceService.loadMusicEnabledSetting(context);
     }
 
     public void start() {
-        mMediaPlayer.start();
+        if (mShouldPlayMusic) mMediaPlayer.start();
     }
 
     public void pause() {
@@ -29,14 +33,14 @@ public class MusicPlayer {
 
         //If music is off and should turn on
         if (!mShouldPlayMusic && isEnabled) {
+            mShouldPlayMusic = true;
             start();
         }
 
         //If music is on and should turn off
         else if (mShouldPlayMusic && !isEnabled) {
+            mShouldPlayMusic = false;
             pause();
         }
-
-        mShouldPlayMusic = isEnabled;
     }
 }
