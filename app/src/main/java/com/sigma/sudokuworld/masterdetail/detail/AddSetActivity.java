@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 import com.sigma.sudokuworld.R;
+import com.sigma.sudokuworld.persistence.db.entities.Language;
 import com.sigma.sudokuworld.persistence.db.views.WordPair;
 
 import java.util.LinkedList;
@@ -41,6 +42,16 @@ public class AddSetActivity extends AbstractDrillDownActivity implements AddSetF
 
         if (isChecked && !isInList) mCheckedPairs.add(wordPair);
         else if (!isChecked && isInList) mCheckedPairs.remove(wordPair);
+    }
+
+    @Override
+    public void onNativeLanguageSelectedFragmentInteraction(Language language) {
+        mMasterDetailViewModel.filterWordPairsByLanguage(language);
+    }
+
+    @Override
+    public void onForeignLanguageSelectedFragmentInteraction(Language language) {
+        mMasterDetailViewModel.filterWordPairsByLanguage(language);
     }
 
     private void saveWordSet() {

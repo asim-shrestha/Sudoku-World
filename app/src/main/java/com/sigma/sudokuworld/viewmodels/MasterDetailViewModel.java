@@ -82,6 +82,13 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         };
         mOnlineSets.observeForever(mFirebaseSetObserver);
         mFilteredFirebaseSets = new MutableLiveData<>();
+
+        mFilteredWordPairs.observeForever(new Observer<List<WordPair>>() {
+            @Override
+            public void onChanged(@Nullable List<WordPair> wordPairs) {
+                return;
+            }
+        });
     }
 
     @Override
@@ -121,7 +128,6 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         Search Filters
      */
 
-
     public void filterWordPairs(String query) {
         mFilterQuery = query.toLowerCase();
         List<WordPair> wordPairs = mAllWordPairs.getValue();
@@ -130,6 +136,21 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         if (wordPairs != null) {
             for (WordPair wp : wordPairs) {
                 if (wp.getNativeWord().getWord().toLowerCase().contains(mFilterQuery) || wp.getForeignWord().getWord().toLowerCase().contains(mFilterQuery)) {
+                    filteredWordPairs.add(wp);
+                }
+            }
+        }
+
+        mFilteredWordPairs.setValue(filteredWordPairs);
+    }
+
+    public void filterWordPairsByLanguage(Language language) {
+        List<WordPair> wordPairs = mAllWordPairs.getValue();
+        List<WordPair> filteredWordPairs = new ArrayList<>();
+
+        if (wordPairs != null) {
+            for (WordPair wp : wordPairs) {
+                if (wp.getNativeLanguageName().equals(language.getName())) {
                     filteredWordPairs.add(wp);
                 }
             }
