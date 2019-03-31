@@ -72,17 +72,17 @@ public class SharedPreferencesInstrumentedTest {
     }
 
     @Test
-    public void readWriteSoundEnabled() {
+    public void readWriteSfxEnabled() {
         boolean isSoundOn = true;
 
-        PersistenceService.saveSoundEnabledSetting(context, isSoundOn);
-        assertEquals(isSoundOn, PersistenceService.loadSoundEnabledSetting(context));
-        assertNotEquals(!isSoundOn, PersistenceService.loadSoundEnabledSetting(context));
+        PersistenceService.saveSfxEnabledSetting(context, isSoundOn);
+        assertEquals(isSoundOn, PersistenceService.loadSfxEnabledSetting(context));
+        assertNotEquals(!isSoundOn, PersistenceService.loadSfxEnabledSetting(context));
 
-        isSoundOn = true;
-        PersistenceService.saveSoundEnabledSetting(context, isSoundOn);
-        assertEquals(isSoundOn, PersistenceService.loadSoundEnabledSetting(context));
-        assertNotEquals(!isSoundOn, PersistenceService.loadSoundEnabledSetting(context));
+        isSoundOn = false;
+        PersistenceService.saveSfxEnabledSetting(context, isSoundOn);
+        assertEquals(isSoundOn, PersistenceService.loadSfxEnabledSetting(context));
+        assertNotEquals(!isSoundOn, PersistenceService.loadSfxEnabledSetting(context));
     }
 
     @Test

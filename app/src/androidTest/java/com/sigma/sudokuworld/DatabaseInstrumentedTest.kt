@@ -118,19 +118,24 @@ class DatabaseInstrumentedTest {
         val save1 = Game(
                 1,
                 1,
+                9,
                 GameDifficulty.EASY,
                 GameMode.NUMBERS,
                 IntArray(0),
                 IntArray(0),
-                BooleanArray(0))
+                BooleanArray(0),
+                500)
         val save2 = Game(
                 2,
+                1,
                 1,
                 GameDifficulty.MEDIUM,
                 GameMode.NATIVE,
                 intArrayOf(1, 2, 3),
                 intArrayOf(1, 3, 3),
-                booleanArrayOf(true, false, true))
+                booleanArrayOf(true, false, true),
+                0
+        )
 
         val gameList = listOf(save1, save2)
 
@@ -186,7 +191,7 @@ class DatabaseInstrumentedTest {
         wordPairList = listOf(wordPair1, wordPair2)
         db.getPairDao().insert(wordPair1, wordPair2)
 
-        val set1 = Set(1, "test_set_name", "test_set_description")
+        val set1 = Set(1, false, "test_set_name", "test_set_description")
         setList = listOf(set1)
         db.getSetDao().insert(set1)
 

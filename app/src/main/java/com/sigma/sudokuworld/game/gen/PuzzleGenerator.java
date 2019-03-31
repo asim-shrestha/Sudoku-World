@@ -2,6 +2,7 @@ package com.sigma.sudokuworld.game.gen;
 import android.os.Bundle;
 
 import com.sigma.sudokuworld.game.GameDifficulty;
+import com.sigma.sudokuworld.persistence.db.entities.Game;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 
 import java.util.Arrays;
@@ -29,25 +30,11 @@ public class PuzzleGenerator {
         mSolutionValues = new int[mBoardSize];
     }
 
-    public Bundle generatePuzzle(GameDifficulty difficulty) {
+    public Puzzle generatePuzzle(GameDifficulty difficulty) {
         generateSudokuCells();
         generateBoard(difficulty);
 
-        Bundle puzzle = new Bundle();
-
-        int[] cellValues = getCellValues();
-        boolean[] lockedCells = new boolean[cellValues.length];
-        Arrays.fill(lockedCells, false);
-        for (int i = 0; i < cellValues.length; i++) {
-            if (cellValues[i] != 0) {
-                lockedCells[i] = true;
-            }
-        }
-
-        puzzle.putIntArray(KeyConstants.CELL_VALUES_KEY, cellValues);
-        puzzle.putIntArray(KeyConstants.SOLUTION_VALUES_KEY, mSolutionValues);
-        puzzle.putBooleanArray(KeyConstants.LOCKED_CELLS_KEY, lockedCells);
-        return puzzle;
+        return new Puzzle(getCellValues(), mSolutionValues);
     }
 
 
@@ -281,5 +268,23 @@ public class PuzzleGenerator {
     private static int randomInt(int max){
         Random random = new Random();
         return random.nextInt(max);
+    }
+
+    public class Puzzle {
+        private int[] cellValues;
+        private int[] soltuion;
+
+        Puzzle(int[] cellValues, int[] solution) {
+            this.cellValues = cellValues;
+            this.soltuion = solution;
+        }
+
+        public int[] getCellValues() {
+            return cellValues;
+        }
+
+        public int[] getSoltuion() {
+            return soltuion;
+        }
     }
 }
