@@ -43,7 +43,6 @@ public abstract class SudokuActivity extends AppCompatActivity {
     protected ImageButton mSettingsButton;
     private SoundPlayer mSoundPlayer;
 
-    protected boolean mCellHeld;
 
     protected LongTouchHandler mLongTouchHandler;
     protected FragmentManager mFragmentManager;
@@ -109,7 +108,6 @@ public abstract class SudokuActivity extends AppCompatActivity {
             switch (eventAction) {
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_DOWN:
-                    mCellHeld = true;
                 case MotionEvent.ACTION_MOVE:
                     int x = (int) event.getX();
                     int y = (int) event.getY();
@@ -123,8 +121,10 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
                         //Check if the cell has been held down or not
                         if (mSudokuGridView.getHighlightedCell() >= 0 && event.getAction() == MotionEvent.ACTION_MOVE){
-                            if (cellTouched != mSudokuGridView.getHighlightedCell()) { mCellHeld = false; }
+                            if (cellTouched != mSudokuGridView.getHighlightedCell()) {
+                                int i = 0;
                             }
+                        }
 
                         //Clear previous highlighted cell
                         mSudokuGridView.clearHighlightedCell();
@@ -147,21 +147,24 @@ public abstract class SudokuActivity extends AppCompatActivity {
         }
     };
 
+    private int getButtonValue(Button button){
+        //Loop through all our possible buttons to see which button is clicked
+        //Set buttonValue to the corresponding button
+        int buttonValue = 0;
+        for (int buttonIndex = 0; buttonIndex < mInputButtons.length; buttonIndex++) {
+            if (button == mInputButtons[buttonIndex]){
+                buttonValue = buttonIndex + 1;
+            }
+        }
 
+        return buttonValue;
+    }
+    
     private View.OnClickListener onButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Button button = (Button) v;
-            int buttonValue = 0;
-
-            //Loop through all our possible buttons to see which button is clicked
-            //Set buttonValue to the corresponding button
-            for (int buttonIndex = 0; buttonIndex < mInputButtons.length; buttonIndex++) {
-                if (button == mInputButtons[buttonIndex]){
-                    buttonValue = buttonIndex + 1;
-                    break;
-                }
-            }
+            int buttonValue = getButtonValue(Button);
 
             int cellNumber = mSudokuGridView.getHighlightedCell();
 

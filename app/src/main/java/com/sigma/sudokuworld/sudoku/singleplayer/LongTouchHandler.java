@@ -79,6 +79,9 @@ public class LongTouchHandler {
         }
 
         else {
+            String text = mGameViewModel.getMappedString(
+                    button.getText(),
+                    GameMode.opposite(mGameViewModel.getGameMode()));
             Toast.makeText(mContext, button.getText(), Toast.LENGTH_SHORT).show();
         }
         return true;
