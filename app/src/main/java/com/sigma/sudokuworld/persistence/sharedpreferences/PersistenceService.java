@@ -29,8 +29,12 @@ public abstract class PersistenceService {
         getEditor(context).putBoolean(AUDIO_KEY, audioModeEnabled).apply();
     }
 
-    public static void saveSoundEnabledSetting(Context context, boolean soundEnabled) {
-        getEditor(context).putBoolean(SOUND_KEY, soundEnabled).apply();
+    public static void saveSfxEnabledSetting(Context context, boolean soundEnabled) {
+        getEditor(context).putBoolean(SFX_KEY, soundEnabled).apply();
+    }
+
+    public static void saveMusicEnabledSetting(Context context, boolean musicEnabled) {
+        getEditor(context).putBoolean(MUSIC_KEY, musicEnabled).apply();
     }
 
     public static void saveHintsEnabledSetting(Context context, boolean hintsEnabled) {
@@ -61,8 +65,12 @@ public abstract class PersistenceService {
         return getSettings(context).getBoolean(AUDIO_KEY, false);
     }
 
-    public static boolean loadSoundEnabledSetting(Context context) {
-        return getSettings(context).getBoolean(SOUND_KEY, true);
+    public static boolean loadSfxEnabledSetting(Context context) {
+        return getSettings(context).getBoolean(SFX_KEY, true);
+    }
+
+    public static boolean loadMusicEnabledSetting(Context context) {
+        return getSettings(context).getBoolean(MUSIC_KEY, true);
     }
 
     public static boolean loadHintsEnabledSetting(Context context) {

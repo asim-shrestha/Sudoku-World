@@ -76,6 +76,6 @@ public class SoundPlayer {
     }
 
     private boolean isSoundOn(){
-        return PersistenceService.loadSoundEnabledSetting(mContext);
+        return PersistenceService.loadSfxEnabledSetting(mContext);
     }
 }

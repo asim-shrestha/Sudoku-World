@@ -41,7 +41,8 @@
     <string name="boardSize3">12x12</string>
     <string name="boardSize4">16x16</string>
     <string name="audioMode">Listening Comprehension Mode</string>
-    <string name="soundMode">Sound</string>
+    <string name="sfxSwitch">Sound Effects</string>
+    <string name="musicSwitch">Background Music</string>
     <string name="hintsMode">Hints</string>
     <string name="saveWordListString">Save</string>
     <string name="defaultWordListString">Default</string>

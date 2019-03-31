@@ -53,13 +53,22 @@
                 android:textColor="@color/colorWhite"/>
 
             <Switch
-                android:id="@+id/soundSwitch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/soundMode"
-                android:layout_marginTop="10dp"
-                android:textColor="@color/colorWhite"/>
+                    android:id="@+id/sfxSwitch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/sfxSwitch"
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/colorWhite"/>
+
+            <Switch
+                    android:id="@+id/musicSwitch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/musicSwitch"
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/colorWhite"/>
 
             <Switch
                 android:id="@+id/hintsSwitch"
