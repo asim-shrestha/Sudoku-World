@@ -24,7 +24,6 @@ public class MultiplayerActivity extends SudokuActivity {
 
     private MultiplayerViewModel mMultiplayerViewModel;
     private LoadingScreenFragment mLoadingScreenFragment;
-    private FragmentManager mFragmentManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,7 +33,6 @@ public class MultiplayerActivity extends SudokuActivity {
         mConnectionViewModel = ViewModelProviders.of(this).get(ConnectionViewModel.class);
         mConnectionViewModel.getGameStateLiveData().observe(this, mGameStateObserver);
 
-        mFragmentManager = getSupportFragmentManager();
         mLoadingScreenFragment = new LoadingScreenFragment();
     }
 

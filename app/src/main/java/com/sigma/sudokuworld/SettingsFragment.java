@@ -42,7 +42,7 @@ public class SettingsFragment extends Fragment {
         mCancelButton.setOnClickListener( new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ((MenuActivity) getActivity()).closeFragment();
+                    getFragmentManager().popBackStack();
                 }
         });
 
@@ -50,7 +50,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 saveSettings();
-                ((MenuActivity) getActivity()).closeFragment();
+                getFragmentManager().popBackStack();
             }
         });
 

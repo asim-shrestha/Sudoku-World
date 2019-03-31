@@ -3,7 +3,9 @@ package com.sigma.sudokuworld.sudoku;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -17,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.sigma.sudokuworld.SettingsFragment;
 import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
 import com.sigma.sudokuworld.viewmodels.GameViewModel;
 import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
@@ -41,6 +44,8 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
     protected boolean mCellHeld;
 
+    protected FragmentManager mFragmentManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +62,8 @@ public abstract class SudokuActivity extends AppCompatActivity {
         mBackButton.setOnClickListener(onBackClickListener);
 
         mSettingsButton = findViewById(R.id.settingsButton);
+        mSettingsButton.setOnClickListener(onSettingsClickListener);
+        mFragmentManager = getSupportFragmentManager();
 
         mSoundPlayer = new SoundPlayer(this);
     }
@@ -327,8 +334,12 @@ public abstract class SudokuActivity extends AppCompatActivity {
     private View.OnClickListener onSettingsClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Button button = (Button) v;
-
+            mSoundPlayer.playPlaceCellSound();
+            mFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new SettingsFragment())
+                    .addToBackStack(null)
+                    .commit();
         }
     };
 }
