@@ -35,6 +35,9 @@ interface PairWithSetDao {
     """)
     fun getAllSetsForPair(pairID: Long): List<Set>
 
+    @Query("SELECT COUNT(setID) FROM word_set_cross_reference WHERE setID = :setID")
+    fun getPairsInSetCount(setID: Long): Long
+
     @Insert(onConflict = OnConflictStrategy.FAIL)
     fun insert(vararg pairWithSets: PairWithSet)
 

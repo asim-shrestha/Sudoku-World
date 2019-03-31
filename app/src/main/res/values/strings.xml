@@ -40,6 +40,7 @@
     <string name="boardSize2">9x9</string>
     <string name="boardSize3">12x12</string>
     <string name="boardSize4">16x16</string>
+    <string name="warningSetSize">*** Set Size is to small for board Size ***</string>
     <string name="audioMode">Listening Comprehension Mode</string>
     <string name="sfxSwitch">Sound Effects</string>
     <string name="musicSwitch">Background Music</string>

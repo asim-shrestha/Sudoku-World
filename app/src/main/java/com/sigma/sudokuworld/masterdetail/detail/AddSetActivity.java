@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class AddSetActivity extends AbstractDrillDownActivity implements AddSetFragment.OnFragmentInteractionListener {
+    private static final int MIN_SET_SIZE = 4;
+
     private AddSetFragment mAddSetFragment;
     private List<WordPair> mCheckedPairs;
 
@@ -58,9 +60,9 @@ public class AddSetActivity extends AbstractDrillDownActivity implements AddSetF
             errorMsg = "The set needs a description.";
         }
 
-        else if (mCheckedPairs.size() < 9) {
+        else if (mCheckedPairs.size() < MIN_SET_SIZE) {
             isValidSet = false;
-            errorMsg = "The set needs at least nine words.";
+            errorMsg = "The set needs at least " +  MIN_SET_SIZE + " words.";
         }
 
         if (isValidSet) {

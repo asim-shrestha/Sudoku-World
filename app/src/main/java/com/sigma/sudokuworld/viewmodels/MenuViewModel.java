@@ -100,6 +100,10 @@ public class MenuViewModel extends BaseSettingsViewModel {
         return set;
     }
 
+    public long getSelectedSetSize() {
+        return mWordSetRepository.getSetSize(PersistenceService.loadSetSetting(mApplication));
+    }
+
     private long getSelectedSetID() {
         return PersistenceService.loadSetSetting(mApplication);
     }

@@ -189,6 +189,10 @@ public class WordSetRepository {
         return setDao.getSetByID(setId);
     }
 
+    public long getSetSize(long setId) {
+        return mPairWithSetDao.getPairsInSetCount(setId);
+    }
+
     public void deleteSet(Set set) {
         setDao.delete(set);
     }
