@@ -14,10 +14,8 @@
         android:layout_gravity="start"
         android:padding="8dp"
         app:boldGridPaintColor="@color/colorGrid"
-
         app:boldGridPaintStrokeWidth="2dp"
         app:gridPaintColor="@color/colorGrid"
-
         app:gridPaintStrokeWidth="0.6dp"
         app:highlightedCellColour="@color/colorHighlight"
         app:incorrectCellColour="@color/colorIncorrect"
@@ -32,6 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        app:layout_constraintRight_toRightOf="@id/sudokuGrid_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -58,8 +57,7 @@
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:textColor="@color/colorWhite"
-                    android:textAlignment="center"
-                    />
+                    android:textAlignment="center" />
 
                 <ImageButton
                     android:id="@+id/settingsButton"
@@ -73,47 +71,42 @@
         </LinearLayout>
 
         <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
             <Button
-                android:id="@+id/clearCellButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_margin="0dp"
-                android:onClick="onClearCellPressed"
-                android:text="@string/clear_cell_button"
-                android:background="@drawable/red_button"
-                android:textColor="@color/colorWhite"/>
+            android:id="@+id/clearCellButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="0dp"
+            android:onClick="onClearCellPressed"
+            android:text="@string/clear_cell_button"
+            android:background="@drawable/red_button"
+            android:textColor="@color/colorWhite"/>
 
 
             <Button
-                android:id="@+id/checkAnswerButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|right"
-                android:layout_margin="0dp"
-                android:onClick="onCheckAnswerPressed"
-                android:text="@string/check_answer_button"
-                android:background="@drawable/red_button"
-                android:textColor="@color/colorWhite"/>
+            android:id="@+id/checkAnswerButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="0dp"
+            android:onClick="onCheckAnswerPressed"
+            android:text="@string/check_answer_button"
+            android:background="@drawable/red_button"
+            android:textColor="@color/colorWhite"/>
+
         </FrameLayout>
 
         <com.sigma.sudokuworld.sudoku.GameTimer
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:id="@+id/gameTimer"/>
-
-        <!-- Stretches and pushing thigns to the bottom through layout_weight -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-        </FrameLayout>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/gameTimer"/>
 
     </LinearLayout>
+
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
