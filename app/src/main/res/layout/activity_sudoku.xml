@@ -26,6 +26,13 @@
             android:background="@drawable/game_header"
             >
 
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:contentDescription="@string/backButton"
+                android:background="@drawable/ic_back_button_icon" />
+
 
 
         </LinearLayout>
