@@ -6,14 +6,17 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.sigma.sudokuworld.game.GameMode;
+import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
 import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
 
 import java.util.Locale;
+import java.util.Timer;
 
 public class LongTouchHandler {
-    private TextToSpeech mTTS;
-    private boolean mIsComprehensionMode;
     private Context mContext;
+    private TextToSpeech mTTS;
+    private Timer mTimer;
+    private boolean mIsComprehensionMode;
 
     public LongTouchHandler(Context context, final GameMode gameMode) {
         mContext = context;
@@ -34,8 +37,12 @@ public class LongTouchHandler {
             }
         });
 
-        //Check if comprehension mode is on
-        mIsComprehensionMode = true;
+        mIsComprehensionMode = false;
+        mTimer = new Timer();
+    }
+
+    private boolean isComprehensionMode() {
+        return PersistenceService.loadAudioModeSetting(mContext);
     }
 
     public void destroyLongTouchHandler() {
@@ -51,7 +58,11 @@ public class LongTouchHandler {
                     mSinglePlayerViewModel.getCellValue(cellTouched),
                     GameMode.opposite(mSinglePlayerViewModel.getGameMode())
             );
-            mTTS.speak(text,TextToSpeech.QUEUE_FLUSH,null,null);
+            if(isComprehensionMode())
+            {
+                mTTS.speak(text,TextToSpeech.QUEUE_FLUSH,null,null);
+            }
+
         }
         return true;
     }
