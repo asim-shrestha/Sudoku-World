@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
 
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -250,7 +252,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
         int columnSize = (int) Math.ceil( Math.sqrt(boardLength) );
 
         //Get the parent layout everything resides in
-        LinearLayout parent = findViewById(R.id.gameLayout);
+        LinearLayout parent = findViewById(R.id.buttonLayout);
 
         //Initialize linear layouts for each button
         mLinearLayouts = new LinearLayout[columnSize];
