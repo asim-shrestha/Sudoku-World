@@ -13,7 +13,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class LongTouchHandler {
+public class LongClickHandler {
     private Context mContext;
     private GameMode mGameMode;
     private TextToSpeech mTTS;
@@ -23,7 +23,7 @@ public class LongTouchHandler {
 
     private String mCellString;
 
-    public LongTouchHandler(Context context, GameMode gameMode) {
+    public LongClickHandler(Context context, GameMode gameMode) {
         mContext = context;
         mGameMode = gameMode;
         initTTS();

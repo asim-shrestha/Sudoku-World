@@ -1,22 +1,15 @@
 package com.sigma.sudokuworld.sudoku;
 
 import android.arch.lifecycle.Observer;
-import android.media.MediaPlayer;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
-import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
 
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -25,7 +18,7 @@ import com.sigma.sudokuworld.BaseActivity;
 import com.sigma.sudokuworld.SettingsFragment;
 import com.sigma.sudokuworld.game.GameMode;
 import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
-import com.sigma.sudokuworld.sudoku.singleplayer.LongTouchHandler;
+import com.sigma.sudokuworld.sudoku.singleplayer.LongClickHandler;
 import com.sigma.sudokuworld.viewmodels.GameViewModel;
 import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.audio.SoundPlayer;
@@ -46,7 +39,7 @@ public abstract class SudokuActivity extends BaseActivity {
     private SoundPlayer mSoundPlayer;
 
 
-    protected LongTouchHandler mLongTouchHandler;
+    protected LongClickHandler mLongClickHandler;
     protected FragmentManager mFragmentManager;
     protected GameTimer mGameTimer;
 
@@ -89,7 +82,7 @@ public abstract class SudokuActivity extends BaseActivity {
             }
         });
 
-        mLongTouchHandler = new LongTouchHandler(this, mGameViewModel.getGameMode());
+        mLongClickHandler = new LongClickHandler(this, mGameViewModel.getGameMode());
 
         mSudokuGridView.setOnTouchListener(onSudokuGridTouchListener);
         mSudokuGridView.setCellLabels(this, mGameViewModel.getCellLabels());
@@ -111,7 +104,7 @@ public abstract class SudokuActivity extends BaseActivity {
             switch (eventAction) {
                 case MotionEvent.ACTION_UP:
                     //Finger has been lifted so we cancel long click
-                    mLongTouchHandler.cancelGridLongClick();
+                    mLongClickHandler.cancelGridLongClick();
                     break;
                 case MotionEvent.ACTION_DOWN:
                 case MotionEvent.ACTION_MOVE:
@@ -128,7 +121,7 @@ public abstract class SudokuActivity extends BaseActivity {
                         if (mSudokuGridView.getHighlightedCell() >= 0 && event.getAction() == MotionEvent.ACTION_MOVE){
                             if (cellTouched != mSudokuGridView.getHighlightedCell()) {
                                 //Finger moved to a new cell so we cancel long click
-                                mLongTouchHandler.cancelGridLongClick();
+                                mLongClickHandler.cancelGridLongClick();
                             }
                         }
 
@@ -139,7 +132,7 @@ public abstract class SudokuActivity extends BaseActivity {
                                     mGameViewModel.getCellValue(cellTouched),
                                     GameMode.opposite(mGameViewModel.getGameMode()));
 
-                            mLongTouchHandler.handleGridLongClick(cellText);
+                            mLongClickHandler.handleGridLongClick(cellText);
                         }
 
                         //Clear previous highlighted cell
@@ -356,7 +349,7 @@ public abstract class SudokuActivity extends BaseActivity {
                     buttonValue,
                     GameMode.opposite(mGameViewModel.getGameMode()));
 
-            return mLongTouchHandler.handleButtonLongClick( buttonText );
+            return mLongClickHandler.handleButtonLongClick( buttonText );
         }
     };
 
@@ -390,6 +383,6 @@ public abstract class SudokuActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mLongTouchHandler.destroyLongTouchHandler();
+        mLongClickHandler.destroyLongTouchHandler();
     }
 }
