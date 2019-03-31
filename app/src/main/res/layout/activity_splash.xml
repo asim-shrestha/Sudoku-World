@@ -35,10 +35,10 @@
 
         <TextView
             android:id="@+id/textView"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/splash_group_name"
-            android:textAlignment="viewStart"
+            android:textAlignment="center"
             android:textAllCaps="false"
             android:textColor="@color/colorSplashScreenAVD"
             android:textSize="36sp"
@@ -51,7 +51,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/splash_group_literal"
-            android:textAlignment="viewStart"
+            android:textAlignment="center"
             android:textColor="@color/colorSplashScreenAVD"
             android:textSize="36sp"
             android:textStyle="bold"
@@ -59,20 +59,23 @@
             tools:layout_editor_absoluteY="643dp" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textAlignment="center"
             android:textColor="@color/colorSplashScreenAVD"
-            android:text="Music:"/>
+            android:text="@string/music"/>
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textAlignment="center"
             android:textColor="@color/colorSplashScreenAVD"
-            android:text="Particles of Life" />
+            android:text="@string/music_credits" />
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textAlignment="center"
             android:textColor="@color/colorSplashScreenAVD"
-            android:text="- relaxdaily.net"/>
+            android:text="@string/music_website"/>
 
     </LinearLayout>
 
