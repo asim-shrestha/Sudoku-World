@@ -19,6 +19,7 @@
             android:background="@drawable/game_header">
 
             <ImageButton
+                android:id="@+id/backButton"
                 android:layout_width="0dp"
                 android:layout_height="30dp"
                 android:layout_weight="1"
@@ -37,6 +38,7 @@
                 />
 
             <ImageButton
+                android:id="@+id/settingsButton"
                 android:layout_width="0dp"
                 android:layout_height="30dp"
                 android:layout_weight="1"
@@ -107,7 +109,7 @@
             </FrameLayout>
 
         </LinearLayout>
-        
+
     </LinearLayout>
 
     <FrameLayout

@@ -13,6 +13,7 @@ import android.widget.Button;
 
 
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -34,6 +35,8 @@ public abstract class SudokuActivity extends AppCompatActivity {
     private GameViewModel mGameViewModel;
     protected LinearLayout[] mLinearLayouts;
     protected Button[] mInputButtons;
+    protected ImageButton mBackButton;
+    protected ImageButton mSettingsButton;
     private SoundPlayer mSoundPlayer;
 
     protected boolean mCellHeld;
@@ -48,6 +51,12 @@ public abstract class SudokuActivity extends AppCompatActivity {
         //Initializing Sudoku grid
         mSudokuGridView = findViewById(R.id.sudokuGrid_view);
         mSudokuGridView.setRectangleMode(PersistenceService.loadRectangleModeEnabledSetting(this));
+
+        //Initialize Buttons
+        mBackButton = findViewById(R.id.backButton);
+        mBackButton.setOnClickListener(onBackClickListener);
+
+        mSettingsButton = findViewById(R.id.settingsButton);
 
         mSoundPlayer = new SoundPlayer(this);
     }
@@ -306,4 +315,20 @@ public abstract class SudokuActivity extends AppCompatActivity {
             mInputButtons[i].setText(buttonLabels.get(i));
         }
     }
+
+    private View.OnClickListener onBackClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mSoundPlayer.playPlaceCellSound();
+            finish();
+        }
+    };
+
+    private View.OnClickListener onSettingsClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Button button = (Button) v;
+
+        }
+    };
 }
