@@ -144,13 +144,13 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         mFilteredWordPairs.setValue(filteredWordPairs);
     }
 
-    public void filterWordPairsByLanguage(Language language) {
+    public void filterWordPairsByLanguage(Language nativeLanguage, Language foreignLanguage) {
         List<WordPair> wordPairs = mAllWordPairs.getValue();
         List<WordPair> filteredWordPairs = new ArrayList<>();
 
         if (wordPairs != null) {
             for (WordPair wp : wordPairs) {
-                if (wp.getNativeLanguageName().equals(language.getName())) {
+                if (wp.getNativeLanguageName().equals(nativeLanguage.getName()) && wp.getForeignLanguageName().equals(foreignLanguage.getName())) {
                     filteredWordPairs.add(wp);
                 }
             }

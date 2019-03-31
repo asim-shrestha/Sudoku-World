@@ -54,14 +54,18 @@ public class AddSetFragment extends AbstractDrillDownFragment {
         View view = inflater.inflate(R.layout.fragment_add_set, container, false);
         mNameInput = view.findViewById(R.id.nameInput);
         mDescriptionInput = view.findViewById(R.id.descriptionInput);
-
         mNativeLanguageSpinner = view.findViewById(R.id.nativeLanguageSpinner);
-        mNativeLanguageSpinner.setAdapter(mLanguageSpinnerAdapter);
+        mForeignLanguageSpinner = view.findViewById(R.id.foreignLanguageSpinner);
 
+        //Setting up native language spinner
+        mNativeLanguageSpinner.setAdapter(mLanguageSpinnerAdapter);
         mNativeLanguageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mListener.onNativeLanguageSelectedFragmentInteraction(mLanguageSpinnerAdapter.getItem(position));
+                Language nLang = mLanguageSpinnerAdapter.getItem(position);
+                Language fLang = mLanguageSpinnerAdapter.getItem(mForeignLanguageSpinner.getSelectedItemPosition());
+
+                mListener.onLanguageSelectedFragmentInteraction(nLang, fLang);
             }
 
             @Override
@@ -69,14 +73,17 @@ public class AddSetFragment extends AbstractDrillDownFragment {
                 //stub
             }
         });
+        mForeignLanguageSpinner.setSelection(0);
 
-        mForeignLanguageSpinner = view.findViewById(R.id.foreignLanguageSpinner);
+        //Setting up foreign language spinner
         mForeignLanguageSpinner.setAdapter(mLanguageSpinnerAdapter);
-
         mForeignLanguageSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mListener.onForeignLanguageSelectedFragmentInteraction(mLanguageSpinnerAdapter.getItem(position));
+                Language nLang =  mLanguageSpinnerAdapter.getItem(mNativeLanguageSpinner.getSelectedItemPosition());
+                Language fLang = mLanguageSpinnerAdapter.getItem(position);
+
+                mListener.onLanguageSelectedFragmentInteraction(nLang, fLang);
             }
 
             @Override
@@ -84,6 +91,7 @@ public class AddSetFragment extends AbstractDrillDownFragment {
                 //stub
             }
         });
+        mForeignLanguageSpinner.setSelection(1);
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
@@ -124,7 +132,6 @@ public class AddSetFragment extends AbstractDrillDownFragment {
 
     public interface OnFragmentInteractionListener {
         void onCheckChangedFragmentInteraction(WordPair wordPair, Boolean isChecked);
-        void onNativeLanguageSelectedFragmentInteraction(Language language);
-        void onForeignLanguageSelectedFragmentInteraction(Language language);
+        void onLanguageSelectedFragmentInteraction(Language nativeLanguage, Language foreignLanguage);
     }
 }

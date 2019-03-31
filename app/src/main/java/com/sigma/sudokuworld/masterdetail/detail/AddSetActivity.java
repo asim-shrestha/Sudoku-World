@@ -45,13 +45,8 @@ public class AddSetActivity extends AbstractDrillDownActivity implements AddSetF
     }
 
     @Override
-    public void onNativeLanguageSelectedFragmentInteraction(Language language) {
-        mMasterDetailViewModel.filterWordPairsByLanguage(language);
-    }
-
-    @Override
-    public void onForeignLanguageSelectedFragmentInteraction(Language language) {
-        mMasterDetailViewModel.filterWordPairsByLanguage(language);
+    public void onLanguageSelectedFragmentInteraction(Language nativeLanguage, Language foreignLanguage) {
+        mMasterDetailViewModel.filterWordPairsByLanguage(nativeLanguage, foreignLanguage);
     }
 
     private void saveWordSet() {
