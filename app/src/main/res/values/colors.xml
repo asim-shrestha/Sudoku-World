@@ -16,12 +16,12 @@
     <color name="colorLogoLightBlue">#aed6f1</color>
     <color name="colorLogoMiddleBlue">#3498db</color>
 
-    <color name="colorLocked">#3498db</color>
+    <color name="colorLocked">#3498DB</color>
 
     <!-- Buttons -->
     <color name="colorButtonText">#ffffff</color>
 
-    <color name="colorBlueButtonBackground">#ccaed6f1</color>
+    <color name="colorBlueButtonBackground">#CCAED6F1</color>
     <color name="colorBlueButtonPressedBackground">#AED6F1</color>
     <color name="colorBlueButtonStroke">#803498db</color>
 

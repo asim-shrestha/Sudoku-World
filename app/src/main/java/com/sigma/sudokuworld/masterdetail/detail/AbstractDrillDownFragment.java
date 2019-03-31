@@ -23,13 +23,16 @@ public abstract class AbstractDrillDownFragment extends Fragment {
         mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class);
 
         Activity activity = this.getActivity();
-        mAppBarLayout = activity.findViewById(R.id.toolbar_layout);
-        mAppBarLayout.setExpandedTitleColor(getResources().getColor(R.color.colorBlack));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            AnimatedVectorDrawable avd = (AnimatedVectorDrawable) ContextCompat.getDrawable(getContext(), R.drawable.avd_menu);
-            avd.start();
-            mAppBarLayout.setBackground(avd);
+        if (activity != null) {
+            mAppBarLayout = activity.findViewById(R.id.toolbar_layout);
+            mAppBarLayout.setExpandedTitleColor(getResources().getColor(R.color.colorBlack));
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                AnimatedVectorDrawable avd = (AnimatedVectorDrawable) ContextCompat.getDrawable(getContext(), R.drawable.avd_menu);
+                avd.start();
+                mAppBarLayout.setBackground(avd);
+            }
         }
     }
 }

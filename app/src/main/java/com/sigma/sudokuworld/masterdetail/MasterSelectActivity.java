@@ -47,12 +47,15 @@ public class MasterSelectActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_master_select);
 
         final ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Set Builder");
+
+        if (actionBar != null) actionBar.setTitle("Set Builder");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             AnimatedVectorDrawable avd = (AnimatedVectorDrawable) ContextCompat.getDrawable(this, R.drawable.avd_menu);
-            avd.start();
-            actionBar.setBackgroundDrawable(avd);
+
+            if (actionBar != null) actionBar.setBackgroundDrawable(avd);
+            if (avd != null) avd.start();
+
         }
 
         mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class); //TODO: make frags and master share the same ViewModel
