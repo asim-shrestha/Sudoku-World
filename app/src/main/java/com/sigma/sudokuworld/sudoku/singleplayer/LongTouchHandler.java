@@ -19,7 +19,7 @@ public class LongTouchHandler {
     private GameViewModel mGameViewModel;
     private TextToSpeech mTTS;
     private Timer mTimer;
-    private boolean mHasStarted;
+    private TimerTask mTimerTask;
 
     private int mCellTouched;
 
@@ -42,16 +42,12 @@ public class LongTouchHandler {
                 }
             }
         });
-
-        mTimer = new Timer();
-        mHasStarted = false;
     }
 
-    private TimerTask createTimerTask(){
-        TimerTask timerTask = new TimerTask() {
+    private void resetTimerTask(){
+        mTimerTask = new TimerTask() {
             @Override
             public void run() {
-                mHasStarted = false;
                 mTimer.purge();
                 if (mGameViewModel.isLockedCell(mCellTouched)) {
                     String text = mGameViewModel.getMappedString(
@@ -66,36 +62,30 @@ public class LongTouchHandler {
                     {
                         Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
                     }
-
                 }
             }
         };
-        return timerTask;
     }
 
     private boolean isComprehensionMode() {
         return PersistenceService.loadAudioModeSetting(mContext);
     }
 
-    public void destroyLongTouchHandler() {
-        if(mTTS != null){
-            mTTS.stop();
-            mTTS.shutdown();
-        }
-    }
-
     public void handleGridLongClick(int cellTouched){
         mCellTouched = cellTouched;
-        if(!mHasStarted){
-            mHasStarted = true;
-            mTimer.schedule(createTimerTask(), (long) 3);
+        if(mTimer == null){
+            //Create a new timer to be run
+            mTimer = new Timer();
+            resetTimerTask();
+            mTimer.schedule(mTimerTask, 650);
         }
     }
 
     public void cancelGridLongClick() {
-        if (mHasStarted) {
+        if (mTimer != null) {
+            //End scheduled task and delete timer
             mTimer.cancel();
-            mTimer.purge();
+            mTimer = null;
         }
     }
 
@@ -114,5 +104,12 @@ public class LongTouchHandler {
             Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
         }
         return true;
+    }
+
+    public void destroyLongTouchHandler() {
+        if(mTTS != null){
+            mTTS.stop();
+            mTTS.shutdown();
+        }
     }
 }

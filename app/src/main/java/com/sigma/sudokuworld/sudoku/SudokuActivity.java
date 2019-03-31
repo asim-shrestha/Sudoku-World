@@ -101,8 +101,6 @@ public abstract class SudokuActivity extends AppCompatActivity {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             int eventAction = event.getAction();
-            boolean touchHandled = false;
-
             //Through looking at every action case, we can move the highlight to where our finger moves to
             switch (eventAction) {
                 case MotionEvent.ACTION_UP:
@@ -122,24 +120,25 @@ public abstract class SudokuActivity extends AppCompatActivity {
                         //Handle a potential long click if it is a locked cell
                         if (mGameViewModel.isLockedCell(cellNum)) {mLongTouchHandler.handleGridLongClick(cellTouched);}
 
+                        //Check if the cell has been held down or not
+                        if (mSudokuGridView.getHighlightedCell() >= 0 && event.getAction() == MotionEvent.ACTION_MOVE){
+                            if (cellTouched != mSudokuGridView.getHighlightedCell()) {
+                                mLongTouchHandler.cancelGridLongClick();
+                            }
+                        }
                         //Clear previous highlighted cell
                         mSudokuGridView.clearHighlightedCell();
 
                         //Set highlight on the currently touched cell
                         mSudokuGridView.setHighlightedCell(cellNum);
 
-                        //Check if we highlighted an editable cell
-                        if (!mGameViewModel.isLockedCell(cellNum)) {
-                            //No long press if the cell since the cell is NOT locked
-                            touchHandled = true;
-                        }
-
                         //Force redraw view
                         mSudokuGridView.invalidate();
                         mSudokuGridView.performClick();
+
                     }
             }
-            return touchHandled; 
+            return true;
         }
     };
 
