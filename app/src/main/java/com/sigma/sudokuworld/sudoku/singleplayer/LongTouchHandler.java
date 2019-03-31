@@ -12,12 +12,16 @@ import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
 
 import java.util.Locale;
 import java.util.Timer;
+import java.util.TimerTask;
 
 public class LongTouchHandler {
     private Context mContext;
     private GameViewModel mGameViewModel;
     private TextToSpeech mTTS;
     private Timer mTimer;
+    private boolean mHasStarted;
+
+    private int mCellTouched;
 
     public LongTouchHandler(Context context, GameViewModel gameViewModel) {
         mContext = context;
@@ -40,6 +44,33 @@ public class LongTouchHandler {
         });
 
         mTimer = new Timer();
+        mHasStarted = false;
+    }
+
+    private TimerTask createTimerTask(){
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                mHasStarted = false;
+                mTimer.purge();
+                if (mGameViewModel.isLockedCell(mCellTouched)) {
+                    String text = mGameViewModel.getMappedString(
+                            mGameViewModel.getCellValue(mCellTouched),
+                            GameMode.opposite(mGameViewModel.getGameMode())
+                    );
+                    if(isComprehensionMode())
+                    {
+                        mTTS.speak(text,TextToSpeech.QUEUE_FLUSH,null,null);
+                    }
+                    else
+                    {
+                        Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            }
+        };
+        return timerTask;
     }
 
     private boolean isComprehensionMode() {
@@ -53,36 +84,34 @@ public class LongTouchHandler {
         }
     }
 
-    public boolean handleGridLongClick(int cellTouched){
-        if (mGameViewModel.isLockedCell(cellTouched)) {
-            String text = mGameViewModel.getMappedString(
-                    mGameViewModel.getCellValue(cellTouched),
-                    GameMode.opposite(mGameViewModel.getGameMode())
-            );
-            if(isComprehensionMode())
-            {
-                mTTS.speak(text,TextToSpeech.QUEUE_FLUSH,null,null);
-            }
-            else
-            {
-                Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
-                return true;
-            }
-
+    public void handleGridLongClick(int cellTouched){
+        mCellTouched = cellTouched;
+        if(!mHasStarted){
+            mHasStarted = true;
+            mTimer.schedule(createTimerTask(), (long) 3);
         }
-        return true;
     }
 
-    public boolean handleButtonLongClick(Button button){
+    public void cancelGridLongClick() {
+        if (mHasStarted) {
+            mTimer.cancel();
+            mTimer.purge();
+        }
+    }
+
+
+    public boolean handleButtonLongClick( int buttonValue ){
+        //Get the opposite language value
+        String text = mGameViewModel.getMappedString(
+                buttonValue,
+                GameMode.opposite(mGameViewModel.getGameMode()));
+
         if (isComprehensionMode()){
-            mTTS.speak(button.getText().toString(),TextToSpeech.QUEUE_FLUSH,null,null);
+            mTTS.speak(text,TextToSpeech.QUEUE_FLUSH,null,null);
         }
 
         else {
-            String text = mGameViewModel.getMappedString(
-                    button.getText(),
-                    GameMode.opposite(mGameViewModel.getGameMode()));
-            Toast.makeText(mContext, button.getText(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
         }
         return true;
     }

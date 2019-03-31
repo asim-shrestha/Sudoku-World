@@ -86,7 +86,6 @@ public abstract class SudokuActivity extends AppCompatActivity {
         mLongTouchHandler = new LongTouchHandler(this, mGameViewModel);
 
         mSudokuGridView.setOnTouchListener(onSudokuGridTouchListener);
-        mSudokuGridView.setOnLongClickListener(onGridLongClickListener);
         mSudokuGridView.setCellLabels(this, mGameViewModel.getCellLabels());
 
     }
@@ -107,6 +106,8 @@ public abstract class SudokuActivity extends AppCompatActivity {
             //Through looking at every action case, we can move the highlight to where our finger moves to
             switch (eventAction) {
                 case MotionEvent.ACTION_UP:
+                    mLongTouchHandler.cancelGridLongClick();
+                    break;
                 case MotionEvent.ACTION_DOWN:
                 case MotionEvent.ACTION_MOVE:
                     int x = (int) event.getX();
@@ -114,17 +115,12 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
                     //If touch in the bounds of the grid
                     if (mSudokuGridView.getGridBounds().contains(x, y)) {
-
                         //Figure out which cell was touched
                         int cellNum = mSudokuGridView.getCellNumberFromCoordinates(x, y);
                         cellTouched = cellNum;
 
-                        //Check if the cell has been held down or not
-                        if (mSudokuGridView.getHighlightedCell() >= 0 && event.getAction() == MotionEvent.ACTION_MOVE){
-                            if (cellTouched != mSudokuGridView.getHighlightedCell()) {
-                                int i = 0;
-                            }
-                        }
+                        //Handle a potential long click if it is a locked cell
+                        if (mGameViewModel.isLockedCell(cellNum)) {mLongTouchHandler.handleGridLongClick(cellTouched);}
 
                         //Clear previous highlighted cell
                         mSudokuGridView.clearHighlightedCell();
@@ -159,12 +155,12 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
         return buttonValue;
     }
-    
+
     private View.OnClickListener onButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             Button button = (Button) v;
-            int buttonValue = getButtonValue(Button);
+            int buttonValue = getButtonValue(button);
 
             int cellNumber = mSudokuGridView.getHighlightedCell();
 
@@ -338,14 +334,8 @@ public abstract class SudokuActivity extends AppCompatActivity {
         @Override
         public boolean onLongClick(View v) {
             Button button = (Button) v;
-            return mLongTouchHandler.handleButtonLongClick(button);
-        }
-    };
-
-    View.OnLongClickListener onGridLongClickListener = new View.OnLongClickListener() {
-        @Override
-        public boolean onLongClick(View v) {
-            return mLongTouchHandler.handleGridLongClick(cellTouched);
+            int buttonValue = getButtonValue(button);
+            return mLongTouchHandler.handleButtonLongClick( buttonValue );
         }
     };
 
