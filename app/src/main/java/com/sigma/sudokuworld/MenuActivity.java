@@ -33,7 +33,7 @@ import com.sigma.sudokuworld.viewmodels.MenuViewModel;
 
 import java.util.List;
 
-public class MenuActivity extends AppCompatActivity {
+public class MenuActivity extends BaseActivity {
     private static final String TAG = "MENU";
     private static final int RC_SIGN_IN = 1337;
 
@@ -108,6 +108,7 @@ public class MenuActivity extends AppCompatActivity {
      */
     public void onContinuePressed(View v) {
         showFragment(new SelectGameFragment());
+        //restart();
     }
 
     /**

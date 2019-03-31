@@ -6,8 +6,10 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.sigma.sudokuworld.persistence.LanguageRepository;
 import com.sigma.sudokuworld.persistence.WordPairRepository;
 import com.sigma.sudokuworld.persistence.WordSetRepository;
+import com.sigma.sudokuworld.persistence.db.entities.Language;
 import com.sigma.sudokuworld.persistence.db.entities.Set;
 import com.sigma.sudokuworld.persistence.db.entities.Word;
 import com.sigma.sudokuworld.persistence.db.views.WordPair;
@@ -20,6 +22,8 @@ import java.util.List;
 public class MasterDetailViewModel extends BaseSettingsViewModel {
     private WordSetRepository mWordSetRepository;
     private WordPairRepository mWordPairRepository;
+    private LanguageRepository mLanguageRepository;
+
     private LiveData<List<Set>> mAllSets;
     private LiveData<List<FireBaseSet>> mOnlineSets;
     private LiveData<List<WordPair>> mAllWordPairs;
@@ -33,24 +37,26 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
     private MutableLiveData<List<FireBaseSet>> mFilteredFirebaseSets;
     private Observer<List<FireBaseSet>> mFirebaseSetObserver;
 
-    private String filterQuery;
+    private String mFilterQuery;
+    private int mNumberOfLocalSets;
 
 
     public MasterDetailViewModel(@NonNull Application application) {
         super(application);
         mWordSetRepository = new WordSetRepository(mApplication);
         mWordPairRepository = new WordPairRepository(mApplication);
+        mLanguageRepository = new LanguageRepository(mApplication);
 
         mAllSets = mWordSetRepository.getAllSets();
         mAllWordPairs = mWordPairRepository.getAllWordPairs();
         mOnlineSets = mWordSetRepository.getOnlineSets();
 
-        filterQuery = "";
+        mFilterQuery = "";
 
         mWordPairObserver = new Observer<List<WordPair>>() {
             @Override
             public void onChanged(@Nullable List<WordPair> wordPairs) {
-                filterWordPairs(filterQuery);
+                filterWordPairs(mFilterQuery);
             }
         };
         mAllWordPairs.observeForever(mWordPairObserver);
@@ -59,7 +65,10 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         mSetObserver = new Observer<List<Set>>() {
             @Override
             public void onChanged(@Nullable List<Set> sets) {
-                filterSets(filterQuery);
+                filterSets(mFilterQuery);
+
+                if (sets != null) mNumberOfLocalSets = sets.size();
+                else mNumberOfLocalSets = 0;
             }
         };
         mAllSets.observeForever(mSetObserver);
@@ -68,7 +77,7 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         mFirebaseSetObserver = new Observer<List<FireBaseSet>>() {
             @Override
             public void onChanged(@Nullable List<FireBaseSet> fireBaseSets) {
-                filterOnlineSets(filterQuery);
+                filterOnlineSets(mFilterQuery);
             }
         };
         mOnlineSets.observeForever(mFirebaseSetObserver);
@@ -80,18 +89,16 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         super.onCleared();
 
         mAllWordPairs.removeObserver(mWordPairObserver);
+        mAllSets.removeObserver(mSetObserver);
+        mOnlineSets.removeObserver(mFirebaseSetObserver);
     }
 
-    public LiveData<List<FireBaseSet>> getOnlineSets() {
-        return mOnlineSets;
-    }
+    /*
+        Live Data
+     */
 
     public LiveData<List<FireBaseSet>> getFilteredOnlineSets() {
         return mFilteredFirebaseSets;
-    }
-
-    public LiveData<List<Set>> getAllSets() {
-        return mAllSets;
     }
 
     public LiveData<List<Set>> getFilteredSets() {
@@ -106,14 +113,23 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         return mFilteredWordPairs;
     }
 
+    public List<Language> getAllLanguages() {
+        return mLanguageRepository.getAllLanguages();
+    }
+
+    /*
+        Search Filters
+     */
+
+
     public void filterWordPairs(String query) {
-        filterQuery = query.toLowerCase();
+        mFilterQuery = query.toLowerCase();
         List<WordPair> wordPairs = mAllWordPairs.getValue();
         List<WordPair> filteredWordPairs = new ArrayList<>();
 
         if (wordPairs != null) {
             for (WordPair wp : wordPairs) {
-                if (wp.getNativeWord().getWord().toLowerCase().contains(filterQuery) || wp.getForeignWord().getWord().toLowerCase().contains(filterQuery)) {
+                if (wp.getNativeWord().getWord().toLowerCase().contains(mFilterQuery) || wp.getForeignWord().getWord().toLowerCase().contains(mFilterQuery)) {
                     filteredWordPairs.add(wp);
                 }
             }
@@ -123,13 +139,13 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
     }
 
     public void filterSets(String query) {
-        filterQuery = query.toLowerCase();
+        mFilterQuery = query.toLowerCase();
         List<Set> sets = mAllSets.getValue();
         List<Set> filteredSets = new ArrayList<>();
 
         if (sets != null) {
             for (Set set : sets) {
-                if (set.getName().toLowerCase().contains(filterQuery)) {
+                if (set.getName().toLowerCase().contains(mFilterQuery)) {
                     filteredSets.add(set);
                 }
             }
@@ -139,13 +155,13 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
     }
 
     public void filterOnlineSets(String query) {
-        filterQuery = query.toLowerCase();
+        mFilterQuery = query.toLowerCase();
         List<FireBaseSet> firebaseSets = mOnlineSets.getValue();
         List<FireBaseSet> filteredFirebaseSets = new ArrayList<>();
 
         if (firebaseSets != null) {
             for (FireBaseSet fireBaseSet : firebaseSets) {
-                if (fireBaseSet.getName().toLowerCase().contains(filterQuery)) {
+                if (fireBaseSet.getName().toLowerCase().contains(mFilterQuery)) {
                     filteredFirebaseSets.add(fireBaseSet);
                 }
             }
@@ -153,6 +169,11 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
 
         mFilteredFirebaseSets.setValue(filteredFirebaseSets);
     }
+
+
+    /*
+        Set actions
+     */
 
     public void setSelectedSet(long setID) {
         PersistenceService.saveSetSetting(mApplication, setID);
@@ -174,6 +195,14 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         return mWordSetRepository.getAllWordPairsInSet(set.getSetID());
     }
 
+    public int getNumberOfLocalSets() {
+        return mNumberOfLocalSets;
+    }
+
+    /*
+        Word pairs
+     */
+
     public boolean deletePair(WordPair wordPair) {
         return mWordPairRepository.deletePair(wordPair.getPairID());
     }
@@ -186,7 +215,11 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         mWordPairRepository.saveWordPair(nativeWord, foreignWord);
     }
 
-    //FIRE BASE
+
+    /*
+        FireBase
+     */
+
     public void downLoadSet(FireBaseSet fireBaseSet) {
         mWordSetRepository.downloadSet(fireBaseSet);
     }

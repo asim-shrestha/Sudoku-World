@@ -36,7 +36,7 @@ public class SoundPlayer {
                 .setMaxStreams(2)
                 .build();
 
-        
+
         //Linking our sounds with the right files in /raw
         emptyButtonSound = gameSounds.load(context, R.raw.emptybutton, 1);
         placeCellSound = gameSounds.load(context, R.raw.placecell, 1);
@@ -76,6 +76,6 @@ public class SoundPlayer {
     }
 
     private boolean isSoundOn(){
-        return PersistenceService.loadSoundEnabledSetting(mContext);
+        return PersistenceService.loadSfxEnabledSetting(mContext);
     }
 }

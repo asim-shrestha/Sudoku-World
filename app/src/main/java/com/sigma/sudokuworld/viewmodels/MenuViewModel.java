@@ -42,7 +42,8 @@ public class MenuViewModel extends BaseSettingsViewModel {
                 getSelectedGameMode(),
                 puzzle.getIntArray(KeyConstants.CELL_VALUES_KEY),
                 puzzle.getIntArray(KeyConstants.SOLUTION_VALUES_KEY),
-                puzzle.getBooleanArray(KeyConstants.LOCKED_CELLS_KEY)
+                puzzle.getBooleanArray(KeyConstants.LOCKED_CELLS_KEY),
+                0
         );
 
         //Returns the saveID
@@ -83,12 +84,28 @@ public class MenuViewModel extends BaseSettingsViewModel {
         PersistenceService.saveSetSetting(mApplication, set.getSetID());
     }
 
+    /**
+     * Get the user selected set.
+     * If the set doesn't exist it choose the first set
+     * @return set
+     */
     public Set getSelectedSet() {
-        return mWordSetRepository.getSet(getSelectedSetID());
+        Set set = mWordSetRepository.getSet(getSelectedSetID());
+
+        if (set == null) {
+            set = mWordSetRepository.getFirstSet();
+            setSelectedSet(set);
+        }
+
+        return set;
     }
 
-    public long getSelectedSetID() {
-        return PersistenceService.loadSetSettingSetting(mApplication);
+    public long getSelectedSetSize() {
+        return mWordSetRepository.getSetSize(PersistenceService.loadSetSetting(mApplication));
+    }
+
+    private long getSelectedSetID() {
+        return PersistenceService.loadSetSetting(mApplication);
     }
 
     public int getSelectedBoardLength(){

@@ -4,7 +4,7 @@
     package="com.sigma.sudokuworld">
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-    <application
+    <application android:name=".SudokuWorldApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

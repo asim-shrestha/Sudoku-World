@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.View;
 
 import com.sigma.sudokuworld.R;
+import com.sigma.sudokuworld.adapters.MasterDetailTabPagerAdapter;
 import com.sigma.sudokuworld.persistence.db.entities.Set;
 import com.sigma.sudokuworld.persistence.db.views.WordPair;
 import com.sigma.sudokuworld.persistence.firebase.FireBaseSet;
@@ -29,12 +30,15 @@ import com.sigma.sudokuworld.masterdetail.detail.AddPairActivity;
 import com.sigma.sudokuworld.masterdetail.detail.AddSetActivity;
 import com.sigma.sudokuworld.masterdetail.detail.SetDetailActivity;
 import com.sigma.sudokuworld.viewmodels.MasterDetailViewModel;
+import org.jetbrains.annotations.NotNull;
 
 
 public class MasterSelectActivity extends AppCompatActivity implements
         SetListFragment.OnFragmentInteractionListener,
         OnlineSetListFragment.OnFragmentInteractionListener,
         PairListFragment.OnFragmentInteractionListener {
+
+    private static int RC_SET_DETAIL = 295;
 
     ViewPager mViewPager;
     TabLayout mTabLayout;
@@ -46,22 +50,24 @@ public class MasterSelectActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_master_select);
 
+        mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class); //TODO: make frags and master share the same ViewModel
+
         final ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("Set Builder");
+
+        if (actionBar != null) actionBar.setTitle("Set Builder");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             AnimatedVectorDrawable avd = (AnimatedVectorDrawable) ContextCompat.getDrawable(this, R.drawable.avd_menu);
-            avd.start();
-            actionBar.setBackgroundDrawable(avd);
+
+            if (actionBar != null) actionBar.setBackgroundDrawable(avd);
+            if (avd != null) avd.start();
+
         }
-
-        mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class); //TODO: make frags and master share the same ViewModel
-
 
         mFloatingActionButton = findViewById(R.id.fab);
         mTabLayout = findViewById(R.id.tabs);
         mViewPager = findViewById(R.id.tabPager);
-        mViewPager.setAdapter(new TabPagerAdapter(getSupportFragmentManager()));
+        mViewPager.setAdapter(new MasterDetailTabPagerAdapter(getSupportFragmentManager()));
 
         mTabLayout.setupWithViewPager(mViewPager);
 
@@ -75,34 +81,27 @@ public class MasterSelectActivity extends AppCompatActivity implements
         return true;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SET_DETAIL) {
+            if (resultCode == SetDetailActivity.RESULT_SELECTED) {
+                Snackbar.make(mFloatingActionButton, "Set Selected", Snackbar.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+
     //Fire base listeners
     @Override
     public void onClickSetFragmentInteraction(FireBaseSet set) {
-        //TODO: stub
+        showFirebaseSetDialog(set);
     }
 
     @Override
     public void onLongClickSetFragmentInteraction(View view, final FireBaseSet set) {
-        new AlertDialog.Builder(this)
-                .setTitle(set.getName())
-                .setPositiveButton("Download", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mMasterDetailViewModel.downLoadSet(set);
-                    }
-                })
-                .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mMasterDetailViewModel.deleteSet(set);
-                    }
-                })
-                .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                }).show();
+        //Stub
     }
 
     //Set fragment listener
@@ -110,31 +109,12 @@ public class MasterSelectActivity extends AppCompatActivity implements
     public void onClickSetFragmentInteraction(Set set) {
         Intent intent = new Intent(this, SetDetailActivity.class);
         intent.putExtra(KeyConstants.SET_ID_KEY, set.getSetID());
-        startActivity(intent);
+        startActivityForResult(intent, RC_SET_DETAIL);
     }
 
     @Override
     public void onLongClickSetFragmentInteraction(View view, final Set set) {
-        new AlertDialog.Builder(this)
-                .setTitle(set.getName())
-                .setPositiveButton("Upload", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mMasterDetailViewModel.uploadSet(set);
-                    }
-                })
-                .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mMasterDetailViewModel.deleteSet(set);
-                    }
-                })
-                .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                }).show();
+        showLocalSetDialog(set);
     }
 
     //Pair fragment listeners
@@ -175,33 +155,63 @@ public class MasterSelectActivity extends AppCompatActivity implements
         }
     }
 
-    public class TabPagerAdapter extends FragmentPagerAdapter {
-        private String[] tabTitles = new String[]{"Online Sets", "My Sets", "My Word Pairs"};
+    private void showFirebaseSetDialog(@NotNull final FireBaseSet set) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(set.getName());
+        builder.setMessage(set.getDescription());
 
-        private TabPagerAdapter(FragmentManager fragmentManager) {
-            super(fragmentManager);
-        }
+        builder.setPositiveButton("Download", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mMasterDetailViewModel.downLoadSet(set);
+                    }
+                })
+                .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mMasterDetailViewModel.deleteSet(set);
+                    }
+                })
+                .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
 
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case 0: return new OnlineSetListFragment();
-                case 1: return new SetListFragment();
-                case 2:
-                default:
-                    return new PairListFragment();
+        builder.show();
+    }
+
+    private void showLocalSetDialog(@NotNull final Set set) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(set.getName());
+        builder.setMessage(set.getDescription());
+        builder.setPositiveButton("Upload", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mMasterDetailViewModel.uploadSet(set);
             }
+        });
+
+        builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        //User cannot delete the last remaining set
+        if(mMasterDetailViewModel.getNumberOfLocalSets() > 1) {
+            builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mMasterDetailViewModel.deleteSet(set);
+                }
+            });
         }
 
-        @Override
-        public int getCount() {
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return tabTitles[position];
-        }
+        builder.show();
     }
 }
 

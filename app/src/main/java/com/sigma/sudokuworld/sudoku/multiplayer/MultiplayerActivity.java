@@ -137,6 +137,7 @@ public class MultiplayerActivity extends SudokuActivity {
 
         mMultiplayerViewModel = ViewModelProviders.of(this, factory).get(MultiplayerViewModel.class);
         super.setGameViewModel(mMultiplayerViewModel);
+        super.mGameTimer.start();
 
         // Watch for my most recent move and send to others
         mMultiplayerViewModel.getLastCellChanged().observe(this, new Observer<Integer>() {

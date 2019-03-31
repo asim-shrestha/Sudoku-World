@@ -19,13 +19,14 @@ public class MultiplayerViewModel extends GameViewModel {
                 application,
                 new Game(
                         0,
-                        PersistenceService.loadSetSettingSetting(application),
+                        PersistenceService.loadSetSetting(application),
                         initialCells.length,
                         GameDifficulty.EASY,
                         GameMode.NUMBERS,
                         initialCells,
                         solution,
-                        Game.Companion.getFilledCells(initialCells)));
+                        Game.Companion.getFilledCells(initialCells),
+                        0));
 
         lastCellChanged = new MutableLiveData<>();
         lastCellChanged.setValue(null);

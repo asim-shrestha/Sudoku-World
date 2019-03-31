@@ -5,11 +5,19 @@ import android.support.design.widget.TextInputEditText;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import android.widget.Spinner;
 import com.sigma.sudokuworld.R;
+import com.sigma.sudokuworld.adapters.LanguageSpinnerAdapter;
+import com.sigma.sudokuworld.persistence.db.entities.Language;
+
+import java.util.ArrayList;
 
 public class AddPairFragment extends AbstractDrillDownFragment {
     private TextInputEditText mNativeWordInput;
     private TextInputEditText mForeignWordInput;
+    private Spinner mNativeSpinner;
+    private Spinner mForeignSpinner;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -23,6 +31,14 @@ public class AddPairFragment extends AbstractDrillDownFragment {
         mAppBarLayout.setTitle("Add Word Pair");
         mNativeWordInput = view.findViewById(R.id.nativeInput);
         mForeignWordInput = view.findViewById(R.id.foreignInput);
+        mNativeSpinner = view.findViewById(R.id.nativeSpinner);
+        mForeignSpinner = view.findViewById(R.id.foreignSpinner);
+
+        ArrayList<Language> languages = (ArrayList<Language>) mMasterDetailViewModel.getAllLanguages();
+        LanguageSpinnerAdapter adapter = new LanguageSpinnerAdapter(getContext(), languages);
+
+        mNativeSpinner.setAdapter(adapter);
+        mForeignSpinner.setAdapter(adapter);
 
         return view;
     }

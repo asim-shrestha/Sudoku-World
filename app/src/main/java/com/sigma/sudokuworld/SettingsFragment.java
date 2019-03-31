@@ -15,7 +15,8 @@ public class SettingsFragment extends Fragment {
     private MenuViewModel mMenuViewModel;
 
     private Switch mAudioModeSwitch;
-    private Switch mSoundSwitch;
+    private Switch mSfxSwitch;
+    private Switch mMusicSwitch;
     private Switch mHintsSwitch;
     private Switch mRectangleSwitch;
 
@@ -33,7 +34,8 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceStace) {
         mView = inflater.inflate(R.layout.fragment_settings, container, false);
         mAudioModeSwitch = mView.findViewById(R.id.audioModeSwitch);
-        mSoundSwitch = mView.findViewById(R.id.soundSwitch);
+        mSfxSwitch = mView.findViewById(R.id.sfxSwitch);
+        mMusicSwitch = mView.findViewById(R.id.musicSwitch);
         mHintsSwitch = mView.findViewById(R.id.hintsSwitch);
         mRectangleSwitch = mView.findViewById(R.id.rectangleMode);
         mCancelButton = mView.findViewById(R.id.settingsCancelButton);
@@ -60,14 +62,16 @@ public class SettingsFragment extends Fragment {
 
     private void loadSettings() {
         mAudioModeSwitch.setChecked(mMenuViewModel.isAudioModeEnabled());
-        mSoundSwitch.setChecked(mMenuViewModel.isSoundEnabled());
+        mSfxSwitch.setChecked(mMenuViewModel.isSfxEnabled());
+        mMusicSwitch.setChecked(mMenuViewModel.isMusicEnabled());
         mHintsSwitch.setChecked(mMenuViewModel.isHintsEnabled());
         mRectangleSwitch.setChecked(mMenuViewModel.isRectangleModeEnabled());
     }
 
     private void saveSettings() {
         mMenuViewModel.setAudioModeEnabled(mAudioModeSwitch.isChecked());
-        mMenuViewModel.setSoundEnabled(mSoundSwitch.isChecked());
+        mMenuViewModel.setSfxEnabled(mSfxSwitch.isChecked());
+        mMenuViewModel.setMusicEnabled(mMusicSwitch.isChecked());
         mMenuViewModel.setHintsEnabled(mHintsSwitch.isChecked());
         mMenuViewModel.setRectangleModeEnabled(mRectangleSwitch.isChecked());
     }
