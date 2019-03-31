@@ -227,8 +227,8 @@ public class SudokuGridView extends View {
                 mYOrigin + mSquareHeight
         );
 
-        mTextPaint.setTextSize(mCellHeight);
-        mLockedTextPaint.setTextSize(mCellHeight);
+        mTextPaint.setTextSize(mCellWidth / 2f);
+        mLockedTextPaint.setTextSize(mCellWidth / 2f);
     }
 
     /**
