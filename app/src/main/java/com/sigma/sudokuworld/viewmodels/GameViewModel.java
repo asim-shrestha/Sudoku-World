@@ -220,27 +220,4 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
 
         return label;
     }
-
-
-    public String valueToSpeak(int value, GameMode gameMode) {
-        String label = "";
-
-        if (value != 0) {
-            if (gameMode == GameMode.NUMBERS || (nativeWordsMap.size() <= value))
-                label = foreignWordsMap.valueAt(value);
-        }
-
-        return label;
-    }
-
-    public String valueTodisplay(int value, GameMode gameMode) {
-        String label = "";
-
-        if (value != 0) {
-            if (gameMode == GameMode.NUMBERS || (nativeWordsMap.size() <= value))
-                label = nativeWordsMap.valueAt(value);
-        }
-
-        return label;
-    }
 }

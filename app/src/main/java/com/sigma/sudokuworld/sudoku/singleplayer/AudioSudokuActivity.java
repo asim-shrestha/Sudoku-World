@@ -38,7 +38,7 @@ public class AudioSudokuActivity extends SinglePlayerActivity {
         @Override
         public boolean onLongClick(View v) {
             if (mSinglePlayerViewModel.isLockedCell(cellTouched)) {
-                String text = mSinglePlayerViewModel.valueToSpeak(
+                String text = mSinglePlayerViewModel.getMappedString(
                         mSinglePlayerViewModel.getCellValue(cellTouched),
                         GameMode.opposite(mSinglePlayerViewModel.getGameMode())
                 );
