@@ -338,10 +338,6 @@ public class SudokuGridView extends View {
                         label = label.substring(1);
                         textPaint = mLockedTextPaint;
                         break;
-                    default:
-                        //Sets the text colour to the default color
-                        textPaint = mTextPaint;
-                        break;
                 }
 
                 //Measure the width of the label and draw it in the cell

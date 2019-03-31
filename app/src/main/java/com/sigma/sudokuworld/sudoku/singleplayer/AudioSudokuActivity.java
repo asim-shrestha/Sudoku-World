@@ -41,7 +41,7 @@ public class AudioSudokuActivity extends SinglePlayerActivity {
                         mSinglePlayerViewModel.getCellValue(cellTouched),
                         GameMode.opposite(mSinglePlayerViewModel.getGameMode())
                 );
-                mTTS.speak(text,TextToSpeech.QUEUE_FLUSH,null,null);
+                if (mCellHeld) {mTTS.speak(text,TextToSpeech.QUEUE_FLUSH,null,null);}
             }
             return true;
         }
@@ -51,7 +51,7 @@ public class AudioSudokuActivity extends SinglePlayerActivity {
         @Override
         public boolean onLongClick(View v) {
             Button button = (Button) v;
-            mTTS.speak(button.getText().toString(),TextToSpeech.QUEUE_FLUSH,null,null);
+            if (mCellHeld) {mTTS.speak(button.getText().toString(),TextToSpeech.QUEUE_FLUSH,null,null);}
             return true;
         }
     };
