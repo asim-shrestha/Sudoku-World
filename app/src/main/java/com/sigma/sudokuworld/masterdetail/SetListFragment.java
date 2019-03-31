@@ -64,15 +64,6 @@ public class SetListFragment extends AbstractListFragment {
         mListener = null;
     }
 
-    @Override
-    public void filterList(String query) {
-        if (query == null) query = "";
-
-        if(mMasterDetailViewModel != null) {
-            mMasterDetailViewModel.filterSets(query);
-        }
-    }
-
     public interface OnFragmentInteractionListener {
         void onClickSetFragmentInteraction(Set set);
         void onLongClickSetFragmentInteraction(View view, Set set);

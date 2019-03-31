@@ -62,14 +62,6 @@ public class PairListFragment extends AbstractListFragment {
         mListener = null;
     }
 
-    @Override
-    public void filterList(String query) {
-        if (query == null) query = "";
-
-        if(mMasterDetailViewModel != null) {
-            mMasterDetailViewModel.filterWordPairs(query);
-        }
-    }
 
     public interface OnFragmentInteractionListener {
         void onClickPairFragmentInteraction(WordPair wordPair);

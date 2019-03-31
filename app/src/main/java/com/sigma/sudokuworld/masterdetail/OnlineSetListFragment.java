@@ -64,15 +64,6 @@ public class OnlineSetListFragment extends AbstractListFragment {
         mListener = null;
     }
 
-    @Override
-    public void filterList(String query) {
-        if (query == null) query = "";
-
-        if(mMasterDetailViewModel != null) {
-            mMasterDetailViewModel.filterOnlineSets(query);
-        }
-    }
-
     public interface OnFragmentInteractionListener {
         void onClickSetFragmentInteraction(FireBaseSet set);
         void onLongClickSetFragmentInteraction(View view, FireBaseSet set);

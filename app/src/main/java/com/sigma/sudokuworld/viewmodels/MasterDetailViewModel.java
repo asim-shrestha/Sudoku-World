@@ -82,13 +82,6 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         };
         mOnlineSets.observeForever(mFirebaseSetObserver);
         mFilteredFirebaseSets = new MutableLiveData<>();
-
-        mFilteredWordPairs.observeForever(new Observer<List<WordPair>>() {
-            @Override
-            public void onChanged(@Nullable List<WordPair> wordPairs) {
-                return;
-            }
-        });
     }
 
     @Override
@@ -128,8 +121,15 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         Search Filters
      */
 
-    public void filterWordPairs(String query) {
-        mFilterQuery = query.toLowerCase();
+    public void filterAllLists(String filterQuery) {
+        mFilterQuery = filterQuery.toLowerCase();
+
+        filterWordPairs(filterQuery);
+        filterSets(filterQuery);
+        filterOnlineSets(filterQuery);
+    }
+
+    private void filterWordPairs(String query) {
         List<WordPair> wordPairs = mAllWordPairs.getValue();
         List<WordPair> filteredWordPairs = new ArrayList<>();
 
@@ -159,8 +159,7 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         mFilteredWordPairs.setValue(filteredWordPairs);
     }
 
-    public void filterSets(String query) {
-        mFilterQuery = query.toLowerCase();
+    private void filterSets(String query) {
         List<Set> sets = mAllSets.getValue();
         List<Set> filteredSets = new ArrayList<>();
 
@@ -175,8 +174,7 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         mFilteredSets.setValue(filteredSets);
     }
 
-    public void filterOnlineSets(String query) {
-        mFilterQuery = query.toLowerCase();
+    private void filterOnlineSets(String query) {
         List<FireBaseSet> firebaseSets = mOnlineSets.getValue();
         List<FireBaseSet> filteredFirebaseSets = new ArrayList<>();
 
