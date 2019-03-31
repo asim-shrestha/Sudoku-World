@@ -120,12 +120,13 @@ public abstract class SudokuActivity extends AppCompatActivity {
                         //Handle a potential long click if it is a locked cell
                         if (mGameViewModel.isLockedCell(cellNum)) {mLongTouchHandler.handleGridLongClick(cellTouched);}
 
-                        //Check if the cell has been held down or not
+                        //Check if the cell has been held down or not (If the last highlighted cell is the current cell)
                         if (mSudokuGridView.getHighlightedCell() >= 0 && event.getAction() == MotionEvent.ACTION_MOVE){
                             if (cellTouched != mSudokuGridView.getHighlightedCell()) {
                                 mLongTouchHandler.cancelGridLongClick();
                             }
                         }
+
                         //Clear previous highlighted cell
                         mSudokuGridView.clearHighlightedCell();
 
