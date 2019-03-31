@@ -64,6 +64,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
         mSettingsButton = findViewById(R.id.settingsButton);
         mSettingsButton.setOnClickListener(onSettingsClickListener);
         mFragmentManager = getSupportFragmentManager();
+        mFragmentManager.addOnBackStackChangedListener(onBackStackChangedListener);
 
         mSoundPlayer = new SoundPlayer(this);
     }
@@ -334,12 +335,19 @@ public abstract class SudokuActivity extends AppCompatActivity {
     private View.OnClickListener onSettingsClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            mSoundPlayer.playPlaceCellSound();
             mFragmentManager
                     .beginTransaction()
                     .replace(R.id.fragment_container, new SettingsFragment())
                     .addToBackStack(null)
                     .commit();
+        }
+    };
+
+    //Play a sound every time the fragment is opened
+    private FragmentManager.OnBackStackChangedListener onBackStackChangedListener = new FragmentManager.OnBackStackChangedListener() {
+        @Override
+        public void onBackStackChanged() {
+            mSoundPlayer.playPlaceCellSound();
         }
     };
 }

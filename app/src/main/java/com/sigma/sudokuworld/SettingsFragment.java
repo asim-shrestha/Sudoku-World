@@ -40,10 +40,10 @@ public class SettingsFragment extends Fragment {
         mSaveButton = mView.findViewById(R.id.settingsSaveButton);
 
         mCancelButton.setOnClickListener( new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    getFragmentManager().popBackStack();
-                }
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+            }
         });
 
         mSaveButton.setOnClickListener( new View.OnClickListener() {
