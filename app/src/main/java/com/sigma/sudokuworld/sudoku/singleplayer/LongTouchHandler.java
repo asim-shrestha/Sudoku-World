@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.sigma.sudokuworld.game.GameMode;
 import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
+import com.sigma.sudokuworld.viewmodels.GameViewModel;
 import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
 
 import java.util.Locale;
@@ -14,12 +15,13 @@ import java.util.Timer;
 
 public class LongTouchHandler {
     private Context mContext;
+    private GameViewModel mGameViewModel;
     private TextToSpeech mTTS;
     private Timer mTimer;
-    private boolean mIsComprehensionMode;
 
-    public LongTouchHandler(Context context, final GameMode gameMode) {
+    public LongTouchHandler(Context context, GameViewModel gameViewModel) {
         mContext = context;
+        mGameViewModel = gameViewModel;
 
         //Initializing TTS
         mTTS = new TextToSpeech(mContext, new TextToSpeech.OnInitListener() {
@@ -28,7 +30,7 @@ public class LongTouchHandler {
                 if (status == TextToSpeech.SUCCESS){
 
                     //Set Lang
-                    if (gameMode == GameMode.NATIVE) {
+                    if (mGameViewModel.getGameMode() == GameMode.NATIVE) {
                         mTTS.setLanguage(new Locale("fr"));
                     } else {
                         mTTS.setLanguage(new Locale("en"));
@@ -37,7 +39,6 @@ public class LongTouchHandler {
             }
         });
 
-        mIsComprehensionMode = false;
         mTimer = new Timer();
     }
 
@@ -52,15 +53,20 @@ public class LongTouchHandler {
         }
     }
 
-    public boolean handleGridLongClick(SinglePlayerViewModel mSinglePlayerViewModel, int cellTouched){
-        if (mSinglePlayerViewModel.isLockedCell(cellTouched)) {
-            String text = mSinglePlayerViewModel.getMappedString(
-                    mSinglePlayerViewModel.getCellValue(cellTouched),
-                    GameMode.opposite(mSinglePlayerViewModel.getGameMode())
+    public boolean handleGridLongClick(int cellTouched){
+        if (mGameViewModel.isLockedCell(cellTouched)) {
+            String text = mGameViewModel.getMappedString(
+                    mGameViewModel.getCellValue(cellTouched),
+                    GameMode.opposite(mGameViewModel.getGameMode())
             );
             if(isComprehensionMode())
             {
                 mTTS.speak(text,TextToSpeech.QUEUE_FLUSH,null,null);
+            }
+            else
+            {
+                Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
+                return true;
             }
 
         }
@@ -68,7 +74,7 @@ public class LongTouchHandler {
     }
 
     public boolean handleButtonLongClick(Button button){
-        if (mIsComprehensionMode){
+        if (isComprehensionMode()){
             mTTS.speak(button.getText().toString(),TextToSpeech.QUEUE_FLUSH,null,null);
         }
 

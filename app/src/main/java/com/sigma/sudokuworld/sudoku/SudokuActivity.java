@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.sigma.sudokuworld.SettingsFragment;
 import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
+import com.sigma.sudokuworld.sudoku.singleplayer.LongTouchHandler;
 import com.sigma.sudokuworld.viewmodels.GameViewModel;
 import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
 import com.sigma.sudokuworld.viewmodels.SingleplayerViewModelFactory;
@@ -44,6 +45,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
     protected boolean mCellHeld;
 
+    protected LongTouchHandler mLongTouchHandler;
     protected FragmentManager mFragmentManager;
 
     @Override
@@ -82,8 +84,12 @@ public abstract class SudokuActivity extends AppCompatActivity {
         };
         mGameViewModel.getButtonLabels().observe(this, buttonLabelsObserver);
 
+        mLongTouchHandler = new LongTouchHandler(this, mGameViewModel);
+
         mSudokuGridView.setOnTouchListener(onSudokuGridTouchListener);
+        mSudokuGridView.setOnLongClickListener(onGridLongClickListener);
         mSudokuGridView.setCellLabels(this, mGameViewModel.getCellLabels());
+
     }
 
     @Override
@@ -306,8 +312,9 @@ public abstract class SudokuActivity extends AppCompatActivity {
                 //Text Color
                 mInputButtons[buttonIndex].setTextColor(getResources().getColor( R.color.colorWhite));
 
-                //Links the listener to the button
+                //Links the listeners to the button
                 mInputButtons[buttonIndex].setOnClickListener(onButtonClickListener);
+                mInputButtons[buttonIndex].setOnLongClickListener(onButtonLongClickListener);
 
                 //Links the button to the linear layout
                 mLinearLayouts[i].addView(mInputButtons[buttonIndex]);
@@ -323,6 +330,21 @@ public abstract class SudokuActivity extends AppCompatActivity {
             mInputButtons[i].setText(buttonLabels.get(i));
         }
     }
+
+    Button.OnLongClickListener onButtonLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            Button button = (Button) v;
+            return mLongTouchHandler.handleButtonLongClick(button);
+        }
+    };
+
+    View.OnLongClickListener onGridLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            return mLongTouchHandler.handleGridLongClick(cellTouched);
+        }
+    };
 
     private View.OnClickListener onBackClickListener = new View.OnClickListener() {
         @Override
@@ -350,4 +372,10 @@ public abstract class SudokuActivity extends AppCompatActivity {
             mSoundPlayer.playPlaceCellSound();
         }
     };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mLongTouchHandler.destroyLongTouchHandler();
+    }
 }
