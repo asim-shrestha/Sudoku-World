@@ -45,12 +45,4 @@ public class GameRepository {
         mGameDao.delete(game);
     }
 
-//    public void uploadPuzzle(FireBasePuzzle puzzle) {
-//        mFirebaseDatabase.getReference().child("puzzles")
-//    }
-//
-//    public FireBasePuzzle downloadPuzzle(String key) {
-//
-//    }
-
 }

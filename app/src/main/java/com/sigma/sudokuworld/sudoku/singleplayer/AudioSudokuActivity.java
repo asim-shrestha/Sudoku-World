@@ -17,6 +17,7 @@ public class AudioSudokuActivity extends SinglePlayerActivity {
         super.onCreate(savedInstanceState);
         initTTS();
 
+
         super.mSudokuGridView.setOnLongClickListener(longClickListener);
 
         for (Button button : mInputButtons) {

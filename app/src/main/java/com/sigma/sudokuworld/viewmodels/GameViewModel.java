@@ -86,6 +86,14 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
         checkForGameWin();
     }
 
+    public long getElapsedTime() {
+        return mGame.getTimeInterval();
+    }
+
+    public void setElapsedTime(long elapsedTime) {
+        mGame.setTimeInterval(elapsedTime);
+    }
+
     public GameMode getGameMode() {
         return mGame.getGameMode();
     }
@@ -102,13 +110,13 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
         return mGame.getSolutionValue(cellNumber) ==  mGame.getCellValue(cellNumber);
     }
 
-    public int getIncorrectCellNumber() {
+    public ArrayList<Integer> getIncorrectCells() {
+        ArrayList<Integer> incorrectCells = new ArrayList<>();
         for (int i = 0; i < mBoardSize; i++) {
-            if (mGame.getCellValue(i) != mGame.getSolutionValue(i)) return i;
+            if (mGame.getCellValue(i) != mGame.getSolutionValue(i)) incorrectCells.add(i);
         }
 
-        //Returns -1 if game is solved;
-        return -1;
+        return incorrectCells;
     }
 
     protected void updateCellLabel(int cellNumber, int value) {

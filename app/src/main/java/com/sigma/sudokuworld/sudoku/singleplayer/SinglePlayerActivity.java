@@ -26,6 +26,7 @@ public abstract class SinglePlayerActivity extends SudokuActivity {
         SingleplayerViewModelFactory factory = new SingleplayerViewModelFactory(getApplication(), mSaveID);
         mSinglePlayerViewModel = ViewModelProviders.of(this, factory).get(SinglePlayerViewModel.class);
         super.setGameViewModel(mSinglePlayerViewModel);
+        mGameTimer.setElapsedTime(mSinglePlayerViewModel.getElapsedTime());
     }
 
     @Override
@@ -34,5 +35,20 @@ public abstract class SinglePlayerActivity extends SudokuActivity {
 
         //Save the current state of the Sudoku board
         outState.putLong(KeyConstants.SAVE_ID_KEY, mSaveID);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mGameTimer.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        mGameTimer.pause();
+        mSinglePlayerViewModel.setElapsedTime(mGameTimer.getElapsedTime());
     }
 }

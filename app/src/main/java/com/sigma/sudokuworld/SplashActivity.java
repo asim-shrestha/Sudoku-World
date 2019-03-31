@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends BaseActivity {
     private static final int START_ANIM_DELAY = 500;
     private int exit_delay;
 
@@ -72,6 +72,4 @@ public class SplashActivity extends AppCompatActivity {
         super.onPause();
         finish();
     }
-
-
 }

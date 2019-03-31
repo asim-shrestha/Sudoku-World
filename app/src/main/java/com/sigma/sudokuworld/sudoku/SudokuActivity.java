@@ -1,8 +1,9 @@
 package com.sigma.sudokuworld.sudoku;
 
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
+import android.media.MediaPlayer;
+import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,17 +15,17 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.sigma.sudokuworld.BaseActivity;
 import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
 import com.sigma.sudokuworld.viewmodels.GameViewModel;
-import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
-import com.sigma.sudokuworld.viewmodels.SingleplayerViewModelFactory;
 import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.audio.SoundPlayer;
-import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public abstract class SudokuActivity extends AppCompatActivity {
+
+public abstract class SudokuActivity extends BaseActivity {
 
     protected SudokuGridView mSudokuGridView;
     protected int cellTouched;
@@ -32,6 +33,9 @@ public abstract class SudokuActivity extends AppCompatActivity {
     protected LinearLayout[] mLinearLayouts;
     protected Button[] mInputButtons;
     private SoundPlayer mSoundPlayer;
+
+    protected GameTimer mGameTimer;
+    protected boolean mCellHeld;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,10 @@ public abstract class SudokuActivity extends AppCompatActivity {
         mSudokuGridView.setRectangleMode(PersistenceService.loadRectangleModeEnabledSetting(this));
 
         mSoundPlayer = new SoundPlayer(this);
+
+        //GameTimer
+        mGameTimer = findViewById(R.id.gameTimer);
+        mGameTimer.setBase(SystemClock.elapsedRealtime());
     }
 
     public void setGameViewModel(GameViewModel viewModel) {
@@ -52,16 +60,16 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
         //Set up buttons
         initButtons();
-        final Observer<List<String>> buttonLabelsObserver = new Observer<List<String>>() {
+        mGameViewModel.getButtonLabels().observe(this, new Observer<List<String>>() {
             @Override
             public void onChanged(@Nullable List<String> strings) {
                 setButtonLabels(strings);
             }
-        };
-        mGameViewModel.getButtonLabels().observe(this, buttonLabelsObserver);
+        });
 
         mSudokuGridView.setOnTouchListener(onSudokuGridTouchListener);
         mSudokuGridView.setCellLabels(this, mGameViewModel.getCellLabels());
+
     }
 
     @Override
@@ -77,34 +85,41 @@ public abstract class SudokuActivity extends AppCompatActivity {
             int eventAction = event.getAction();
             boolean touchHandled = false;
 
-            //Through looking at every case, we can move the highlight to where our finger moves to
+            //Through looking at every action case, we can move the highlight to where our finger moves to
             switch (eventAction) {
-                case MotionEvent.ACTION_MOVE:
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_DOWN:
+                    mCellHeld = true;
+                case MotionEvent.ACTION_MOVE:
                     int x = (int) event.getX();
                     int y = (int) event.getY();
 
-                    //If touch in the bound of the grid
+                    //If touch in the bounds of the grid
                     if (mSudokuGridView.getGridBounds().contains(x, y)) {
+
+                        //Figure out which cell was touched
+                        int cellNum = mSudokuGridView.getCellNumberFromCoordinates(x, y);
+                        cellTouched = cellNum;
+
+                        //Check if the cell has been held down or not
+                        if (mSudokuGridView.getHighlightedCell() >= 0 && event.getAction() == MotionEvent.ACTION_MOVE){
+                            if (cellTouched != mSudokuGridView.getHighlightedCell()) { mCellHeld = false; }
+                            }
 
                         //Clear previous highlighted cell
                         mSudokuGridView.clearHighlightedCell();
 
-                        //Cell that was touched
-                        int cellNum = mSudokuGridView.getCellNumberFromCoordinates(x, y);
-                        cellTouched = cellNum;
-
-                        //If we have selected the incorrect cell, un highlight it
-                        if (cellNum == mSudokuGridView.getIncorrectCell()) {
-                            mSudokuGridView.clearIncorrectCell();
+                        //If we have selected a cell with an "incorrect" cell highlight , un highlight it
+                        if (mSudokuGridView.IsIncorrectCell(cellNum)) {
+                            mSudokuGridView.clearIncorrectCell(cellNum);
                         }
 
-                        //Set new highlighted cell if its not a locked cell
-                        if (!mGameViewModel.isLockedCell(cellNum)) {
-                            mSudokuGridView.setHighlightedCell(cellNum);
+                        //Set highlight on the currently touched cell
+                        mSudokuGridView.setHighlightedCell(cellNum);
 
-                            //No long press
+                        //Check if we highlighted an editable cell
+                        if (!mGameViewModel.isLockedCell(cellNum)) {
+                            //No long press if the cell since the cell is NOT locked
                             touchHandled = true;
                         }
 
@@ -113,10 +128,10 @@ public abstract class SudokuActivity extends AppCompatActivity {
                         mSudokuGridView.performClick();
                     }
             }
-
-            return touchHandled;
+            return touchHandled; 
         }
     };
+
 
     private View.OnClickListener onButtonClickListener = new View.OnClickListener() {
         @Override
@@ -135,23 +150,27 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
             int cellNumber = mSudokuGridView.getHighlightedCell();
 
-            //No cell is highlighted
-            if (cellNumber == -1){
+            //No cell is highlighted or a locked cell is highlighted
+            if (cellNumber == -1 || mGameViewModel.isLockedCell(cellNumber)){
+                mSudokuGridView.clearHighlightedCell();
                 mSoundPlayer.playEmptyButtonSound();
-            } else {
+            }
+
+            else {
                 if (mGameViewModel.isCorrectValue(cellNumber, buttonValue) || !mGameViewModel.isHintsEnabled()) {
                     //Correct number is placed in cell
                     mSudokuGridView.clearHighlightedCell();
-                    mSudokuGridView.clearIncorrectCell();
+                    mSudokuGridView.clearIncorrectCell(cellNumber);
                     mSoundPlayer.playPlaceCellSound();
                 } else {
                     //Incorrect value has been placed in cell
-                    mSudokuGridView.setIncorrectCell(cellNumber);
+                    mSudokuGridView.addIncorrectCell(cellNumber);
                     mSoundPlayer.playWrongSound();
                 }
 
                 mGameViewModel.setCellValue(cellNumber, buttonValue);
             }
+            mSudokuGridView.invalidate();
         }
     };
 
@@ -163,8 +182,17 @@ public abstract class SudokuActivity extends AppCompatActivity {
         int highlightedCell = mSudokuGridView.getHighlightedCell();
         if (highlightedCell != -1)
         {
+            //Cell is a locked cell
+            if (mGameViewModel.isLockedCell(highlightedCell)){
+                mSudokuGridView.clearHighlightedCell();
+                mSoundPlayer.playEmptyButtonSound();
+            }
+
             //Cell is right
-            if (mGameViewModel.isCellCorrect(highlightedCell)){
+            else if (
+                    mGameViewModel.isCellCorrect(highlightedCell)
+                    && !mGameViewModel.isLockedCell(highlightedCell)
+            ){
                 mSudokuGridView.clearHighlightedCell();
                 mSudokuGridView.invalidate();
                 mSoundPlayer.playCorrectSound();
@@ -175,7 +203,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
             //Cell is wrong
             else {
-                mSudokuGridView.setIncorrectCell(highlightedCell);
+                mSudokuGridView.addIncorrectCell(highlightedCell);
                 mSoundPlayer.playWrongSound();
 
             }
@@ -184,12 +212,12 @@ public abstract class SudokuActivity extends AppCompatActivity {
         }
 
         //Checks if the answers are right and displays the first wrong cell (if any)
-        int potentialIndex = mGameViewModel.getIncorrectCellNumber();
+        ArrayList<Integer> incorrectCells= mGameViewModel.getIncorrectCells();
         //Clear highlights / what cell is selected for input
         mSudokuGridView.clearHighlightedCell();
 
         //Case where answer is correct
-        if (potentialIndex == -1) {
+        if (incorrectCells.size() == 0) {
             mSoundPlayer.playCorrectSound();
             Toast.makeText(getBaseContext(),
                     "Congratulations, You've Won!",
@@ -198,8 +226,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
         //Case where answer is incorrect
         else {
-            mSudokuGridView.setIncorrectCell(potentialIndex);
-            mSudokuGridView.setHighlightedCell(potentialIndex);
+            mSudokuGridView.setIncorrectCells(incorrectCells);
             mSoundPlayer.playWrongSound();
         }
 
@@ -218,7 +245,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
         } else {
             mGameViewModel.setCellValue(cellNumber, 0);
             mSudokuGridView.clearHighlightedCell();
-            mSudokuGridView.clearIncorrectCell();
+            mSudokuGridView.clearIncorrectCell(cellNumber);
             mSoundPlayer.playClearCellSound();
             mSudokuGridView.invalidate();
         }
@@ -283,8 +310,8 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
 
     private void setButtonLabels(List<String> buttonLabels) {
-        for(int i = 0; i < mInputButtons.length; i++) {
-            mInputButtons[i].setText(buttonLabels.get(i));
-        }
+            for (int i = 0; i < mInputButtons.length; i++) {
+                mInputButtons[i].setText(buttonLabels.get(i));
+            }
     }
 }

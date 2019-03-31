@@ -39,6 +39,8 @@ public class NewGameFragment extends Fragment {
 
         //Get the menu's viewModel
         mMenuViewModel = ViewModelProviders.of(this).get(MenuViewModel.class);
+
+        //restart();
     }
 
     @Override
