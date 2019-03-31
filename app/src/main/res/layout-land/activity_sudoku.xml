@@ -49,12 +49,13 @@
                 android:text="@string/clear_cell_button"
                 android:background="@drawable/red_button"
                 android:textColor="@color/colorWhite"/>
-            <Chronometer
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/gameTimer"
-                />
+
+            <com.sigma.sudokuworld.sudoku.GameTimer
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/gameTimer"/>
+
             <Button
                 android:id="@+id/checkAnswerButton"
                 android:layout_width="wrap_content"
