@@ -40,6 +40,7 @@
     <string name="boardSize2">9x9</string>
     <string name="boardSize3">12x12</string>
     <string name="boardSize4">16x16</string>
+    <string name="warningSetSize">*** Set Size is to small for board Size ***</string>
     <string name="audioMode">Listening Comprehension Mode</string>
     <string name="sfxSwitch">Sound Effects</string>
     <string name="musicSwitch">Background Music</string>
@@ -58,9 +59,11 @@
     <string name="SetTabTitle">Sets</string>
     <string name="WordPairTabTitle">Pairs</string>
     <string name="Search">Search</string>
+    <string name="nativeLanguageLabel">Native Language:</string>
+    <string name="foreignLanguageLabel">Foreign Language:</string>
     <string name="title_wordset_list">Word Sets</string>
     <string name="title_wordset_detail">Word Set Detail</string>
-    <string name="title_default_set">Default se</string>
+    <string name="title_default_set">Default set</string>
     <string name="title_default_description">The default set</string>
 
     <!--Add word dialog-->

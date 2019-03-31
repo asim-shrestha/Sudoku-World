@@ -45,6 +45,7 @@ abstract class AppDatabase : RoomDatabase() {
                 instance = buildDB(context)
 
                 DatabaseInitializer.initLanguages(instance!!)
+                DatabaseInitializer.initDefaultSet(instance!!)
             }
 
             return instance!!

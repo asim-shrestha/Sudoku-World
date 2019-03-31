@@ -8,6 +8,7 @@ import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 
 public class SetDetailActivity extends AbstractDrillDownActivity {
+    public static int RESULT_SELECTED = 307;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -19,8 +20,9 @@ public class SetDetailActivity extends AbstractDrillDownActivity {
         mFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Set Selected", Snackbar.LENGTH_LONG).show();
                 mMasterDetailViewModel.setSelectedSet(setID);
+                setResult(RESULT_SELECTED);
+                finish();
             }
         });
 

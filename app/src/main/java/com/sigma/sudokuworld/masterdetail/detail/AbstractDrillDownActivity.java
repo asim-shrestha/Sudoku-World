@@ -3,6 +3,7 @@ package com.sigma.sudokuworld.masterdetail.detail;
 import android.arch.lifecycle.ViewModelProviders;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -30,6 +31,12 @@ public abstract class AbstractDrillDownActivity extends AppCompatActivity {
         mCoordinatorLayout = findViewById(R.id.clayout);
         mToolbar = findViewById(R.id.detail_toolbar);
         setSupportActionBar(mToolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
 
         mFAB = findViewById(R.id.fab); //TODO add back button
     }

@@ -6,6 +6,17 @@
               android:layout_height="match_parent"
               android:orientation="vertical">
 
+    <TextView
+            android:text="TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView6"/>
+
+    <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/nativeSpinner"/>
+
     <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -19,6 +30,17 @@
                 />
 
     </android.support.design.widget.TextInputLayout>
+
+    <TextView
+            android:text="TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView7"/>
+
+    <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/foreignSpinner"/>
 
     <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"

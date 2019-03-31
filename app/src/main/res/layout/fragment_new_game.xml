@@ -209,6 +209,15 @@
                     android:progress="2"
                     android:id="@+id/boardSizeBar"/>
 
+            <TextView
+                    android:text="@string/warningSetSize"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/setSizeWarning"
+                    android:textColor="@color/colorAccent"
+                    android:textAlignment="center"
+                    android:visibility="visible"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -32,6 +32,7 @@ public class NewGameFragment extends Fragment {
     private Button mPlayButton;
     private Button mSetButton;
     private Button mCancelButton;
+    private TextView mSizeWarning;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,7 +41,6 @@ public class NewGameFragment extends Fragment {
         //Get the menu's viewModel
         mMenuViewModel = ViewModelProviders.of(this).get(MenuViewModel.class);
 
-        //restart();
     }
 
     @Override
@@ -52,6 +52,7 @@ public class NewGameFragment extends Fragment {
         mBoardSizeSeekBar = mView.findViewById(R.id.boardSizeBar);
         mSetLayout = mView.findViewById(R.id.setViewLayout);
         mSetTitle = mView.findViewById(R.id.setTitle);
+        mSizeWarning = mView.findViewById(R.id.setSizeWarning);
 
         mSetButton = mView.findViewById(R.id.setBuilderButton);
         mSetButton.setOnClickListener(setButtonListener);
@@ -61,15 +62,6 @@ public class NewGameFragment extends Fragment {
 
         mCancelButton = mView.findViewById(R.id.cancelButton);
         mCancelButton.setOnClickListener(cancelButtonListener);
-
-        mGameModeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == mView.findViewById(R.id.numbersModeRadioButton).getId()) {
-                    mSetLayout.setVisibility(View.GONE);
-                } else mSetLayout.setVisibility(View.VISIBLE);
-            }
-        });
 
         initStoredSettings();
         initLabelListeners();
@@ -81,6 +73,15 @@ public class NewGameFragment extends Fragment {
         super.onStart();
 
         Set set = mMenuViewModel.getSelectedSet(); //TODO make buttons disappear better
+
+        //Show Set size error
+        final long setSize = mMenuViewModel.getSelectedSetSize();
+        if (shouldShowSetSizeError(mBoardSizeSeekBar.getProgress(), setSize)) {
+            mSizeWarning.setVisibility(View.VISIBLE);
+        } else {
+            mSizeWarning.setVisibility(View.GONE);
+        }
+
         if (set == null) {
             mSetTitle.setVisibility(View.GONE);
             mPlayButton.setVisibility(View.GONE);
@@ -92,6 +93,48 @@ public class NewGameFragment extends Fragment {
             mPlayButton.setVisibility(View.VISIBLE);
             mSetTitle.setText(set.getName());
         }
+
+        mGameModeRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == mView.findViewById(R.id.numbersModeRadioButton).getId()) {
+                    mSetLayout.setVisibility(View.GONE);
+
+                    //Hide the set size warning if in numbers mode
+                    mSizeWarning.setVisibility(View.GONE);
+
+                } else {
+                    mSetLayout.setVisibility(View.VISIBLE);
+
+                    //Show the set size warning if not in numbers mode
+                    if(shouldShowSetSizeError(mBoardSizeSeekBar.getProgress(), setSize)) {
+                        mSizeWarning.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
+
+        mBoardSizeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                if (shouldShowSetSizeError(progress, setSize)) {
+                    mSizeWarning.setVisibility(View.VISIBLE);
+                } else {
+                    mSizeWarning.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     @Override
@@ -256,5 +299,29 @@ public class NewGameFragment extends Fragment {
         } else {
             mMenuViewModel.setSelectedBoardLength(16);
         }
+    }
+
+    private boolean shouldShowSetSizeError(int seekBarPosition, long setSize) {
+        boolean isTooSmall = false;
+
+        switch (seekBarPosition) {
+            case 0:
+                if (setSize < 4) isTooSmall = true;
+                break;
+            case 1:
+                if (setSize < 6) isTooSmall = true;
+                break;
+            case 2:
+                if (setSize < 9) isTooSmall = true;
+                break;
+            case 3:
+                if (setSize < 12) isTooSmall = true;
+                break;
+            case 4:
+                if (setSize < 16) isTooSmall = true;
+                break;
+        }
+
+        return isTooSmall;
     }
 }

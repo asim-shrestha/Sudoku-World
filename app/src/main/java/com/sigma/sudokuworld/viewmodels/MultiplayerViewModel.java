@@ -19,7 +19,7 @@ public class MultiplayerViewModel extends GameViewModel {
                 application,
                 new Game(
                         0,
-                        PersistenceService.loadSetSettingSetting(application),
+                        PersistenceService.loadSetSetting(application),
                         initialCells.length,
                         GameDifficulty.EASY,
                         GameMode.NUMBERS,

@@ -34,10 +34,15 @@ public class SetDetailFragment extends AbstractDrillDownFragment {
         View view = inflater.inflate(R.layout.fragment_set_detail, container, false);
         TextView nameTextView = view.findViewById(R.id.setName);
         TextView descriptionTextView = view.findViewById(R.id.setDescription);
+        TextView nativeLanguageName = view.findViewById(R.id.nativeLangName);
+        TextView foreignLanguageName = view.findViewById(R.id.foreignLangName);
 
         if (mSet != null) {
             nameTextView.setText(mSet.getName());
             descriptionTextView.setText(mSet.getDescription());
+            nativeLanguageName.setText(mWordPairs.get(0).getNativeLanguageName());
+            foreignLanguageName.setText(mWordPairs.get(0).getForeignLanguageName());
+
             mAppBarLayout.setTitle(mSet.getName());
         }
 
@@ -47,8 +52,6 @@ public class SetDetailFragment extends AbstractDrillDownFragment {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         recyclerView.setAdapter(adapter);
-
-        ;
 
         return view;
     }
