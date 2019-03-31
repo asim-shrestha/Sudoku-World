@@ -86,6 +86,14 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
         checkForGameWin();
     }
 
+    public long getElapsedTime() {
+        return mGame.getTimeInterval();
+    }
+
+    public void setElapsedTime(long elapsedTime) {
+        mGame.setTimeInterval(elapsedTime);
+    }
+
     public GameMode getGameMode() {
         return mGame.getGameMode();
     }

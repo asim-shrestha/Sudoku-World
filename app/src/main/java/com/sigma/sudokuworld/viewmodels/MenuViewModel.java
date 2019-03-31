@@ -42,7 +42,8 @@ public class MenuViewModel extends BaseSettingsViewModel {
                 getSelectedGameMode(),
                 puzzle.getIntArray(KeyConstants.CELL_VALUES_KEY),
                 puzzle.getIntArray(KeyConstants.SOLUTION_VALUES_KEY),
-                puzzle.getBooleanArray(KeyConstants.LOCKED_CELLS_KEY)
+                puzzle.getBooleanArray(KeyConstants.LOCKED_CELLS_KEY),
+                0
         );
 
         //Returns the saveID

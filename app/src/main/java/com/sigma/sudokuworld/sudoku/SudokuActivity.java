@@ -1,8 +1,9 @@
 package com.sigma.sudokuworld.sudoku;
 
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
+import android.media.MediaPlayer;
+import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,18 +15,17 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.sigma.sudokuworld.BaseActivity;
 import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
 import com.sigma.sudokuworld.viewmodels.GameViewModel;
-import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
-import com.sigma.sudokuworld.viewmodels.SingleplayerViewModelFactory;
 import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.audio.SoundPlayer;
-import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class SudokuActivity extends AppCompatActivity {
+
+public abstract class SudokuActivity extends BaseActivity {
 
     protected SudokuGridView mSudokuGridView;
     protected int cellTouched;
@@ -34,6 +34,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
     protected Button[] mInputButtons;
     private SoundPlayer mSoundPlayer;
 
+    protected GameTimer mGameTimer;
     protected boolean mCellHeld;
 
     @Override
@@ -48,6 +49,10 @@ public abstract class SudokuActivity extends AppCompatActivity {
         mSudokuGridView.setRectangleMode(PersistenceService.loadRectangleModeEnabledSetting(this));
 
         mSoundPlayer = new SoundPlayer(this);
+
+        //GameTimer
+        mGameTimer = findViewById(R.id.gameTimer);
+        mGameTimer.setBase(SystemClock.elapsedRealtime());
     }
 
     public void setGameViewModel(GameViewModel viewModel) {
@@ -55,16 +60,16 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
         //Set up buttons
         initButtons();
-        final Observer<List<String>> buttonLabelsObserver = new Observer<List<String>>() {
+        mGameViewModel.getButtonLabels().observe(this, new Observer<List<String>>() {
             @Override
             public void onChanged(@Nullable List<String> strings) {
                 setButtonLabels(strings);
             }
-        };
-        mGameViewModel.getButtonLabels().observe(this, buttonLabelsObserver);
+        });
 
         mSudokuGridView.setOnTouchListener(onSudokuGridTouchListener);
         mSudokuGridView.setCellLabels(this, mGameViewModel.getCellLabels());
+
     }
 
     @Override
@@ -305,8 +310,8 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
 
     private void setButtonLabels(List<String> buttonLabels) {
-        for(int i = 0; i < mInputButtons.length; i++) {
-            mInputButtons[i].setText(buttonLabels.get(i));
-        }
+            for (int i = 0; i < mInputButtons.length; i++) {
+                mInputButtons[i].setText(buttonLabels.get(i));
+            }
     }
 }

@@ -25,7 +25,8 @@ public class MultiplayerViewModel extends GameViewModel {
                         GameMode.NUMBERS,
                         initialCells,
                         solution,
-                        Game.Companion.getFilledCells(initialCells)));
+                        Game.Companion.getFilledCells(initialCells),
+                        0));
 
         lastCellChanged = new MutableLiveData<>();
         lastCellChanged.setValue(null);
