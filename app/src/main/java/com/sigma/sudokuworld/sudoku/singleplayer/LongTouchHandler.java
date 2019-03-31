@@ -4,13 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.sigma.sudokuworld.game.GameMode;
 import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
-import com.sigma.sudokuworld.viewmodels.GameViewModel;
-import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
 
 import java.util.Locale;
 import java.util.Timer;
@@ -18,17 +15,17 @@ import java.util.TimerTask;
 
 public class LongTouchHandler {
     private Context mContext;
-    private GameViewModel mGameViewModel;
+    private GameMode mGameMode;
     private TextToSpeech mTTS;
 
     private Timer mTimer;
     private TimerTask mGridLongClickTask;
 
-    private int mCellTouched;
+    private String mCellString;
 
-    public LongTouchHandler(Context context, GameViewModel gameViewModel) {
+    public LongTouchHandler(Context context, GameMode gameMode) {
         mContext = context;
-        mGameViewModel = gameViewModel;
+        mGameMode = gameMode;
         initTTS();
         initLooper();
     }
@@ -44,7 +41,7 @@ public class LongTouchHandler {
                 public void onInit(int status) {
                     if (status == TextToSpeech.SUCCESS) {
                         //Set Lang
-                        if (mGameViewModel.getGameMode() == GameMode.NATIVE) {
+                        if (mGameMode == GameMode.NATIVE) {
                             mTTS.setLanguage(new Locale("fr"));
                         } else {
                             mTTS.setLanguage(new Locale("en"));
@@ -57,19 +54,10 @@ public class LongTouchHandler {
 
     private void initLooper(){
         //Create a looper if there is none
-        if( Looper.myLooper() == null){ Looper.prepare(); }
+        //Looper must be in thread to make toasts
+        if( mContext.getMainLooper()== null){ Looper.prepare(); }
     }
 
-    public void handleGridLongClick(int cellTouched){
-        mCellTouched = cellTouched;
-        if(mTimer == null){
-            //Create a new timer to be run
-            mTimer = new Timer();
-            resetGridLongClickTimer();
-            mTimer.schedule(mGridLongClickTask, 650);
-        }
-    }
-    
     private void resetGridLongClickTimer(){
         mGridLongClickTask = new TimerTask() {
             @Override
@@ -91,20 +79,19 @@ public class LongTouchHandler {
         };
     }
 
-    private void gridLongClick(){
-        if (mGameViewModel.isLockedCell(mCellTouched)) {
-            String text = mGameViewModel.getMappedString(
-                    mGameViewModel.getCellValue(mCellTouched),
-                    GameMode.opposite(mGameViewModel.getGameMode()));
-
-            if (isComprehensionMode()) {
-                initTTS();
-                mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
-            } else {
-                initLooper();
-                Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
-            }
+    public void handleGridLongClick(String cellString){
+        mCellString = cellString;
+        if(mTimer == null){
+            //Create a new timer to be run
+            mTimer = new Timer();
+            resetGridLongClickTimer();
+            mTimer.schedule(mGridLongClickTask, 650);
         }
+    }
+
+    private void gridLongClick(){
+        //Runs after the timer has successfully finished
+        displayText(mCellString);
     }
 
     public void cancelGridLongClick() {
@@ -115,24 +102,23 @@ public class LongTouchHandler {
         }
     }
 
-    public boolean handleButtonLongClick( int buttonValue ){
-        //Get the opposite language value
-        String buttonText = mGameViewModel.getMappedString(
-                buttonValue,
-                GameMode.opposite(mGameViewModel.getGameMode()));
+    public boolean handleButtonLongClick( String buttonText ){
+        //Get the opposite language value and display it
+        displayText(buttonText);
+        return true;
+    }
 
+    private void displayText(String text) {
         if (isComprehensionMode()){
             initTTS();
-            mTTS.speak(buttonText,TextToSpeech.QUEUE_FLUSH,null,null);
+            mTTS.speak(text,TextToSpeech.QUEUE_FLUSH,null,null);
         }
 
         else {
             initLooper();
-            Toast.makeText(mContext, buttonText, Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, text, Toast.LENGTH_SHORT).show();
         }
-        return true;
     }
-
 
     public void destroyLongTouchHandler() {
         if(mTTS != null){
@@ -140,4 +126,5 @@ public class LongTouchHandler {
             mTTS.shutdown();
         }
     }
+
 }

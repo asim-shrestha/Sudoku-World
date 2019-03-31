@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.sigma.sudokuworld.SettingsFragment;
+import com.sigma.sudokuworld.game.GameMode;
 import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
 import com.sigma.sudokuworld.sudoku.singleplayer.LongTouchHandler;
 import com.sigma.sudokuworld.viewmodels.GameViewModel;
@@ -83,7 +84,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
         };
         mGameViewModel.getButtonLabels().observe(this, buttonLabelsObserver);
 
-        mLongTouchHandler = new LongTouchHandler(this, mGameViewModel);
+        mLongTouchHandler = new LongTouchHandler(this, mGameViewModel.getGameMode());
 
         mSudokuGridView.setOnTouchListener(onSudokuGridTouchListener);
         mSudokuGridView.setCellLabels(this, mGameViewModel.getCellLabels());
@@ -118,7 +119,14 @@ public abstract class SudokuActivity extends AppCompatActivity {
                         cellTouched = cellNum;
 
                         //Handle a potential long click if it is a locked cell
-                        if (mGameViewModel.isLockedCell(cellNum)) {mLongTouchHandler.handleGridLongClick(cellTouched);}
+                        if (mGameViewModel.isLockedCell(cellNum)) {
+                            //Get cell string
+                            String cellText = mGameViewModel.getMappedString(
+                                    mGameViewModel.getCellValue(cellTouched),
+                                    GameMode.opposite(mGameViewModel.getGameMode()));
+
+                            mLongTouchHandler.handleGridLongClick(cellText);
+                        }
 
                         //Check if the cell has been held down or not (If the last highlighted cell is the current cell)
                         if (mSudokuGridView.getHighlightedCell() >= 0 && event.getAction() == MotionEvent.ACTION_MOVE){
@@ -333,9 +341,16 @@ public abstract class SudokuActivity extends AppCompatActivity {
     Button.OnLongClickListener onButtonLongClickListener = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View v) {
+            //Find which button it is
             Button button = (Button) v;
             int buttonValue = getButtonValue(button);
-            return mLongTouchHandler.handleButtonLongClick( buttonValue );
+
+            //Get button string
+            String buttonText = mGameViewModel.getMappedString(
+                    buttonValue,
+                    GameMode.opposite(mGameViewModel.getGameMode()));
+
+            return mLongTouchHandler.handleButtonLongClick( buttonText );
         }
     };
 
