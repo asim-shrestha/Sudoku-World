@@ -103,12 +103,7 @@ public abstract class SudokuActivity extends AppCompatActivity {
 
                         //Clear previous highlighted cell
                         mSudokuGridView.clearHighlightedCell();
-
-                        //If we have selected a cell with an "incorrect" cell highlight , un highlight it
-                        if (mSudokuGridView.IsIncorrectCell(cellNum)) {
-                            mSudokuGridView.clearIncorrectCell(cellNum);
-                        }
-
+                        
                         //Set highlight on the currently touched cell
                         mSudokuGridView.setHighlightedCell(cellNum);
 
