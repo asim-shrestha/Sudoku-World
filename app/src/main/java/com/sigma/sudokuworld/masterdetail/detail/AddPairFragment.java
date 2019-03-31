@@ -16,6 +16,8 @@ import java.util.ArrayList;
 public class AddPairFragment extends AbstractDrillDownFragment {
     private TextInputEditText mNativeWordInput;
     private TextInputEditText mForeignWordInput;
+
+    private LanguageSpinnerAdapter mLanguageSpinnerAdapter;
     private Spinner mNativeSpinner;
     private Spinner mForeignSpinner;
 
@@ -35,12 +37,20 @@ public class AddPairFragment extends AbstractDrillDownFragment {
         mForeignSpinner = view.findViewById(R.id.foreignSpinner);
 
         ArrayList<Language> languages = (ArrayList<Language>) mMasterDetailViewModel.getAllLanguages();
-        LanguageSpinnerAdapter adapter = new LanguageSpinnerAdapter(getContext(), languages);
+        mLanguageSpinnerAdapter = new LanguageSpinnerAdapter(getContext(), languages);
 
-        mNativeSpinner.setAdapter(adapter);
-        mForeignSpinner.setAdapter(adapter);
+        mNativeSpinner.setAdapter(mLanguageSpinnerAdapter);
+        mForeignSpinner.setAdapter(mLanguageSpinnerAdapter);
 
         return view;
+    }
+
+    public Language getNativeLanguage() {
+        return (Language) mNativeSpinner.getSelectedItem();
+    }
+
+    public Language getForeignLanguage() {
+        return (Language) mForeignSpinner.getSelectedItem();
     }
 
     public String getNativeWord() {
