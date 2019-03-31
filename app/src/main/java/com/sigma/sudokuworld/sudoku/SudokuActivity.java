@@ -11,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -50,7 +49,6 @@ public abstract class SudokuActivity extends BaseActivity {
     protected LongTouchHandler mLongTouchHandler;
     protected FragmentManager mFragmentManager;
     protected GameTimer mGameTimer;
-    protected boolean mCellHeld;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +102,7 @@ public abstract class SudokuActivity extends BaseActivity {
         finish();
     }
 
-    //When sudoku grid is touched
+    //When Sudoku grid is touched
     private SudokuGridView.OnTouchListener onSudokuGridTouchListener = new SudokuGridView.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -112,6 +110,7 @@ public abstract class SudokuActivity extends BaseActivity {
             //Through looking at every action case, we can move the highlight to where our finger moves to
             switch (eventAction) {
                 case MotionEvent.ACTION_UP:
+                    //Finger has been lifted so we cancel long click
                     mLongTouchHandler.cancelGridLongClick();
                     break;
                 case MotionEvent.ACTION_DOWN:
@@ -125,6 +124,14 @@ public abstract class SudokuActivity extends BaseActivity {
                         int cellNum = mSudokuGridView.getCellNumberFromCoordinates(x, y);
                         cellTouched = cellNum;
 
+                        //Check if the cell has been held down or not (If the last highlighted cell is the current cell)
+                        if (mSudokuGridView.getHighlightedCell() >= 0 && event.getAction() == MotionEvent.ACTION_MOVE){
+                            if (cellTouched != mSudokuGridView.getHighlightedCell()) {
+                                //Finger moved to a new cell so we cancel long click
+                                mLongTouchHandler.cancelGridLongClick();
+                            }
+                        }
+
                         //Handle a potential long click if it is a locked cell
                         if (mGameViewModel.isLockedCell(cellNum)) {
                             //Get cell string
@@ -133,13 +140,6 @@ public abstract class SudokuActivity extends BaseActivity {
                                     GameMode.opposite(mGameViewModel.getGameMode()));
 
                             mLongTouchHandler.handleGridLongClick(cellText);
-                        }
-
-                        //Check if the cell has been held down or not (If the last highlighted cell is the current cell)
-                        if (mSudokuGridView.getHighlightedCell() >= 0 && event.getAction() == MotionEvent.ACTION_MOVE){
-                            if (cellTouched != mSudokuGridView.getHighlightedCell()) {
-                                mLongTouchHandler.cancelGridLongClick();
-                            }
                         }
 
                         //Clear previous highlighted cell
@@ -151,7 +151,6 @@ public abstract class SudokuActivity extends BaseActivity {
                         //Force redraw view
                         mSudokuGridView.invalidate();
                         mSudokuGridView.performClick();
-
                     }
             }
             return true;
@@ -176,7 +175,6 @@ public abstract class SudokuActivity extends BaseActivity {
         public void onClick(View v) {
             Button button = (Button) v;
             int buttonValue = getButtonValue(button);
-
             int cellNumber = mSudokuGridView.getHighlightedCell();
 
             //No cell is highlighted or a locked cell is highlighted
@@ -204,7 +202,7 @@ public abstract class SudokuActivity extends BaseActivity {
     };
 
     public void onCheckAnswerPressed(View v) {
-        if (mGameViewModel == null) return;
+        if (mGameViewModel == null) { return; }
 
         //Check if cell is selected
         //If a cell is selected, check if that cell is correct
@@ -217,7 +215,7 @@ public abstract class SudokuActivity extends BaseActivity {
                 mSoundPlayer.playEmptyButtonSound();
             }
 
-            //Cell is right
+            //Cell is correct
             else if (
                     mGameViewModel.isCellCorrect(highlightedCell)
                     && !mGameViewModel.isLockedCell(highlightedCell)
@@ -240,12 +238,12 @@ public abstract class SudokuActivity extends BaseActivity {
             return;
         }
 
-        //Checks if the answers are right and displays the first wrong cell (if any)
-        ArrayList<Integer> incorrectCells= mGameViewModel.getIncorrectCells();
-        //Clear highlights / what cell is selected for input
+        //Checks if the whole board is right and displays all of the wrong cells
+        ArrayList<Integer> incorrectCells = mGameViewModel.getIncorrectCells();
+        //Clear the selected cell highlight
         mSudokuGridView.clearHighlightedCell();
 
-        //Case where answer is correct
+        //The Sudoku board is correct
         if (incorrectCells.size() == 0) {
             mSoundPlayer.playCorrectSound();
             Toast.makeText(getBaseContext(),
@@ -253,7 +251,7 @@ public abstract class SudokuActivity extends BaseActivity {
                     Toast.LENGTH_LONG).show();
         }
 
-        //Case where answer is incorrect
+        //The Sudoku board is incorrect
         else {
             mSudokuGridView.setIncorrectCells(incorrectCells);
             mSoundPlayer.playWrongSound();
@@ -272,6 +270,7 @@ public abstract class SudokuActivity extends BaseActivity {
             //No cell is highlighted
             mSoundPlayer.playEmptyButtonSound();
         } else {
+            //Clear the cell
             mGameViewModel.setCellValue(cellNumber, 0);
             mSudokuGridView.clearHighlightedCell();
             mSudokuGridView.clearIncorrectCell(cellNumber);
