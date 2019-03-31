@@ -1,4 +1,4 @@
-package com.sigma.sudokuworld.viewmodels
+package com.sigma.sudokuworld
 
 import com.sigma.sudokuworld.game.GameDifficulty
 import com.sigma.sudokuworld.game.GameMode
@@ -8,11 +8,11 @@ import org.junit.Test
 import org.junit.Assert.*
 import java.lang.IndexOutOfBoundsException
 
-class GameTest {
+class GameEntityUnitTest {
     private val cells: IntArray = intArrayOf(1, 2, 4, 6, 8)
     private val solutions: IntArray = intArrayOf(1, 3, 5, 7, 9)
     private val locked: BooleanArray = booleanArrayOf(true, false, false, false, false)
-    private val game = Game(1, 1, GameDifficulty.MEDIUM, GameMode.NUMBERS, cells, solutions, locked)
+    private val game = Game(1, 1, 9, GameDifficulty.MEDIUM, GameMode.NUMBERS, cells, solutions, locked, 0)
 
     @Test(expected = IndexOutOfBoundsException::class)
     fun indexOutOfBoundsException() {
