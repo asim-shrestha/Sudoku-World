@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SudokuWorld</string>
+    <string name="app_name">Sudoku World</string>
     <string name="splash_group_name">SIGMA</string>
     <string name="splash_group_literal">GROUP</string>
     <string name="play_button">Play</string>
