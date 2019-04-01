@@ -11,6 +11,7 @@ import com.google.firebase.database.*;
 import com.sigma.sudokuworld.persistence.db.AppDatabase;
 import com.sigma.sudokuworld.persistence.db.daos.SetDao;
 import com.sigma.sudokuworld.persistence.db.daos.PairWithSetDao;
+import com.sigma.sudokuworld.persistence.db.entities.Language;
 import com.sigma.sudokuworld.persistence.db.entities.Set;
 import com.sigma.sudokuworld.persistence.db.entities.PairWithSet;
 import com.sigma.sudokuworld.persistence.db.entities.Word;
@@ -69,7 +70,7 @@ public class WordSetRepository {
      * Gets a set from FireBase db and adds it to the local db
      * @param fireBaseSet set to get
      */
-    public void downloadSet(FireBaseSet fireBaseSet) {
+    public void downloadSet(final FireBaseSet fireBaseSet) {
         mFireBase.getReference().child("sets").child(fireBaseSet.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
@@ -81,12 +82,12 @@ public class WordSetRepository {
                     Set set = new Set(0, true, fireBaseWordSet.getName(), fireBaseWordSet.getDescription());
                     long setID = setDao.insert(set);
 
-                    long nLangId = mLanguageRepository.insertLanguage("Test lang", fireBaseWordSet.getNativeLanguageCode()); //TODO: FIX LANG
-                    long fLangId = mLanguageRepository.insertLanguage("Test lang", fireBaseWordSet.getForeignLanguageCode()); //TODO: FIX LANG
+                    Language nLang = mLanguageRepository.getLanguageByCode(fireBaseWordSet.getNativeLanguageCode());
+                    Language fLang = mLanguageRepository.getLanguageByCode(fireBaseWordSet.getForeignLanguageCode());
 
                     for (FireBaseWordPair wp : fireBaseWordSet.getWordPairs()) {
-                        Word nWord = new Word(0, nLangId, wp.getNativeWord());
-                        Word fWord = new Word(0, fLangId, wp.getForeignWord());
+                        Word nWord = new Word(0, nLang.getLanguageID(), wp.getNativeWord());
+                        Word fWord = new Word(0, fLang.getLanguageID(), wp.getForeignWord());
 
                         long pairID = mWordPairRepository.saveWordPair(nWord, fWord);
                         mPairWithSetDao.insert(new PairWithSet(setID, pairID));
@@ -106,18 +107,31 @@ public class WordSetRepository {
      * @param set set to upload
      */
     public void uploadSetToFireBase(Set set) {
+        String nLangName = "";
+        String fLangName = "";
+
+
 
         List<FireBaseWordPair> fireBaseWordPairs = new LinkedList<>();
         for (WordPair wp: getAllWordPairsInSet(set.getSetID())) {
+
+            if (nLangName.isEmpty() || fLangName.isEmpty()) {
+                nLangName = wp.getNativeLanguageName();
+                fLangName = wp.getForeignLanguageName();
+            }
+
             fireBaseWordPairs.add(new FireBaseWordPair(wp.getNativeWord().getWord(), wp.getForeignWord().getWord()));
         }
+
+        if (nLangName.isEmpty()) nLangName = "English";
+        if (fLangName.isEmpty()) fLangName = "French";
 
         FireBaseWordSet wordSet = new FireBaseWordSet(
                 "parent",
                 set.getName(),
                 set.getDescription(),
-                "en",
-                "fr",   //TODO: fix lang
+                mLanguageRepository.getLanguageByName(nLangName).getCode(),
+                mLanguageRepository.getLanguageByName(fLangName).getCode(),
                 fireBaseWordPairs);
 
         mFireBase.getReference().child("sets").push().setValue(wordSet);

@@ -19,16 +19,11 @@ public class LanguageRepository {
         return mLanguageDao.getAll();
     }
 
-    public long insertLanguage(String name, String code) {
-        Language language = mLanguageDao.getLanguageByCode(code);
+    public Language getLanguageByCode(String code) {
+        return mLanguageDao.getLanguageByCode(code);
+    }
 
-        long langID;
-        if (language == null) {
-             langID = mLanguageDao.insert(new Language(0, name, code));
-        } else {
-            langID = language.getLanguageID();
-        }
-
-        return langID;
+    public Language getLanguageByName(String name) {
+        return mLanguageDao.getLanguageByName(name);
     }
 }

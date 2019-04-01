@@ -42,6 +42,9 @@ public class AddPairFragment extends AbstractDrillDownFragment {
         mNativeSpinner.setAdapter(mLanguageSpinnerAdapter);
         mForeignSpinner.setAdapter(mLanguageSpinnerAdapter);
 
+        mForeignSpinner.setSelection(0);
+        mForeignSpinner.setSelection(1);
+
         return view;
     }
 
