@@ -19,6 +19,7 @@ import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class SudokuGridView extends View {
@@ -367,6 +368,7 @@ public class SudokuGridView extends View {
 
 
     private void drawIncorrectCellFill(Canvas canvas) {
+
         // If its the cell that's currently INCORRECT, draw its highlight
         int incorrectCellsLen = mIncorrectCells.size();
         for (int i = 0; i < incorrectCellsLen; i++){
@@ -472,6 +474,7 @@ public class SudokuGridView extends View {
     public boolean IsIncorrectCell(int cellNumber){
         return mIncorrectCells.contains(cellNumber);
     }
+
     public void setIncorrectCells(ArrayList<Integer> incorrectCells) {
         mIncorrectCells.clear();
         mIncorrectCells.addAll(incorrectCells);
@@ -480,8 +483,22 @@ public class SudokuGridView extends View {
         if(!mIncorrectCells.contains(cellNumber))
             mIncorrectCells.add(cellNumber);
     }
-    public void clearIncorrectCell(int cellNumber) {
+    public void removeIncorrectCell(int cellNumber) {
         int index = mIncorrectCells.indexOf(cellNumber);
-        if (index != -1) { mIncorrectCells.remove(mIncorrectCells.indexOf(cellNumber)); }
+        if (index != -1) { mIncorrectCells.remove(index); }
+    }
+
+    public void clearALlIncorrectCells() {
+        mIncorrectCells.clear();
+    }
+
+    public void clearEmptyIncorrectCells() {
+        Iterator<Integer> iter = mIncorrectCells.iterator();
+
+        while (iter.hasNext()) {
+            int cellNumber = iter.next();
+
+            if (mCellLabels[cellNumber].isEmpty()) iter.remove();
+        }
     }
 }
