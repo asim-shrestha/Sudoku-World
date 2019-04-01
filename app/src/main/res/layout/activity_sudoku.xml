@@ -1,61 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".sudoku.SudokuActivity">
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent"
+                                             tools:context=".sudoku.SudokuActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="8dp"
-        android:orientation="vertical">
-
-        <android.support.constraint.ConstraintLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
+    <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
+            android:background="@color/colorAccent"
+            android:theme="?attr/actionBarTheme"
+            android:id="@+id/toolbar"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:background="@drawable/game_header">
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:minHeight="40dp">
 
-            <ImageButton
+        <ImageButton
                 android:id="@+id/backButton"
-                android:layout_width="0dp"
-                android:layout_height="30dp"
-                android:contentDescription="@string/backButton"
-                android:background="@drawable/ic_back_button_icon"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="6"
+                android:layout_weight="1"
+                android:contentDescription="@string/backButton"
+                android:background="@drawable/ic_back_button_icon"/>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.75"
                 android:text="@string/app_name"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="@color/colorWhite"
-                android:textAlignment="center"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/backButton" />
+                android:textAlignment="center"/>
 
-            <ImageButton
+        <ImageButton
                 android:id="@+id/settingsButton"
-                android:layout_width="0dp"
-                android:layout_height="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:contentDescription="@string/settingsHeader"
                 android:background="@drawable/ic_settings_icon"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                android:layout_gravity="end"
+                android:scaleType="centerInside"/>
+    </android.support.v7.widget.Toolbar>
 
-        </android.support.constraint.ConstraintLayout>
-
-        <view
+    <view
             android:id="@+id/sudokuGrid_view"
             class="com.sigma.sudokuworld.sudoku.SudokuGridView"
             android:layout_width="wrap_content"
@@ -67,69 +61,126 @@
             app:gridPaintStrokeWidth="0.6dp"
 
             app:highlightedCellColour="@color/colorHighlight"
-            app:layout_constraintBottom_toBottomOf="parent"
 
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:lockedCellColour="@color/colorLockedCell"
-            app:incorrectCellColour="@color/colorIncorrect"/>
+            app:incorrectCellColour="@color/colorIncorrect"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"/>
+
+    <LinearLayout
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/fragment_container"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/sudokuGrid_view"
+            android:layout_marginBottom="8dp"
+            android:layout_width="0dp">
+
+        <!--<android.support.constraint.ConstraintLayout-->
+        <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+        <!--xmlns:tools="http://schemas.android.com/tools"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:background="@drawable/game_header">-->
+
+        <!--<ImageButton-->
+        <!--android:id="@+id/backButton"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="30dp"-->
+        <!--android:contentDescription="@string/backButton"-->
+        <!--android:background="@drawable/ic_back_button_icon"-->
+        <!--app:layout_constraintTop_toTopOf="parent"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="parent" />-->
+
+        <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_weight="6"-->
+        <!--android:text="@string/app_name"-->
+        <!--android:textSize="22sp"-->
+        <!--android:textStyle="bold"-->
+        <!--android:textColor="@color/colorWhite"-->
+        <!--android:textAlignment="center"-->
+        <!--app:layout_constraintTop_toTopOf="parent"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintStart_toEndOf="@id/backButton" />-->
+
+        <!--<ImageButton-->
+        <!--android:id="@+id/settingsButton"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="30dp"-->
+        <!--android:contentDescription="@string/settingsHeader"-->
+        <!--android:background="@drawable/ic_settings_icon"-->
+        <!--app:layout_constraintTop_toTopOf="parent"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintEnd_toEndOf="parent" />-->
+
+        <!--</android.support.constraint.ConstraintLayout>-->
 
         <LinearLayout
-            android:id="@+id/buttonLayout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+                android:id="@+id/buttonLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
             <!-- Stretches and pushing thigns to the bottom through layout_weight -->
             <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
             </FrameLayout>
 
             <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                 <Button
-                    android:id="@+id/clearCellButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_margin="0dp"
-                    android:onClick="onClearCellPressed"
-                    android:text="@string/clear_cell_button"
-                    android:background="@drawable/red_button"
-                    android:textColor="@color/colorWhite"/>
+                        android:id="@+id/clearCellButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_margin="0dp"
+                        android:onClick="onClearCellPressed"
+                        android:text="@string/clear_cell_button"
+                        android:background="@drawable/red_button"
+                        android:textColor="@color/colorWhite"/>
 
-            <com.sigma.sudokuworld.sudoku.GameTimer
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/gameTimer"
-                />
+                <com.sigma.sudokuworld.sudoku.GameTimer
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:id="@+id/gameTimer"
+                        />
 
-            <Button
-                android:id="@+id/checkAnswerButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|right"
-                android:layout_margin="0dp"
-                android:onClick="onCheckAnswerPressed"
-                android:text="@string/check_answer_button"
-                android:background="@drawable/red_button"
-                android:textColor="@color/colorWhite"/>
-        </FrameLayout>
+                <Button
+                        android:id="@+id/checkAnswerButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|right"
+                        android:layout_margin="0dp"
+                        android:onClick="onCheckAnswerPressed"
+                        android:text="@string/check_answer_button"
+                        android:background="@drawable/red_button"
+                        android:textColor="@color/colorWhite"/>
+            </FrameLayout>
 
         </LinearLayout>
 
     </LinearLayout>
 
     <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+            android:id="@+id/fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout_editor_absoluteY="33dp"
+            tools:layout_editor_absoluteX="281dp">
 
     </FrameLayout>
 </android.support.constraint.ConstraintLayout>
