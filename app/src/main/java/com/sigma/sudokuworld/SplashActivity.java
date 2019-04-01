@@ -37,7 +37,7 @@ public class SplashActivity extends BaseActivity {
 
         ImageView imageView = findViewById(R.id.sigmaAnimation);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             final AnimatedVectorDrawable animatedVectorDrawable = (AnimatedVectorDrawable) imageView.getDrawable();
 
             //Timer starts animation on launch and exits splash screen

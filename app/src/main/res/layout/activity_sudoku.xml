@@ -7,18 +7,53 @@
     tools:context=".sudoku.SudokuActivity">
 
     <LinearLayout
-        android:id="@+id/gameLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginBottom="8dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        android:orientation="vertical">
+
+        <android.support.constraint.ConstraintLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/game_header">
+
+            <ImageButton
+                android:id="@+id/backButton"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:contentDescription="@string/backButton"
+                android:background="@drawable/ic_back_button_icon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
+                android:text="@string/app_name"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorWhite"
+                android:textAlignment="center"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/backButton" />
+
+            <ImageButton
+                android:id="@+id/settingsButton"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:contentDescription="@string/settingsHeader"
+                android:background="@drawable/ic_settings_icon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </android.support.constraint.ConstraintLayout>
 
         <view
             android:id="@+id/sudokuGrid_view"
@@ -40,21 +75,33 @@
             app:lockedCellColour="@color/colorLockedCell"
             app:incorrectCellColour="@color/colorIncorrect"/>
 
-
-        <FrameLayout
+        <LinearLayout
+            android:id="@+id/buttonLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/clearCellButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_margin="0dp"
-                android:onClick="onClearCellPressed"
-                android:text="@string/clear_cell_button"
-                android:background="@drawable/red_button"
-                android:textColor="@color/colorWhite"/>
+            <!-- Stretches and pushing thigns to the bottom through layout_weight -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/clearCellButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_margin="0dp"
+                    android:onClick="onClearCellPressed"
+                    android:text="@string/clear_cell_button"
+                    android:background="@drawable/red_button"
+                    android:textColor="@color/colorWhite"/>
 
             <com.sigma.sudokuworld.sudoku.GameTimer
                 android:layout_width="wrap_content"
@@ -75,13 +122,14 @@
                 android:textColor="@color/colorWhite"/>
         </FrameLayout>
 
+        </LinearLayout>
 
     </LinearLayout>
 
     <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/fragment_container">
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     </FrameLayout>
 </android.support.constraint.ConstraintLayout>

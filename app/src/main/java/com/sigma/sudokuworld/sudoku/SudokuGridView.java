@@ -41,7 +41,6 @@ public class SudokuGridView extends View {
 
     //Dimensions for the largest string
     private float mMaxTextSize;
-    private float mMaxTextWidth;
 
     private Rect mGridBoundingRect;
 
@@ -55,8 +54,6 @@ public class SudokuGridView extends View {
 
     private Paint mTextPaint;
     private Paint mLockedTextPaint;
-
-    private Float mTextPaintTextHeight;
 
     private Boolean mRectangleCells;
     private String[] mCellLabels;       //Labels for every cell in grid
@@ -136,6 +133,7 @@ public class SudokuGridView extends View {
         labelsLiveData.observe(owner, cellLabelsObserver);
     }
 
+    //TODO: Currently unused, remove later if we decide to never use it
     private void setTextDimensions(){
 
         //Get the length of the maximum label so that every cell is drawn at that size
@@ -152,19 +150,17 @@ public class SudokuGridView extends View {
             }
         }
 
-        //Set the maximum text width based on the largest label
         Paint textPaint = mTextPaint;
         float textWidth = textPaint.measureText(largestLabel);
 
-        //Lower dimensions until text fits in cell
+        //Lower dimensions until text fits within a cell
         while (textWidth > mCellWidth) {
             textPaint.setTextSize(textPaint.getTextSize() - 1);
             textWidth = textPaint.measureText(largestLabel);
         }
 
-        //Update member variables
+        //Update
         mMaxTextSize = textPaint.getTextSize();
-        mMaxTextWidth = textWidth;
     }
 
     public void lazySetLockedCellsLabels(boolean[] lockedCells) {
@@ -177,7 +173,6 @@ public class SudokuGridView extends View {
             else { mCellLabels[i] = ""; }
         }
         mMaxTextSize = 0;
-        mMaxTextWidth = 0;
         invalidate();
     }
 
@@ -233,6 +228,7 @@ public class SudokuGridView extends View {
         );
 
         mTextPaint.setTextSize(mCellWidth / 2f);
+        mLockedTextPaint.setTextSize(mCellWidth / 2f);
     }
 
     /**
@@ -310,9 +306,6 @@ public class SudokuGridView extends View {
      * @param canvas canvas
      */
     private void drawCellFill(Canvas canvas) {
-        Paint textPaint = mTextPaint;
-        setTextDimensions(); //TODO: Run only one time when cell labels is fully initialized
-
         //Loop through every cell
         for (int i = 0; i < mCellLabels.length; i++) {
             int cx = i % mBoardLength;   //x cell pos
@@ -327,40 +320,50 @@ public class SudokuGridView extends View {
             String label = mCellLabels[i];
 
             if (!label.isEmpty()) {
+                Paint textPaint = mTextPaint;
                 //Determine what kind of cell it is
                 switch (label.charAt(0)){
                     case COMPETITOR_FILLED_FLAG:
                         //Draws the cell fill for squares are filled by other player
-                        drawCellHighlight(canvas, mCompetitorFillPaint, i);
                         label = label.substring(1);
+                        drawCellHighlight(canvas, mCompetitorFillPaint, i);
                         break;
                     case SETTINGS_FILL_FLAG:
                         //Draws the cell fill for locked squares in continue game
-                        drawCellHighlight(canvas, mLockedFillPaint, i);
                         label = label.substring(1);
+                        drawCellHighlight(canvas, mLockedFillPaint, i);
                         break;
                     case LOCKED_CELL_FLAG:
                         //Sets the text color for locked cells to be blue
                         label = label.substring(1);
                         textPaint = mLockedTextPaint;
                         break;
-                    default:
-                        //Sets the text colour to the default color
-                        textPaint = mTextPaint;
-                        break;
                 }
 
-                //Draws cell text if possible
-                textPaint.setTextSize( mMaxTextSize );
-                float textWidth = textPaint.measureText( label );
+                //Measure the width of the label and draw it in the cell
+                float textWidth = textPaint.measureText(label);
+
+                //Text too big for cell decrease size
+                float defaultTextSize = textPaint.getTextSize();
+                while (textWidth > mCellWidth) {
+                    textPaint.setTextSize(textPaint.getTextSize() - 1);
+                    textWidth = textPaint.measureText(label);
+                }
+
+
+
                 canvas.drawText(label,
                         mXOrigin + (cx * mCellWidth) + (mCellWidth / 2f) - (textWidth / 2),
-                        mYOrigin + (cy * mCellHeight)+(mCellHeight + mMaxTextSize)/2f,
+                        mYOrigin + (cy * mCellHeight)+(mCellHeight + textPaint.getTextSize())/2f,
 ///CENTERS NUMBERS ONLY   mYOrigin + (cy * mCellHeight)+(mCellHeight/2f)+ (mCellHeight - mTextPaintTextHeight)/2f,
                         textPaint);
+
+                //Reset size
+                textPaint.setTextSize(defaultTextSize);
             }
         }
     }
+
 
 
     private void drawIncorrectCellFill(Canvas canvas) {

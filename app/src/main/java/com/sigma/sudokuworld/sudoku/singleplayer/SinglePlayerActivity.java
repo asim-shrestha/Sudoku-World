@@ -8,7 +8,7 @@ import com.sigma.sudokuworld.sudoku.SudokuActivity;
 import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
 import com.sigma.sudokuworld.viewmodels.SingleplayerViewModelFactory;
 
-public abstract class SinglePlayerActivity extends SudokuActivity {
+public class SinglePlayerActivity extends SudokuActivity {
     protected long mSaveID = 0;
     protected SinglePlayerViewModel mSinglePlayerViewModel;
 
