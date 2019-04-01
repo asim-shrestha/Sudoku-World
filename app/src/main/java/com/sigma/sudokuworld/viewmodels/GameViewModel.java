@@ -142,7 +142,7 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
             flags += SudokuGridView.COMPETITOR_FILLED_FLAG;
         }
 
-        labels.set(cellNumber, flags + valueToMappedLabel(value, gameMode));
+        labels.set(cellNumber, flags + valueToMappedLabel(value, GameMode.opposite(gameMode)));
         updateLiveLabels();
     }
 
@@ -203,9 +203,9 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
             String label = "";
             if (mGame.isLocked(i)) {
                 label += KeyConstants.CELL_LOCKED_FLAG;
-                label += valueToMappedLabel(mGame.getCellValue(i), GameMode.opposite(gameMode));
-            } else {
                 label += valueToMappedLabel(mGame.getCellValue(i), gameMode);
+            } else {
+                label += valueToMappedLabel(mGame.getCellValue(i), GameMode.opposite(gameMode));
             }
 
             labels.add(i, label);
@@ -223,7 +223,7 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
 
         for (int i = 0; i < mBoardLength; i++) {
             String label = "";
-            label += valueToMappedLabel(i + 1, GameMode.opposite(gameMode));
+            label += valueToMappedLabel(i + 1, gameMode);
 
             buttonLabels.add(i, label);
         }
@@ -235,8 +235,7 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
         String label = "";
 
         if (value != 0) {
-            if (gameMode == GameMode.NUMBERS || (nativeWordsMap.size() <= value)) //TODO: Remove OR CASE once set sizes >= 12
-                label = Integer.toString(value);
+            if (gameMode == GameMode.NUMBERS || (nativeWordsMap.size() <= value)) label = Integer.toString(value);
             else if (gameMode == GameMode.NATIVE) label = nativeWordsMap.valueAt(value);
             else if (gameMode == GameMode.FOREIGN) label = foreignWordsMap.valueAt(value);
         }
