@@ -121,9 +121,15 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         Search Filters
      */
 
+    public void filterAllLists(String filterQuery) {
+        mFilterQuery = filterQuery.toLowerCase();
 
-    public void filterWordPairs(String query) {
-        mFilterQuery = query.toLowerCase();
+        filterWordPairs(filterQuery);
+        filterSets(filterQuery);
+        filterOnlineSets(filterQuery);
+    }
+
+    private void filterWordPairs(String query) {
         List<WordPair> wordPairs = mAllWordPairs.getValue();
         List<WordPair> filteredWordPairs = new ArrayList<>();
 
@@ -138,8 +144,22 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         mFilteredWordPairs.setValue(filteredWordPairs);
     }
 
-    public void filterSets(String query) {
-        mFilterQuery = query.toLowerCase();
+    public void filterWordPairsByLanguage(Language nativeLanguage, Language foreignLanguage) {
+        List<WordPair> wordPairs = mAllWordPairs.getValue();
+        List<WordPair> filteredWordPairs = new ArrayList<>();
+
+        if (wordPairs != null) {
+            for (WordPair wp : wordPairs) {
+                if (wp.getNativeLanguageName().equals(nativeLanguage.getName()) && wp.getForeignLanguageName().equals(foreignLanguage.getName())) {
+                    filteredWordPairs.add(wp);
+                }
+            }
+        }
+
+        mFilteredWordPairs.setValue(filteredWordPairs);
+    }
+
+    private void filterSets(String query) {
         List<Set> sets = mAllSets.getValue();
         List<Set> filteredSets = new ArrayList<>();
 
@@ -154,8 +174,7 @@ public class MasterDetailViewModel extends BaseSettingsViewModel {
         mFilteredSets.setValue(filteredSets);
     }
 
-    public void filterOnlineSets(String query) {
-        mFilterQuery = query.toLowerCase();
+    private void filterOnlineSets(String query) {
         List<FireBaseSet> firebaseSets = mOnlineSets.getValue();
         List<FireBaseSet> filteredFirebaseSets = new ArrayList<>();
 

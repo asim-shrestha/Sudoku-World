@@ -12,6 +12,9 @@ interface LanguageDao {
     @Query("SELECT * FROM languages WHERE code = :languageCode")
     fun getLanguageByCode(languageCode: String): Language?
 
+    @Query("SELECT * FROM languages WHERE name = :languageName")
+    fun getLanguageByName(languageName: String): Language?
+
     @Query("SELECT * FROM languages WHERE languageID = :languageID")
     fun getLanguageByID(languageID: Int): Language?
 

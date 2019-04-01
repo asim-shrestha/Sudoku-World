@@ -38,7 +38,6 @@ public abstract class SudokuActivity extends BaseActivity {
     protected ImageButton mSettingsButton;
     private SoundPlayer mSoundPlayer;
 
-
     protected LongClickHandler mLongClickHandler;
     protected FragmentManager mFragmentManager;
     protected GameTimer mGameTimer;
@@ -83,6 +82,10 @@ public abstract class SudokuActivity extends BaseActivity {
         });
 
         mLongClickHandler = new LongClickHandler(this, mGameViewModel.getGameMode());
+        mLongClickHandler.setTTSLanguage(
+                mGameViewModel.getNativeLanguage().getCode(),
+                mGameViewModel.getForeignLanguage().getCode()
+        );
 
         mSudokuGridView.setOnTouchListener(onSudokuGridTouchListener);
         mSudokuGridView.setCellLabels(this, mGameViewModel.getCellLabels());

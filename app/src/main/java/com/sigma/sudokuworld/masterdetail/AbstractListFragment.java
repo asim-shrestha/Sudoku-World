@@ -15,34 +15,12 @@ public abstract class AbstractListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class);
 
-        //Clearing search results on rotate TODO: search persists rotate. VIEW models make this trick
-        if (savedInstanceState != null) {
-            filterList("");
+        //Shared view model
+        if (this.getActivity() != null) {
+            mMasterDetailViewModel = ViewModelProviders.of(this.getActivity()).get(MasterDetailViewModel.class);
+        } else {
+            mMasterDetailViewModel = ViewModelProviders.of(this).get(MasterDetailViewModel.class);
         }
-
-        setHasOptionsMenu(true);
     }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-
-        SearchView searchView = (SearchView) menu.findItem(R.id.searchItem).getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                filterList(newText);
-                return false;
-            }
-        });
-    }
-
-    public abstract void filterList(String query);
 }
