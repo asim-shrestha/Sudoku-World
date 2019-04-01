@@ -26,6 +26,14 @@ public class MultiplayerFragment extends Fragment {
             }
         });
 
+        Button cancel = mView.findViewById(R.id.cancelButton);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MenuActivity) getActivity()).closeFragment();
+            }
+        });
+
         return mView;
     }
 }
