@@ -40,38 +40,60 @@
                 android:theme="?attr/actionBarTheme"
                 android:minHeight="40dp"
                 android:id="@+id/toolbar"
-                android:layout_weight="1"
+                android:contentInsetLeft="0dp"
+                android:contentInsetStart="0dp"
+                app:contentInsetLeft="0dp"
+                app:contentInsetStart="0dp"
+                android:contentInsetRight="0dp"
+                android:contentInsetEnd="0dp"
+                app:contentInsetRight="0dp"
+                app:contentInsetEnd="0dp"
                 android:layout_height="wrap_content"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp">
+                tools:layout_editor_absoluteX="411dp">
 
-            <ImageButton
-                    android:id="@+id/backButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:contentDescription="@string/backButton"
-                    android:background="@drawable/ic_back_button_icon"/>
+            <android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.75"
-                    android:text="@string/app_name"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/colorWhite"
-                    android:textAlignment="center"/>
+                <ImageButton
+                        android:id="@+id/backButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/backButton"
+                        android:background="@drawable/ic_back_button_icon"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginStart="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        />
 
-            <ImageButton
-                    android:id="@+id/settingsButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:contentDescription="@string/settingsHeader"
-                    android:background="@drawable/ic_settings_icon"
-                    android:layout_gravity="end"
-                    android:scaleType="centerInside"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_name"
+                        android:textSize="22sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorWhite"
+                        android:textAlignment="center"
+                        android:id="@+id/textView11"
+                        android:layout_marginEnd="8dp"
+                        app:layout_constraintEnd_toStartOf="@+id/settingsButton"
+                        app:layout_constraintStart_toEndOf="@+id/backButton"
+                        android:layout_marginStart="8dp"/>
+
+                <ImageButton
+                        android:id="@+id/settingsButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/settingsHeader"
+                        android:background="@drawable/ic_settings_icon"
+                        android:scaleType="centerInside"
+                        android:layout_marginEnd="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+            </android.support.constraint.ConstraintLayout>
         </android.support.v7.widget.Toolbar>
 
         <FrameLayout
@@ -90,6 +112,12 @@
                     android:textColor="@color/colorWhite"/>
 
 
+            <com.sigma.sudokuworld.sudoku.GameTimer
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:id="@+id/gameTimer"/>
+
             <Button
                     android:id="@+id/checkAnswerButton"
                     android:layout_width="wrap_content"
@@ -102,12 +130,6 @@
                     android:textColor="@color/colorWhite"/>
 
         </FrameLayout>
-
-        <com.sigma.sudokuworld.sudoku.GameTimer
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/gameTimer"/>
 
     </LinearLayout>
 
