@@ -180,10 +180,12 @@ public abstract class SudokuActivity extends BaseActivity {
             }
 
             else {
+                mSudokuGridView.clearEmptyIncorrectCells();
+
                 if (mGameViewModel.isCorrectValue(cellNumber, buttonValue) || !mGameViewModel.isHintsEnabled()) {
                     //Correct number is placed in cell
                     mSudokuGridView.clearHighlightedCell();
-                    mSudokuGridView.clearIncorrectCell(cellNumber);
+                    mSudokuGridView.removeIncorrectCell(cellNumber);
                     mSoundPlayer.playPlaceCellSound();
                 } else {
                     //Incorrect value has been placed in cell
@@ -269,7 +271,7 @@ public abstract class SudokuActivity extends BaseActivity {
             //Clear the cell
             mGameViewModel.setCellValue(cellNumber, 0);
             mSudokuGridView.clearHighlightedCell();
-            mSudokuGridView.clearIncorrectCell(cellNumber);
+            mSudokuGridView.removeIncorrectCell(cellNumber);
             mSoundPlayer.playClearCellSound();
             mSudokuGridView.invalidate();
         }
@@ -386,6 +388,7 @@ public abstract class SudokuActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mLongClickHandler.destroyLongTouchHandler();
+
+        if (mLongClickHandler != null) mLongClickHandler.destroyLongTouchHandler();
     }
 }
