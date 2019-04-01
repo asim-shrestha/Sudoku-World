@@ -1,6 +1,7 @@
 package com.sigma.sudokuworld;
 
 import com.sigma.sudokuworld.game.GameDifficulty;
+import com.sigma.sudokuworld.game.GameMode;
 import com.sigma.sudokuworld.game.gen.PuzzleGenerator;
 import com.sigma.sudokuworld.game.gen.PuzzleGenerator.Puzzle;
 import org.junit.Test;
@@ -13,35 +14,44 @@ public class PuzzleGeneratorUnitTest {
 
     @Test
     public void puzzleValidity() {
-        checkValidPuzzle(getPuzzle(4));
-        checkValidPuzzle(getPuzzle(6));
-        checkValidPuzzle(getPuzzle(9));
-        checkValidPuzzle(getPuzzle(12));
-        checkValidPuzzle(getPuzzle(16));
+        //For each game difficulty, check the validity of each puzzle size
+        GameDifficulty[] gameDifficultys = {GameDifficulty.EASY, GameDifficulty.MEDIUM, GameDifficulty.HARD};
+
+        for (int i = 0; i < gameDifficultys.length; i++) {
+            checkValidPuzzle(getPuzzle(4, gameDifficultys[i]));
+            checkValidPuzzle(getPuzzle(6, gameDifficultys[i]));
+            checkValidPuzzle(getPuzzle(9, gameDifficultys[i]));
+            checkValidPuzzle(getPuzzle(12, gameDifficultys[i]));
+            checkValidPuzzle(getPuzzle(16, gameDifficultys[i]));
+        }
     }
 
     @Test
     public void solutionValidity() {
+        //For each game difficulty, check the validity of each puzzle size
+        GameDifficulty[] gameDifficultys = {GameDifficulty.EASY, GameDifficulty.MEDIUM, GameDifficulty.HARD};
 
-        int size = 4;
-        int[] solution = getPuzzle(size).getSoltuion();
-        checkValidSolution(size, solution);
+        for (int i = 0; i < gameDifficultys.length; i++) {
+            int size = 4;
+            int[] solution = getPuzzle(size, gameDifficultys[i]).getSoltuion();
+            checkValidSolution(size, solution);
 
-        size = 6;
-        solution = getPuzzle(size).getSoltuion();
-        checkValidSolution(size, solution);
+            size = 6;
+            solution = getPuzzle(size, gameDifficultys[i]).getSoltuion();
+            checkValidSolution(size, solution);
 
-        size = 9;
-        solution = getPuzzle(size).getSoltuion();
-        checkValidSolution(size, solution);
+            size = 9;
+            solution = getPuzzle(size, gameDifficultys[i]).getSoltuion();
+            checkValidSolution(size, solution);
 
-        size = 12;
-        solution = getPuzzle(size).getSoltuion();
-        checkValidSolution(size, solution);
+            size = 12;
+            solution = getPuzzle(size, gameDifficultys[i]).getSoltuion();
+            checkValidSolution(size, solution);
 
-        size = 16;
-        solution = getPuzzle(size).getSoltuion();
-        checkValidSolution(size, solution);
+            size = 16;
+            solution = getPuzzle(size, gameDifficultys[i]).getSoltuion();
+            checkValidSolution(size, solution);
+        }
 
     }
 
@@ -94,7 +104,7 @@ public class PuzzleGeneratorUnitTest {
             }
         }
 
-        //Check cols
+        //Check columns
         for (int i = 0; i < size; i++) {
 
             //Accounting for empty cell
@@ -116,7 +126,7 @@ public class PuzzleGeneratorUnitTest {
         }
     }
 
-    private Puzzle getPuzzle(int size) {
-        return new PuzzleGenerator(size).generatePuzzle(GameDifficulty.EASY);
+    private Puzzle getPuzzle(int size, GameDifficulty gameDifficulty) {
+        return new PuzzleGenerator(size).generatePuzzle(gameDifficulty);
     }
 }
