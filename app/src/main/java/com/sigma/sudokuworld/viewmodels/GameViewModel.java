@@ -7,8 +7,10 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
 import com.sigma.sudokuworld.game.GameMode;
+import com.sigma.sudokuworld.persistence.LanguageRepository;
 import com.sigma.sudokuworld.persistence.WordSetRepository;
 import com.sigma.sudokuworld.persistence.db.entities.Game;
+import com.sigma.sudokuworld.persistence.db.entities.Language;
 import com.sigma.sudokuworld.persistence.db.views.WordPair;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 import com.sigma.sudokuworld.sudoku.SudokuGridView;
@@ -31,6 +33,9 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
 
     private SparseArray<String> nativeWordsMap;
     private SparseArray<String> foreignWordsMap;
+
+    private Language nativeLanguage;
+    private Language foreignLanguage;
 
     private String TAG = "SinglePlayerViewModel";
 
@@ -58,6 +63,14 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
 
     public LiveData<Boolean> isGameWon() {
         return gameWonLiveData;
+    }
+
+    public Language getNativeLanguage() {
+        return nativeLanguage;
+    }
+
+    public Language getForeignLanguage() {
+        return foreignLanguage;
     }
 
     public String getMappedString(int value, GameMode mode) {
@@ -157,7 +170,17 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
 
     private void initializeWordMaps() {
         WordSetRepository wordSetRepository = new WordSetRepository(getApplication());
+        LanguageRepository languageRepository = new LanguageRepository(getApplication());
+
         List<WordPair> wordPairs = wordSetRepository.getAllWordPairsInSet(mGame.getSetID());
+
+        if (nativeLanguage == null && !wordPairs.isEmpty()) {
+            nativeLanguage = languageRepository.getLanguageByName(wordPairs.get(0).getNativeLanguageName());
+        }
+
+        if (foreignLanguage == null && !wordPairs.isEmpty()) {
+            foreignLanguage = languageRepository.getLanguageByName(wordPairs.get(0).getForeignLanguageName());
+        }
 
         nativeWordsMap = new SparseArray<>();
         nativeWordsMap.append(0, "");

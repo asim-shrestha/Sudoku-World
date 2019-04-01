@@ -16,7 +16,10 @@ import java.util.TimerTask;
 public class LongClickHandler {
     private Context mContext;
     private GameMode mGameMode;
+
     private TextToSpeech mTTS;
+    private Locale nativeLocal;
+    private Locale foreignLocal;
 
     private Timer mTimer;
     private TimerTask mGridLongClickTask;
@@ -30,11 +33,19 @@ public class LongClickHandler {
         initLooper();
     }
 
+    public void setTTSLanguage(String nativeLanguageCode, String foreignLanguageCode) {
+        nativeLocal = new Locale(nativeLanguageCode);
+        foreignLocal = new Locale(foreignLanguageCode);
+    }
+
     private boolean isComprehensionMode() {
         return PersistenceService.loadAudioModeSetting(mContext);
     }
 
     private void initTTS(){
+        if (nativeLocal == null) nativeLocal = new Locale("em");
+        if (foreignLocal == null) foreignLocal = new Locale("fr");
+
         if (mTTS == null) {
             mTTS = new TextToSpeech(mContext, new TextToSpeech.OnInitListener() {
                 @Override
@@ -42,9 +53,9 @@ public class LongClickHandler {
                     if (status == TextToSpeech.SUCCESS) {
                         //Set Lang
                         if (mGameMode == GameMode.NATIVE) {
-                            mTTS.setLanguage(new Locale("fr"));
+                            mTTS.setLanguage(foreignLocal);
                         } else {
-                            mTTS.setLanguage(new Locale("en"));
+                            mTTS.setLanguage(nativeLocal);
                         }
                     }
                 }
