@@ -82,8 +82,12 @@
     - Given: that the user is in the puzzle screen
     - When: the user presses the settings icon at the top right of the screen
     - Then: a settings menu will appear, enabling the user to change desired settings<br/><br/>
+    
 
-
+- User Story: As a language learner, I would like to be able to learn up to 4 different languages.
+    - Given: that the user is in the set builder
+    - When: the user wants to make a new word set, the user can add word pairs of the desired language
+    - Then: the user is able to create a worded said in either english, spanish, french, or russian<br/><br/>
 
 
 # User stories of past iterations:
