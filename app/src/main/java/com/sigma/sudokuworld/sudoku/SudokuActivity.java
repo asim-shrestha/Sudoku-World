@@ -386,6 +386,7 @@ public abstract class SudokuActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mLongClickHandler.destroyLongTouchHandler();
+
+        if (mLongClickHandler != null) mLongClickHandler.destroyLongTouchHandler();
     }
 }
