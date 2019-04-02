@@ -3,6 +3,7 @@ package com.sigma.sudokuworld;
 import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,10 +12,8 @@ import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -23,11 +22,11 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.*;
 import com.google.android.gms.games.*;
 import com.google.android.gms.games.multiplayer.Invitation;
+import com.google.android.gms.games.multiplayer.InvitationCallback;
 import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.sigma.sudokuworld.audio.MusicPlayer;
 import com.sigma.sudokuworld.audio.SoundPlayer;
 import com.sigma.sudokuworld.persistence.db.entities.Game;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
@@ -146,7 +145,8 @@ public class MenuActivity extends BaseActivity {
         }
 
         else if (requestCode == RC_INBOX && resultCode == Activity.RESULT_OK) {
-            inboxResult(data.getExtras());
+            Invitation invitation = data.getParcelableExtra(Multiplayer.EXTRA_INVITATION);
+            inboxResult(invitation);
         }
     }
 
@@ -173,8 +173,21 @@ public class MenuActivity extends BaseActivity {
         });
     }
 
-    public void inboxResult(Bundle data) {
-        Invitation invitation = data.getParcelable(Multiplayer.EXTRA_INVITATION);
+    public void showInviteDialog(final Invitation invitation) {
+        new AlertDialog.Builder(this)
+                .setTitle("Game Invite")
+                .setMessage(invitation.getInviter().getDisplayName() + " has invited you to a game!")
+                .setNeutralButton("Cancel", null)  //TODO decline invite
+                .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        inboxResult(invitation);
+                    }
+                })
+                .show();
+    }
+
+    private void inboxResult(Invitation invitation) {
 
         if (invitation != null) {
             Intent intent = new Intent(getBaseContext(), MultiplayerActivity.class);
@@ -275,13 +288,40 @@ public class MenuActivity extends BaseActivity {
                 }
             }
         });
+
+        //Checks if the user has accepted an invitation from the notification bar
+        mGamesClient.getActivationHint().addOnSuccessListener(new OnSuccessListener<Bundle>() {
+            @Override
+            public void onSuccess(Bundle bundle) {
+                if (bundle != null) {
+                    Invitation invitation = bundle.getParcelable(Multiplayer.EXTRA_INVITATION);
+                    inboxResult(invitation);
+                }
+            }
+        });
+
+        mInvitationsClient.registerInvitationCallback(mInvitationCallback);
     }
+
+    private InvitationCallback mInvitationCallback = new InvitationCallback() {
+        @Override
+        public void onInvitationReceived(@NonNull final Invitation invitation) {
+            showInviteDialog(invitation);
+        }
+
+        @Override
+        public void onInvitationRemoved(@NonNull String s) {
+            //STUB
+        }
+    };
 
     private void onDisconnected() {
         mPlayersClient = null;
         mGamesClient = null;
+
+        mInvitationsClient.unregisterInvitationCallback(mInvitationCallback);
         mInvitationsClient = null;
+
         mPlayerLabel.setText(R.string.signedOut);
     }
 }
-
