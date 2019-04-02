@@ -94,6 +94,7 @@ public class MultiplayerActivity extends SudokuActivity {
                     displayWaitingRoom();
                     break;
                 case PLAYING:
+                    hideLoadingScreen();
                     displayGame();
                     break;
                 case OVER:
@@ -150,8 +151,11 @@ public class MultiplayerActivity extends SudokuActivity {
         mFragmentManager
                 .beginTransaction()
                 .replace(R.id.fragment_container, mLoadingScreenFragment)
-                .addToBackStack(null)
                 .commit();
+    }
+
+    void hideLoadingScreen() {
+        mFragmentManager.beginTransaction().remove(mLoadingScreenFragment).commit();
     }
 
     void displayGame() {
@@ -206,17 +210,15 @@ public class MultiplayerActivity extends SudokuActivity {
                 mMultiplayerViewModel.setCompetitorFilledCell(integer, false);
             }
         });
-
-        mFragmentManager.popBackStack();
     }
 
     private void displayGameOverScreen() {
-        GameOverFragment gameOverFragment = GameOverFragment.newInstance("FIX ME", true);
+        GameOverFragment gameOverFragment = GameOverFragment
+                .newInstance(mConnectionViewModel.getWinnerParticipant(), mConnectionViewModel.isWinnerMe());
 
         mFragmentManager
                 .beginTransaction()
                 .replace(R.id.fragment_container, gameOverFragment)
-                .addToBackStack(null)
                 .commit();
     }
 }

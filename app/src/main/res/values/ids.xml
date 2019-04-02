@@ -2,6 +2,5 @@
 <resources>
     <string name="app_id">202154014754</string>
     <string name="package_name">com.sigma.sudokuworld</string>
-    <!--<string name="achievement_lightning_fast">HzkA4Kz04F8MRYIAze</string>-->
-    <!--<string name="leaderboard_my_little_leaderboard">HzkA4Kz04F8MRYIBVU</string>-->
+    <string name="leaderboard_wins">CgkIovDFivEFEAIQBQ</string>
 </resources>

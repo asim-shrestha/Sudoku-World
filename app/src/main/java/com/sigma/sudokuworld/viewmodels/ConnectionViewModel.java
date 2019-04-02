@@ -12,15 +12,18 @@ import android.util.Log;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.games.*;
+import com.google.android.gms.games.leaderboard.Leaderboard;
+import com.google.android.gms.games.leaderboard.LeaderboardScore;
+import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.*;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.game.GameDifficulty;
 import com.sigma.sudokuworld.game.gen.PuzzleGenerator;
-import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +48,7 @@ public class ConnectionViewModel extends AndroidViewModel {
     //Clients
     private RealTimeMultiplayerClient mRealTimeMultiplayerClient;
     private PlayersClient mPlayersClient;
+    private LeaderboardsClient mLeaderboardsClient;
 
     //My account
     private GoogleSignInAccount mGoogleSignInAccount;
@@ -64,6 +68,9 @@ public class ConnectionViewModel extends AndroidViewModel {
     //Game
     private int[] mInitialCells;
     private int[] mSolutionCells;
+
+    //Game over
+    private Participant mWinnerParticipant;
 
     //ViewModel
     private Application mApplication;
@@ -102,6 +109,7 @@ public class ConnectionViewModel extends AndroidViewModel {
                 mMyPlayerID = task.getResult();
             }
         });
+        mLeaderboardsClient = Games.getLeaderboardsClient(mApplication, mGoogleSignInAccount);
     }
 
     /*
@@ -153,12 +161,40 @@ public class ConnectionViewModel extends AndroidViewModel {
     private void performHostSetup() {
         Log.d(TAG, "performHostSetup: I AM HOST");
 
-        PuzzleGenerator.Puzzle puzzle = new PuzzleGenerator(4).generatePuzzle(GameDifficulty.HARD);
-
+        PuzzleGenerator.Puzzle puzzle = new PuzzleGenerator(4).generatePuzzle(GameDifficulty.EASY);
         broadcastPuzzle(puzzle.getCellValues(), puzzle.getSoltuion());
     }
 
     public void claimWin() {
+        Log.d(TAG, "claimWin: I WON");
+
+        mWinnerParticipant = getParticipant(mMyParticipantID);
+        final String learderboardID = mApplication.getString(R.string.leaderboard_wins);
+
+        mLeaderboardsClient.loadCurrentPlayerLeaderboardScore(
+                learderboardID,
+                LeaderboardVariant.TIME_SPAN_ALL_TIME,
+                LeaderboardVariant.COLLECTION_PUBLIC).addOnSuccessListener(new OnSuccessListener<AnnotatedData<LeaderboardScore>>() {
+            @Override
+            public void onSuccess(AnnotatedData<LeaderboardScore> leaderboardScoreAnnotatedData) {
+                Log.d(TAG, "onClaimWin: SUCCESSFULLY FETCHED LEADER BOARD SCORE");
+
+                long score;
+                LeaderboardScore leaderboardScore = leaderboardScoreAnnotatedData.get();
+                if (leaderboardScore != null) {
+                    Log.d(TAG, "onClaimWin: ADDED TO LEADER BOARD SCORE");
+
+                    score = leaderboardScore.getRawScore();
+                    score++;
+                } else {
+                    Log.d(TAG, "onClaimWin: PLAYER NOT ON LEADER BOARD. ADDING");
+                    score = 1;
+                }
+
+                mLeaderboardsClient.submitScore(learderboardID, score);
+            }
+        });
+
         broadcastWin();
     }
 
@@ -413,6 +449,8 @@ public class ConnectionViewModel extends AndroidViewModel {
             }
 
             else if (bytes[0] == WINNER_PROTOCOL) {
+                mWinnerParticipant =  getParticipant(realTimeMessage.getSenderParticipantId());
+
                 endGame();
             }
         }
@@ -477,6 +515,7 @@ public class ConnectionViewModel extends AndroidViewModel {
     }
 
     private void broadcastWin() {
+
         for (Participant p : mParticipants) {
             if (isParticipantMe(p.getParticipantId())) continue;
             byte[] bytes = { WINNER_PROTOCOL };
@@ -489,7 +528,7 @@ public class ConnectionViewModel extends AndroidViewModel {
                     .addOnSuccessListener(new OnSuccessListener<Integer>() {
                         @Override
                         public void onSuccess(Integer integer) {
-                            Log.d(TAG, "onSuccess: PUZZLE_PROTOCOL SUCCESSFULLY DELIVERED");
+                            Log.d(TAG, "onSuccess: GAME_WIN_PROTOCOL SUCCESSFULLY DELIVERED");
                             endGame();
                         }
                     });
@@ -542,6 +581,16 @@ public class ConnectionViewModel extends AndroidViewModel {
         leaveRoom();
     }
 
+    public Participant getWinnerParticipant() {
+        return mWinnerParticipant;
+    }
+
+    public boolean isWinnerMe() {
+        if (mWinnerParticipant == null) return false;
+
+        return isParticipantMe(mWinnerParticipant.getParticipantId());
+    }
+
     public Intent getSelectOpponentsIntent() {
         return mSelectOpponentsIntent;
     }
@@ -564,6 +613,16 @@ public class ConnectionViewModel extends AndroidViewModel {
         } else if (resultCode == GamesActivityResultCodes.RESULT_LEFT_ROOM){
             leaveRoom();
         }
+    }
+
+    private Participant getParticipant(String participantID) {
+        for (Participant p : mParticipants) {
+            if (p.getParticipantId().equals(participantID)) {
+                return p;
+            }
+        }
+
+        return null;
     }
 
     public enum GameState {
