@@ -48,6 +48,13 @@
                 app:layout_constraintTop_toTopOf="parent">
 
 
+            <Button
+                    style="@style/AppTheme.RedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Host Game"
+                    android:id="@+id/host"/>
+
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

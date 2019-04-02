@@ -13,6 +13,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -20,10 +21,12 @@ import android.widget.TextView;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.*;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.GamesClient;
 import com.google.android.gms.games.Player;
 import com.google.android.gms.games.PlayersClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.sigma.sudokuworld.audio.MusicPlayer;
 import com.sigma.sudokuworld.audio.SoundPlayer;
 import com.sigma.sudokuworld.persistence.db.entities.Game;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
@@ -40,7 +43,9 @@ public class MenuActivity extends BaseActivity {
     private MenuViewModel mMenuViewModel;
     private SoundPlayer mSoundPlayer;
     private FragmentManager mFragmentManager;
+
     private PlayersClient mPlayersClient;
+    private GamesClient mGamesClient;
 
     private TextView mPlayerLabel;
 
@@ -147,8 +152,9 @@ public class MenuActivity extends BaseActivity {
         closeFragment();
     }
 
-    public void startMultiplayerGame() {
+    public void startMultiplayerGame(boolean isHost) {
         Intent intent = new Intent(getBaseContext(), MultiplayerActivity.class);
+        intent.putExtra(MultiplayerActivity.IS_HOST_KEY, isHost);
         startActivity(intent);
     }
 
@@ -176,7 +182,7 @@ public class MenuActivity extends BaseActivity {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 
         if (GoogleSignIn.hasPermissions(account, signInOptions.getScopeArray())) {
-            // Stub already signed
+            //Already signed in
         } else {
             final GoogleSignInClient signInClient = GoogleSignIn.getClient(this, signInOptions);
             signInClient.silentSignIn().addOnCompleteListener(this, new OnCompleteListener<GoogleSignInAccount>() {
@@ -229,6 +235,9 @@ public class MenuActivity extends BaseActivity {
      */
     private void onConnected(GoogleSignInAccount googleSignInAccount) {
         mPlayersClient = Games.getPlayersClient(this, googleSignInAccount);
+        mGamesClient = Games.getGamesClient(this, googleSignInAccount);
+
+        mGamesClient.setViewForPopups(findViewById(android.R.id.content));
 
         mPlayersClient.getCurrentPlayer().addOnCompleteListener(new OnCompleteListener<Player>() {
             @Override

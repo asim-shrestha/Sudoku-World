@@ -21,7 +21,11 @@
 
     <style name="AppTheme.MenuText" parent="AppTheme.NoActionBar">
         <item name="android:textColor">@color/colorWhite</item>
+    </style>
 
+    <style name="AppTheme.RedButton">
+        <item name="android:background">@drawable/red_button</item>
+        <item name="android:textSize">15sp</item>
     </style>
 
     <style name="MySwitch" parent="@style/Widget.AppCompat.CompoundButton.Switch">

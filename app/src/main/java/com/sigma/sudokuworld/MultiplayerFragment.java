@@ -22,7 +22,15 @@ public class MultiplayerFragment extends Fragment {
         mQuickGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MenuActivity) getActivity()).startMultiplayerGame();
+                ((MenuActivity) getActivity()).startMultiplayerGame(false);
+            }
+        });
+
+        Button host = mView.findViewById(R.id.host);
+        host.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MenuActivity) getActivity()).startMultiplayerGame(true);
             }
         });
 
