@@ -26,6 +26,13 @@
         <item name="android:textSize">15sp</item>
     </style>
 
+    <style name="AppTheme.BlueButton" parent="AppTheme.MenuText">
+        <item name="android:background">@drawable/blue_button</item>
+        <item name="android:layout_width">280dp</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:textSize">21sp</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
