@@ -6,22 +6,22 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.sudoku.SudokuActivity;
 import com.sigma.sudokuworld.viewmodels.ConnectionViewModel;
 import com.sigma.sudokuworld.viewmodels.MultiplayerViewModel;
-import com.sigma.sudokuworld.viewmodels.MultiplayerViewModelFactory;
+import com.sigma.sudokuworld.viewmodels.factories.MultiplayerViewModelFactory;
 
 public class MultiplayerActivity extends SudokuActivity {
     private static final String TAG = "Multiplayer";
+    public static final String IS_HOST_KEY = "host";
 
     private static final int RC_WAITING_ROOM = 276;
+    private static final int RC_PLAYER_INVITE = 277;
 
     private ConnectionViewModel mConnectionViewModel;
-
     private MultiplayerViewModel mMultiplayerViewModel;
     private LoadingScreenFragment mLoadingScreenFragment;
 
@@ -29,11 +29,19 @@ public class MultiplayerActivity extends SudokuActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //TODO make rotation compatible, Currently boots you out of game on rotate. Put in view model?
         mConnectionViewModel = ViewModelProviders.of(this).get(ConnectionViewModel.class);
         mConnectionViewModel.getGameStateLiveData().observe(this, mGameStateObserver);
-
         mLoadingScreenFragment = new LoadingScreenFragment();
+
+        if (savedInstanceState == null) {
+            boolean isHost = getIntent().getBooleanExtra(IS_HOST_KEY, false);
+
+            if (isHost) {
+                mConnectionViewModel.newHostedRoom();
+            } else {
+                mConnectionViewModel.newAutoMatchRoom();
+            }
+        }
     }
 
     @Override
@@ -48,6 +56,10 @@ public class MultiplayerActivity extends SudokuActivity {
 
         if (requestCode == RC_WAITING_ROOM) {
             mConnectionViewModel.setWaitingRoomResult(resultCode);
+        }
+
+        else if (requestCode == RC_PLAYER_INVITE) {
+            mConnectionViewModel.setSelectOpponentsResult(resultCode, data.getExtras());
         }
     }
 
@@ -68,6 +80,9 @@ public class MultiplayerActivity extends SudokuActivity {
             switch(state) {
                 case NEW:
                     displayLoadingScreen();
+                    break;
+                case INVITE:
+                    displayInviteScreen();
                     break;
                 case LOBBY:
                     displayWaitingRoom();
@@ -113,6 +128,11 @@ public class MultiplayerActivity extends SudokuActivity {
                     }
                 })
                 .show();
+    }
+
+    void displayInviteScreen() {
+        Intent intent = mConnectionViewModel.getSelectOpponentsIntent();
+        startActivityForResult(intent, RC_PLAYER_INVITE);
     }
 
     void displayWaitingRoom() {

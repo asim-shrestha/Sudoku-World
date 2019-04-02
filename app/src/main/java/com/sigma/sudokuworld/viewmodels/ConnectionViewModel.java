@@ -12,6 +12,7 @@ import android.util.Log;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.games.*;
+import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.*;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -52,10 +53,12 @@ public class ConnectionViewModel extends AndroidViewModel {
     private ArrayList<Participant> mParticipants;
     private String mHostParticipantID;
     private String mMyParticipantID;
+
+    //Intents
     private Intent mWaitingRoomIntent;
+    private Intent mSelectOpponentsIntent;
 
     //Game
-    private boolean isGameStarted;
     private int[] mInitialCells;
     private int[] mSolutionCells;
 
@@ -69,28 +72,18 @@ public class ConnectionViewModel extends AndroidViewModel {
         super(application);
 
         mApplication = application;
-        mGoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(mApplication);
-
-        if (mGoogleSignInAccount == null) {
-            updateGameState(GameState.SINGED_OUT);
-        }
-
-        isGameStarted = false;
         mGameStateLiveData = new MutableLiveData<>();
         mCompetitorFilledCell = new MutableLiveData<>();
         mCompetitorEmptiedCell = new MutableLiveData<>();
 
-        updateGameState(GameState.NEW);
-
-        onConnected();
-        newAutoMatchRoom();
+        mGoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(mApplication);
+        if (mGoogleSignInAccount == null) {
+            updateGameState(GameState.SINGED_OUT);
+        } else {
+            updateGameState(GameState.NEW);
+            onConnected();
+        }
     }
-
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-   }
-
 
     /**
      * Connect to google
@@ -131,7 +124,6 @@ public class ConnectionViewModel extends AndroidViewModel {
         mInitialCells = initialCells;
         mSolutionCells = solution;
 
-        isGameStarted = true;
         updateGameState(GameState.PLAYING);
     }
 
@@ -173,23 +165,6 @@ public class ConnectionViewModel extends AndroidViewModel {
         updateGameState(GameState.OVER);
     }
 
-    /**
-     * Logic for if we should cancel the game
-     * @return should we cancel the game
-     */
-    private boolean shouldCancelGame() {
-        if (isGameStarted) {
-            int playerCount = 0;
-
-            for (Participant p : mParticipants) {
-                if (p.isConnectedToRoom()) playerCount++;
-            }
-
-            return (playerCount < MIN_PLAYER_COUNT);
-        }
-
-        return false;
-    }
 
     /*
      *
@@ -200,7 +175,7 @@ public class ConnectionViewModel extends AndroidViewModel {
     /**
      * Creates a new auto match lobby
      */
-    private void newAutoMatchRoom() {
+    public void newAutoMatchRoom() {
         Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(1, 1, 0);
 
         mRoomConfig = RoomConfig.builder(mRoomUpdateCallback)
@@ -208,6 +183,38 @@ public class ConnectionViewModel extends AndroidViewModel {
                 .setRoomStatusUpdateCallback(mRoomStatusUpdateCallback)
                 .setAutoMatchCriteria(autoMatchCriteria)
                 .build();
+
+        mRealTimeMultiplayerClient.create(mRoomConfig);
+    }
+
+    public void newHostedRoom() {
+        mRealTimeMultiplayerClient.getSelectOpponentsIntent(1, 1).addOnSuccessListener(new OnSuccessListener<Intent>() {
+            @Override
+            public void onSuccess(Intent intent) {
+                mSelectOpponentsIntent = intent;
+                updateGameState(GameState.INVITE);
+            }
+        });
+    }
+
+    private void buildHostedRoom(Bundle data) {
+
+        //Settings
+        final ArrayList<String> invitess = data.getStringArrayList(Games.EXTRA_PLAYER_IDS);
+        int minAutoPlayers = data.getInt(Multiplayer.EXTRA_MIN_AUTOMATCH_PLAYERS, 0);
+        int maxAutoPlayers = data.getInt(Multiplayer.EXTRA_MAX_AUTOMATCH_PLAYERS, 0);
+
+        RoomConfig.Builder builder = RoomConfig.builder(mRoomUpdateCallback)
+                .setOnMessageReceivedListener(mMessageReceivedListener)
+                .setRoomStatusUpdateCallback(mRoomStatusUpdateCallback)
+                .addPlayersToInvite(invitess);
+
+        if (minAutoPlayers > 0) {
+            Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(minAutoPlayers, maxAutoPlayers, 0);
+            builder.setAutoMatchCriteria(autoMatchCriteria);
+        }
+
+        mRoomConfig = builder.build();
 
         mRealTimeMultiplayerClient.create(mRoomConfig);
     }
@@ -249,7 +256,9 @@ public class ConnectionViewModel extends AndroidViewModel {
         //Called when all players are connected
         @Override
         public void onRoomConnected(int statusCode, @Nullable Room room) {
-            Log.d(TAG, "onRoomConnected: CONNECTED TO ROOM");
+            Log.d(TAG, "onRoomConnected: CONNECTED TO ROOM" +
+                    "\nROOM ID: " + room.getRoomId() +
+                    "\nCREATOR ID: " + room.getCreatorId());
 
             if (statusCode != GamesCallbackStatusCodes.OK)
                 gameError("OnRoomConnected: ERROR CODE  " + GamesCallbackStatusCodes.getStatusCodeString(statusCode));
@@ -511,6 +520,18 @@ public class ConnectionViewModel extends AndroidViewModel {
         leaveRoom();
     }
 
+    public Intent getSelectOpponentsIntent() {
+        return mSelectOpponentsIntent;
+    }
+
+    public void setSelectOpponentsResult(int resultCode, Bundle data) {
+        if (resultCode != RESULT_OK) {
+            leaveRoom();
+        } else {
+            buildHostedRoom(data);
+        }
+    }
+
     public Intent getWaitingRoomIntent() {
         return mWaitingRoomIntent;
     }
@@ -524,6 +545,6 @@ public class ConnectionViewModel extends AndroidViewModel {
     }
 
     public enum GameState {
-        NEW, LOBBY, SETUP, PLAYING, OVER, ERROR, LEAVE, PEER_LEFT, SINGED_OUT
+        NEW, INVITE, LOBBY, SETUP, PLAYING, OVER, ERROR, LEAVE, PEER_LEFT, SINGED_OUT
     }
 }
