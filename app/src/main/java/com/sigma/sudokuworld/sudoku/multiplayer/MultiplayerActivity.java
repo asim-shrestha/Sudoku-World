@@ -17,6 +17,7 @@ import com.sigma.sudokuworld.viewmodels.factories.MultiplayerViewModelFactory;
 public class MultiplayerActivity extends SudokuActivity {
     private static final String TAG = "Multiplayer";
     public static final String IS_HOST_KEY = "host";
+    public static final String INVITATION_KEY = "invite";
 
     private static final int RC_WAITING_ROOM = 276;
     private static final int RC_PLAYER_INVITE = 277;
@@ -34,10 +35,15 @@ public class MultiplayerActivity extends SudokuActivity {
         mLoadingScreenFragment = new LoadingScreenFragment();
 
         if (savedInstanceState == null) {
-            boolean isHost = getIntent().getBooleanExtra(IS_HOST_KEY, false);
+            Intent intent = getIntent();
+
+            boolean isHost = intent.getBooleanExtra(IS_HOST_KEY, false);
+            String invite = intent.getStringExtra(INVITATION_KEY);
 
             if (isHost) {
                 mConnectionViewModel.newHostedRoom();
+            } else if (invite != null && !invite.isEmpty()) {
+                mConnectionViewModel.joinHostedRoom(invite);
             } else {
                 mConnectionViewModel.newAutoMatchRoom();
             }

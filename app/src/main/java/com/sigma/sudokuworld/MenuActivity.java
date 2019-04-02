@@ -1,5 +1,6 @@
 package com.sigma.sudokuworld;
 
+import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Build;
@@ -20,11 +21,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.*;
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.GamesClient;
-import com.google.android.gms.games.Player;
-import com.google.android.gms.games.PlayersClient;
+import com.google.android.gms.games.*;
+import com.google.android.gms.games.multiplayer.Invitation;
+import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.sigma.sudokuworld.audio.MusicPlayer;
 import com.sigma.sudokuworld.audio.SoundPlayer;
@@ -39,6 +40,7 @@ import java.util.List;
 public class MenuActivity extends BaseActivity {
     private static final String TAG = "MENU";
     private static final int RC_SIGN_IN = 1337;
+    private static final int RC_INBOX = 1338;
 
     private MenuViewModel mMenuViewModel;
     private SoundPlayer mSoundPlayer;
@@ -46,6 +48,7 @@ public class MenuActivity extends BaseActivity {
 
     private PlayersClient mPlayersClient;
     private GamesClient mGamesClient;
+    private InvitationsClient mInvitationsClient;
 
     private TextView mPlayerLabel;
 
@@ -141,11 +144,14 @@ public class MenuActivity extends BaseActivity {
         if (requestCode == RC_SIGN_IN) {
             interactiveSignInResult(data);
         }
+
+        else if (requestCode == RC_INBOX && resultCode == Activity.RESULT_OK) {
+            inboxResult(data.getExtras());
+        }
     }
 
     public void startGame(long saveID) {
-        Intent intent;
-        intent = new Intent(getBaseContext(), SinglePlayerActivity.class);
+        Intent intent = new Intent(getBaseContext(), SinglePlayerActivity.class);
         intent.putExtra(KeyConstants.SAVE_ID_KEY, saveID);
 
         startActivity(intent);
@@ -156,6 +162,25 @@ public class MenuActivity extends BaseActivity {
         Intent intent = new Intent(getBaseContext(), MultiplayerActivity.class);
         intent.putExtra(MultiplayerActivity.IS_HOST_KEY, isHost);
         startActivity(intent);
+    }
+
+    public void showInviteInbox() {
+        mInvitationsClient.getInvitationInboxIntent().addOnSuccessListener(new OnSuccessListener<Intent>() {
+            @Override
+            public void onSuccess(Intent intent) {
+                startActivityForResult(intent, RC_INBOX);
+            }
+        });
+    }
+
+    public void inboxResult(Bundle data) {
+        Invitation invitation = data.getParcelable(Multiplayer.EXTRA_INVITATION);
+
+        if (invitation != null) {
+            Intent intent = new Intent(getBaseContext(), MultiplayerActivity.class);
+            intent.putExtra(MultiplayerActivity.INVITATION_KEY, invitation.getInvitationId());
+            startActivity(intent);
+        }
     }
 
     /* Show and close fragments */
@@ -236,6 +261,7 @@ public class MenuActivity extends BaseActivity {
     private void onConnected(GoogleSignInAccount googleSignInAccount) {
         mPlayersClient = Games.getPlayersClient(this, googleSignInAccount);
         mGamesClient = Games.getGamesClient(this, googleSignInAccount);
+        mInvitationsClient = Games.getInvitationsClient(this, googleSignInAccount);
 
         mGamesClient.setViewForPopups(findViewById(android.R.id.content));
 
@@ -253,6 +279,8 @@ public class MenuActivity extends BaseActivity {
 
     private void onDisconnected() {
         mPlayersClient = null;
+        mGamesClient = null;
+        mInvitationsClient = null;
         mPlayerLabel.setText(R.string.signedOut);
     }
 }

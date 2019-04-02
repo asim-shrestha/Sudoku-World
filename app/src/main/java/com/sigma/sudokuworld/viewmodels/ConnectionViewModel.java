@@ -31,7 +31,10 @@ import static android.app.Activity.RESULT_OK;
 public class ConnectionViewModel extends AndroidViewModel {
 
     private static final String TAG = "Multiplayer";
-    private static final int MIN_PLAYER_COUNT = 2;
+
+    private static final int MIN_PLAYERS = 2;
+    private static final int MIN_OPPONENTS = 1;
+    private static final int MAX_OPPONENTS = 3;
 
     //Protocol
     private static byte FILL_SQUARE_PROTOCOL = 1;
@@ -176,7 +179,7 @@ public class ConnectionViewModel extends AndroidViewModel {
      * Creates a new auto match lobby
      */
     public void newAutoMatchRoom() {
-        Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(1, 1, 0);
+        Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(MIN_OPPONENTS, MAX_OPPONENTS, 0);
 
         mRoomConfig = RoomConfig.builder(mRoomUpdateCallback)
                 .setOnMessageReceivedListener(mMessageReceivedListener)
@@ -188,7 +191,7 @@ public class ConnectionViewModel extends AndroidViewModel {
     }
 
     public void newHostedRoom() {
-        mRealTimeMultiplayerClient.getSelectOpponentsIntent(1, 1).addOnSuccessListener(new OnSuccessListener<Intent>() {
+        mRealTimeMultiplayerClient.getSelectOpponentsIntent(MIN_OPPONENTS, MAX_OPPONENTS).addOnSuccessListener(new OnSuccessListener<Intent>() {
             @Override
             public void onSuccess(Intent intent) {
                 mSelectOpponentsIntent = intent;
@@ -197,17 +200,27 @@ public class ConnectionViewModel extends AndroidViewModel {
         });
     }
 
+    public void joinHostedRoom(String inviteID) {
+        mRoomConfig = RoomConfig.builder(mRoomUpdateCallback)
+                .setOnMessageReceivedListener(mMessageReceivedListener)
+                .setRoomStatusUpdateCallback(mRoomStatusUpdateCallback)
+                .setInvitationIdToAccept(inviteID)
+                .build();
+
+        mRealTimeMultiplayerClient.join(mRoomConfig);
+    }
+
     private void buildHostedRoom(Bundle data) {
 
         //Settings
-        final ArrayList<String> invitess = data.getStringArrayList(Games.EXTRA_PLAYER_IDS);
+        final ArrayList<String> invitees = data.getStringArrayList(Games.EXTRA_PLAYER_IDS);
         int minAutoPlayers = data.getInt(Multiplayer.EXTRA_MIN_AUTOMATCH_PLAYERS, 0);
         int maxAutoPlayers = data.getInt(Multiplayer.EXTRA_MAX_AUTOMATCH_PLAYERS, 0);
 
         RoomConfig.Builder builder = RoomConfig.builder(mRoomUpdateCallback)
                 .setOnMessageReceivedListener(mMessageReceivedListener)
                 .setRoomStatusUpdateCallback(mRoomStatusUpdateCallback)
-                .addPlayersToInvite(invitess);
+                .addPlayersToInvite(invitees);
 
         if (minAutoPlayers > 0) {
             Bundle autoMatchCriteria = RoomConfig.createAutoMatchCriteria(minAutoPlayers, maxAutoPlayers, 0);
@@ -220,6 +233,7 @@ public class ConnectionViewModel extends AndroidViewModel {
     }
 
     private RoomUpdateCallback mRoomUpdateCallback = new RoomUpdateCallback() {
+
         @Override
         public void onRoomCreated(int statusCode, @Nullable Room room) {
             Log.d(TAG, "onRoomCreated: CREATED ROOM");
@@ -227,7 +241,7 @@ public class ConnectionViewModel extends AndroidViewModel {
             if (statusCode != GamesCallbackStatusCodes.OK)
                 gameError("OnRoomCreate: ERROR CODE  " + GamesCallbackStatusCodes.getStatusCodeString(statusCode));
 
-            mRealTimeMultiplayerClient.getWaitingRoomIntent(room, 2).addOnSuccessListener(new OnSuccessListener<Intent>() {
+            mRealTimeMultiplayerClient.getWaitingRoomIntent(room, MIN_PLAYERS).addOnSuccessListener(new OnSuccessListener<Intent>() {
                 @Override
                 public void onSuccess(Intent intent) {
                     mWaitingRoomIntent = intent;
@@ -243,7 +257,13 @@ public class ConnectionViewModel extends AndroidViewModel {
             if (statusCode != GamesCallbackStatusCodes.OK)
                 gameError("OnRoomJoin: ERROR CODE  " + GamesCallbackStatusCodes.getStatusCodeString(statusCode));
 
-            //TODO: figure out what goes here
+            mRealTimeMultiplayerClient.getWaitingRoomIntent(room, MIN_PLAYERS).addOnSuccessListener(new OnSuccessListener<Intent>() {
+                @Override
+                public void onSuccess(Intent intent) {
+                    mWaitingRoomIntent = intent;
+                    updateGameState(GameState.LOBBY);
+                }
+            });
         }
 
         @Override
@@ -501,7 +521,9 @@ public class ConnectionViewModel extends AndroidViewModel {
     }
 
     private void updateGameState(GameState state) {
-        mGameStateLiveData.setValue(state);
+        if (state != mGameStateLiveData.getValue()) {
+            mGameStateLiveData.setValue(state);
+        }
     }
 
     public LiveData<GameState> getGameStateLiveData() {

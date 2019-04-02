@@ -42,6 +42,14 @@ public class MultiplayerFragment extends Fragment {
             }
         });
 
+        Button invites = mView.findViewById(R.id.invites);
+        invites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MenuActivity) getActivity()).showInviteInbox();
+            }
+        });
+
         return mView;
     }
 }
