@@ -1,27 +1,30 @@
 package com.sigma.sudokuworld.sudoku.multiplayer;
 
+import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.sudoku.SudokuActivity;
 import com.sigma.sudokuworld.viewmodels.ConnectionViewModel;
 import com.sigma.sudokuworld.viewmodels.MultiplayerViewModel;
-import com.sigma.sudokuworld.viewmodels.MultiplayerViewModelFactory;
+import com.sigma.sudokuworld.viewmodels.factories.MultiplayerViewModelFactory;
 
 public class MultiplayerActivity extends SudokuActivity {
     private static final String TAG = "Multiplayer";
 
+    public static final String IS_HOST_KEY = "host";
+    public static final String INVITATION_KEY = "invite";
+
     private static final int RC_WAITING_ROOM = 276;
+    private static final int RC_PLAYER_INVITE = 277;
 
     private ConnectionViewModel mConnectionViewModel;
-
     private MultiplayerViewModel mMultiplayerViewModel;
     private LoadingScreenFragment mLoadingScreenFragment;
 
@@ -29,11 +32,24 @@ public class MultiplayerActivity extends SudokuActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //TODO make rotation compatible, Currently boots you out of game on rotate. Put in view model?
         mConnectionViewModel = ViewModelProviders.of(this).get(ConnectionViewModel.class);
         mConnectionViewModel.getGameStateLiveData().observe(this, mGameStateObserver);
-
         mLoadingScreenFragment = new LoadingScreenFragment();
+
+        if (savedInstanceState == null) {
+            Intent intent = getIntent();
+
+            boolean isHost = intent.getBooleanExtra(IS_HOST_KEY, false);
+            String invite = intent.getStringExtra(INVITATION_KEY);
+
+            if (isHost) {
+                mConnectionViewModel.newHostedRoom();
+            } else if (invite != null && !invite.isEmpty()) {
+                mConnectionViewModel.joinHostedRoom(invite);
+            } else {
+                mConnectionViewModel.newAutoMatchRoom();
+            }
+        }
     }
 
     @Override
@@ -48,6 +64,10 @@ public class MultiplayerActivity extends SudokuActivity {
 
         if (requestCode == RC_WAITING_ROOM) {
             mConnectionViewModel.setWaitingRoomResult(resultCode);
+        }
+
+        else if (requestCode == RC_PLAYER_INVITE) {
+            mConnectionViewModel.setSelectOpponentsResult(resultCode, data.getExtras());
         }
     }
 
@@ -69,10 +89,14 @@ public class MultiplayerActivity extends SudokuActivity {
                 case NEW:
                     displayLoadingScreen();
                     break;
+                case INVITE:
+                    displayInviteScreen();
+                    break;
                 case LOBBY:
                     displayWaitingRoom();
                     break;
                 case PLAYING:
+                    hideLoadingScreen();
                     displayGame();
                     break;
                 case OVER:
@@ -115,6 +139,11 @@ public class MultiplayerActivity extends SudokuActivity {
                 .show();
     }
 
+    void displayInviteScreen() {
+        Intent intent = mConnectionViewModel.getSelectOpponentsIntent();
+        startActivityForResult(intent, RC_PLAYER_INVITE);
+    }
+
     void displayWaitingRoom() {
         Intent intent = mConnectionViewModel.getWaitingRoomIntent();
         startActivityForResult(intent, RC_WAITING_ROOM);
@@ -124,8 +153,11 @@ public class MultiplayerActivity extends SudokuActivity {
         mFragmentManager
                 .beginTransaction()
                 .replace(R.id.fragment_container, mLoadingScreenFragment)
-                .addToBackStack(null)
                 .commit();
+    }
+
+    void hideLoadingScreen() {
+        mFragmentManager.beginTransaction().remove(mLoadingScreenFragment).commit();
     }
 
     void displayGame() {
@@ -180,17 +212,15 @@ public class MultiplayerActivity extends SudokuActivity {
                 mMultiplayerViewModel.setCompetitorFilledCell(integer, false);
             }
         });
-
-        mFragmentManager.popBackStack();
     }
 
     private void displayGameOverScreen() {
-        GameOverFragment gameOverFragment = GameOverFragment.newInstance("FIX ME", true);
+        GameOverFragment gameOverFragment = GameOverFragment
+                .newInstance(mConnectionViewModel.getWinnerParticipant(), mConnectionViewModel.isWinnerMe());
 
         mFragmentManager
                 .beginTransaction()
                 .replace(R.id.fragment_container, gameOverFragment)
-                .addToBackStack(null)
                 .commit();
     }
 }

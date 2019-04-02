@@ -3,6 +3,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:theme="@style/AppTheme.MenuText"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorPrimary"
@@ -37,69 +38,68 @@
 
     <ImageView
             android:id="@+id/imageView"
-            android:layout_width="411dp"
-            android:layout_height="318dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             app:srcCompat="@drawable/ic_sudokuworld"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout3"/>
 
-    <Button
-            android:id="@+id/playButton"
-            android:layout_width="280dp"
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/blue_button"
-            android:elevation="0dp"
-            android:onClick="onPlayPressed"
-            android:text="@string/play_button"
-            android:textSize="21sp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@+id/imageView"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintBottom_toTopOf="@+id/userLabel"
+            android:id="@+id/linearLayout3"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
-
-    <Button
-            android:id="@+id/continueButton"
-            android:layout_width="280dp"
-            android:layout_height="50dp"
-            android:background="@drawable/blue_button"
-            android:elevation="0dp"
-            android:onClick="onContinuePressed"
-            android:text="@string/continue_button"
-            android:textSize="21sp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintHorizontal_bias="0.503"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@+id/playButton"/>
+            android:layout_marginStart="8dp">
 
-    <Button
-            android:id="@+id/settingsButton"
-            android:layout_width="280dp"
-            android:layout_height="50dp"
-            android:background="@drawable/blue_button"
-            android:elevation="0dp"
-            android:onClick="onSettingsPressed"
-            android:text="@string/settingsHeader"
-            android:textSize="21sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@+id/multiplayerButton"/>
+        <Button
+                style="@style/AppTheme.BlueButton"
+                android:id="@+id/playButton"
+                android:onClick="onPlayPressed"
+                android:text="@string/play_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteY="334dp"/>
 
-    <Button
-            android:id="@+id/multiplayerButton"
-            android:layout_width="280dp"
-            android:layout_height="50dp"
-            android:background="@drawable/blue_button"
-            android:elevation="0dp"
-            android:onClick="onMultiPlayerPressed"
-            android:text="Multiplayer"
-            android:textSize="21sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@+id/continueButton"/>
+        <Button
+                style="@style/AppTheme.BlueButton"
+                android:id="@+id/continueButton"
+                android:onClick="onContinuePressed"
+                android:text="@string/continue_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/playButton"/>
+
+        <Button
+                style="@style/AppTheme.BlueButton"
+                android:id="@+id/multiplayerButton"
+                android:onClick="onMultiPlayerPressed"
+                android:text="Multiplayer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/continueButton"
+                />
+
+        <Button
+                style="@style/AppTheme.BlueButton"
+                android:id="@+id/settingsButton"
+                android:onClick="onSettingsPressed"
+                android:text="@string/settingsHeader"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/multiplayerButton"/>
+
+    </LinearLayout>
 
     <TextView
             android:text="@string/signedOut"

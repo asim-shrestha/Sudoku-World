@@ -6,7 +6,7 @@ import android.os.Bundle;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 import com.sigma.sudokuworld.sudoku.SudokuActivity;
 import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
-import com.sigma.sudokuworld.viewmodels.SingleplayerViewModelFactory;
+import com.sigma.sudokuworld.viewmodels.factories.SingleplayerViewModelFactory;
 
 public class SinglePlayerActivity extends SudokuActivity {
     protected long mSaveID = 0;
@@ -25,7 +25,13 @@ public class SinglePlayerActivity extends SudokuActivity {
 
         SingleplayerViewModelFactory factory = new SingleplayerViewModelFactory(getApplication(), mSaveID);
         mSinglePlayerViewModel = ViewModelProviders.of(this, factory).get(SinglePlayerViewModel.class);
+
         super.setGameViewModel(mSinglePlayerViewModel);
+        super.mLongClickHandler.setTTSLanguage(
+                mSinglePlayerViewModel.getNativeLanguage().getCode(),
+                mSinglePlayerViewModel.getForeignLanguage().getCode()
+        );
+
         mGameTimer.setElapsedTime(mSinglePlayerViewModel.getElapsedTime());
     }
 

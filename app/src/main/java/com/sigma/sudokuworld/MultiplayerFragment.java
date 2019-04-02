@@ -22,7 +22,15 @@ public class MultiplayerFragment extends Fragment {
         mQuickGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MenuActivity) getActivity()).startMultiplayerGame();
+                ((MenuActivity) getActivity()).startMultiplayerGame(false);
+            }
+        });
+
+        Button host = mView.findViewById(R.id.host);
+        host.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MenuActivity) getActivity()).startMultiplayerGame(true);
             }
         });
 
@@ -31,6 +39,22 @@ public class MultiplayerFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ((MenuActivity) getActivity()).closeFragment();
+            }
+        });
+
+        Button invites = mView.findViewById(R.id.invites);
+        invites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MenuActivity) getActivity()).showInviteInbox();
+            }
+        });
+
+        Button leader = mView.findViewById(R.id.leaderboards);
+        leader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MenuActivity) getActivity()).showLeaderboard();
             }
         });
 
