@@ -15,19 +15,16 @@ public class GameOverFragment extends Fragment {
     private static final String WINNER_NAME_KEY = "name";
     private static final String IS_WINNER_KEY = "winner?";
 
-    private View mView;
     private boolean isWinner;
     private String winnerName;
 
-
     public static GameOverFragment newInstance(Participant winner, boolean isWinner) {
-        Bundle args = new Bundle();
-        args.putBoolean(IS_WINNER_KEY, isWinner);
 
         String winnerName;
         if (winner !=  null) winnerName = winner.getDisplayName();
         else winnerName = "Unknown";
 
+        Bundle args = new Bundle();
         args.putString(WINNER_NAME_KEY, winnerName);
         args.putBoolean(IS_WINNER_KEY, isWinner);
 
@@ -51,7 +48,7 @@ public class GameOverFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-         mView = inflater.inflate(R.layout.fragment_game_over, container, false);
+        View view = inflater.inflate(R.layout.fragment_game_over, container, false);
 
         String msg;
         if (isWinner) {
@@ -60,8 +57,8 @@ public class GameOverFragment extends Fragment {
             msg = winnerName + " won!";
         }
 
-        ((TextView) mView.findViewById(R.id.whoWon)).setText(msg);
+        ((TextView) view.findViewById(R.id.whoWon)).setText(msg);
 
-        return mView;
+        return view;
     }
 }

@@ -198,6 +198,8 @@ public class ConnectionViewModel extends AndroidViewModel {
 
     public void claimWin() {
         Log.d(TAG, "claimWin: I WON");
+
+        mWinnerParticipant = getParticipant(mMyParticipantID);
         broadcastWin();
     }
 
