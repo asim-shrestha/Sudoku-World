@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -40,6 +41,7 @@ public class MenuActivity extends BaseActivity {
     private static final String TAG = "MENU";
     private static final int RC_SIGN_IN = 1337;
     private static final int RC_INBOX = 1338;
+    private static final int RC_LEADERBOARD = 1339;
 
     private MenuViewModel mMenuViewModel;
     private SoundPlayer mSoundPlayer;
@@ -48,6 +50,7 @@ public class MenuActivity extends BaseActivity {
     private PlayersClient mPlayersClient;
     private GamesClient mGamesClient;
     private InvitationsClient mInvitationsClient;
+    private LeaderboardsClient mLeaderboardsClient;
 
     private TextView mPlayerLabel;
 
@@ -187,6 +190,15 @@ public class MenuActivity extends BaseActivity {
                 .show();
     }
 
+    public void showLeaderboard() {
+        mLeaderboardsClient.getAllLeaderboardsIntent().addOnSuccessListener(new OnSuccessListener<Intent>() {
+            @Override
+            public void onSuccess(Intent intent) {
+                startActivityForResult(intent, RC_LEADERBOARD);
+            }
+        });
+    }
+
     private void inboxResult(Invitation invitation) {
 
         if (invitation != null) {
@@ -275,6 +287,7 @@ public class MenuActivity extends BaseActivity {
         mPlayersClient = Games.getPlayersClient(this, googleSignInAccount);
         mGamesClient = Games.getGamesClient(this, googleSignInAccount);
         mInvitationsClient = Games.getInvitationsClient(this, googleSignInAccount);
+        mLeaderboardsClient = Games.getLeaderboardsClient(this, googleSignInAccount);
 
         mGamesClient.setViewForPopups(findViewById(android.R.id.content));
 
@@ -318,6 +331,7 @@ public class MenuActivity extends BaseActivity {
     private void onDisconnected() {
         mPlayersClient = null;
         mGamesClient = null;
+        mLeaderboardsClient = null;
 
         mInvitationsClient.unregisterInvitationCallback(mInvitationCallback);
         mInvitationsClient = null;

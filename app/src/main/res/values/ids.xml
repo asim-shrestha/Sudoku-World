@@ -3,4 +3,6 @@
     <string name="app_id">202154014754</string>
     <string name="package_name">com.sigma.sudokuworld</string>
     <string name="leaderboard_wins">CgkIovDFivEFEAIQBQ</string>
+    <string name="leaderboard_games">CgkIovDFivEFEAIQBg</string>
+    <string name="leaderboard_ratio">CgkIovDFivEFEAIQBw</string>
 </resources>

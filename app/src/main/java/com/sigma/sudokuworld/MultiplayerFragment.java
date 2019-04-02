@@ -50,6 +50,14 @@ public class MultiplayerFragment extends Fragment {
             }
         });
 
+        Button leader = mView.findViewById(R.id.leaderboards);
+        leader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((MenuActivity) getActivity()).showLeaderboard();
+            }
+        });
+
         return mView;
     }
 }

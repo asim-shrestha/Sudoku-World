@@ -12,7 +12,6 @@ import android.util.Log;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.games.*;
-import com.google.android.gms.games.leaderboard.Leaderboard;
 import com.google.android.gms.games.leaderboard.LeaderboardScore;
 import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.multiplayer.Multiplayer;
@@ -68,6 +67,9 @@ public class ConnectionViewModel extends AndroidViewModel {
     //Game
     private int[] mInitialCells;
     private int[] mSolutionCells;
+    public enum GameState {
+        NEW, INVITE, LOBBY, SETUP, PLAYING, OVER, ERROR, LEAVE, PEER_LEFT, SINGED_OUT
+    }
 
     //Game over
     private Participant mWinnerParticipant;
@@ -77,6 +79,7 @@ public class ConnectionViewModel extends AndroidViewModel {
     private MutableLiveData<GameState> mGameStateLiveData;
     private MutableLiveData<Integer> mCompetitorFilledCell;
     private MutableLiveData<Integer> mCompetitorEmptiedCell;
+
 
     public ConnectionViewModel(@NonNull Application application) {
         super(application);
@@ -110,6 +113,34 @@ public class ConnectionViewModel extends AndroidViewModel {
             }
         });
         mLeaderboardsClient = Games.getLeaderboardsClient(mApplication, mGoogleSignInAccount);
+    }
+
+    /*
+        Intents for google services UI.
+     */
+
+    public Intent getSelectOpponentsIntent() {
+        return mSelectOpponentsIntent;
+    }
+
+    public void setSelectOpponentsResult(int resultCode, Bundle data) {
+        if (resultCode != RESULT_OK) {
+            leaveRoom();
+        } else {
+            buildHostedRoom(data);
+        }
+    }
+
+    public Intent getWaitingRoomIntent() {
+        return mWaitingRoomIntent;
+    }
+
+    public void setWaitingRoomResult(int resultCode) {
+        if (resultCode == RESULT_OK) {
+            setupGame();
+        } else if (resultCode == GamesActivityResultCodes.RESULT_LEFT_ROOM){
+            leaveRoom();
+        }
     }
 
     /*
@@ -167,40 +198,12 @@ public class ConnectionViewModel extends AndroidViewModel {
 
     public void claimWin() {
         Log.d(TAG, "claimWin: I WON");
-
-        mWinnerParticipant = getParticipant(mMyParticipantID);
-        final String learderboardID = mApplication.getString(R.string.leaderboard_wins);
-
-        mLeaderboardsClient.loadCurrentPlayerLeaderboardScore(
-                learderboardID,
-                LeaderboardVariant.TIME_SPAN_ALL_TIME,
-                LeaderboardVariant.COLLECTION_PUBLIC).addOnSuccessListener(new OnSuccessListener<AnnotatedData<LeaderboardScore>>() {
-            @Override
-            public void onSuccess(AnnotatedData<LeaderboardScore> leaderboardScoreAnnotatedData) {
-                Log.d(TAG, "onClaimWin: SUCCESSFULLY FETCHED LEADER BOARD SCORE");
-
-                long score;
-                LeaderboardScore leaderboardScore = leaderboardScoreAnnotatedData.get();
-                if (leaderboardScore != null) {
-                    Log.d(TAG, "onClaimWin: ADDED TO LEADER BOARD SCORE");
-
-                    score = leaderboardScore.getRawScore();
-                    score++;
-                } else {
-                    Log.d(TAG, "onClaimWin: PLAYER NOT ON LEADER BOARD. ADDING");
-                    score = 1;
-                }
-
-                mLeaderboardsClient.submitScore(learderboardID, score);
-            }
-        });
-
         broadcastWin();
     }
 
     private void endGame() {
         //TODO leave lobby gracefully
-
+        updateLeaderboards(isWinnerMe());
         updateGameState(GameState.OVER);
     }
 
@@ -450,7 +453,6 @@ public class ConnectionViewModel extends AndroidViewModel {
 
             else if (bytes[0] == WINNER_PROTOCOL) {
                 mWinnerParticipant =  getParticipant(realTimeMessage.getSenderParticipantId());
-
                 endGame();
             }
         }
@@ -541,6 +543,60 @@ public class ConnectionViewModel extends AndroidViewModel {
      *
      * */
 
+    /**
+     * Updates both the wins and game played boards
+     * @param didWin did the player win
+     */
+    private void updateLeaderboards(final boolean didWin) {
+        final String winsBoardID = mApplication.getString(R.string.leaderboard_wins);
+        final String gamesBoardID = mApplication.getString(R.string.leaderboard_games);
+
+        //increments the number of games won by the user
+        mLeaderboardsClient
+                .loadCurrentPlayerLeaderboardScore(
+                    winsBoardID,
+                    LeaderboardVariant.TIME_SPAN_ALL_TIME,
+                    LeaderboardVariant.COLLECTION_PUBLIC)
+                .addOnSuccessListener(new OnSuccessListener<AnnotatedData<LeaderboardScore>>() {
+                    @Override
+                    public void onSuccess(AnnotatedData<LeaderboardScore> leaderboardScoreAnnotatedData) {
+                        Log.d(TAG, "onClaimWin: SUCCESSFULLY FETCHED WINS SCOREBOARD");
+
+                        long wins;
+                        LeaderboardScore score = leaderboardScoreAnnotatedData.get();
+
+                        if (score != null) {
+                            wins = score.getRawScore();
+                            wins += didWin ? 1 : 0;
+
+                        } else wins = didWin ? 1 : 0;
+
+                        mLeaderboardsClient.submitScore(winsBoardID, wins);
+                    }});
+
+        //increments the number of games played by the user
+        mLeaderboardsClient.loadCurrentPlayerLeaderboardScore(
+                gamesBoardID,
+                LeaderboardVariant.TIME_SPAN_ALL_TIME,
+                LeaderboardVariant.COLLECTION_PUBLIC)
+                .addOnSuccessListener(new OnSuccessListener<AnnotatedData<LeaderboardScore>>() {
+                    @Override
+                    public void onSuccess(AnnotatedData<LeaderboardScore> leaderboardScoreAnnotatedData) {
+                        Log.d(TAG, "onClaimWin: SUCCESSFULLY FETCHED GAMES SCOREBOARD");
+
+                        long games;
+                        LeaderboardScore score = leaderboardScoreAnnotatedData.get();
+
+                        if (score != null) {
+                            games = score.getRawScore();
+                            games++;
+                        } else games = 1;
+
+                        mLeaderboardsClient.submitScore(gamesBoardID, games);
+                    }
+                });
+    }
+
     public int[] getInitialCells() {
         return mInitialCells;
     }
@@ -591,30 +647,6 @@ public class ConnectionViewModel extends AndroidViewModel {
         return isParticipantMe(mWinnerParticipant.getParticipantId());
     }
 
-    public Intent getSelectOpponentsIntent() {
-        return mSelectOpponentsIntent;
-    }
-
-    public void setSelectOpponentsResult(int resultCode, Bundle data) {
-        if (resultCode != RESULT_OK) {
-            leaveRoom();
-        } else {
-            buildHostedRoom(data);
-        }
-    }
-
-    public Intent getWaitingRoomIntent() {
-        return mWaitingRoomIntent;
-    }
-
-    public void setWaitingRoomResult(int resultCode) {
-        if (resultCode == RESULT_OK) {
-            setupGame();
-        } else if (resultCode == GamesActivityResultCodes.RESULT_LEFT_ROOM){
-            leaveRoom();
-        }
-    }
-
     private Participant getParticipant(String participantID) {
         for (Participant p : mParticipants) {
             if (p.getParticipantId().equals(participantID)) {
@@ -623,9 +655,5 @@ public class ConnectionViewModel extends AndroidViewModel {
         }
 
         return null;
-    }
-
-    public enum GameState {
-        NEW, INVITE, LOBBY, SETUP, PLAYING, OVER, ERROR, LEAVE, PEER_LEFT, SINGED_OUT
     }
 }

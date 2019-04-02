@@ -1,5 +1,6 @@
 package com.sigma.sudokuworld.sudoku.multiplayer;
 
+import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
@@ -16,6 +17,7 @@ import com.sigma.sudokuworld.viewmodels.factories.MultiplayerViewModelFactory;
 
 public class MultiplayerActivity extends SudokuActivity {
     private static final String TAG = "Multiplayer";
+
     public static final String IS_HOST_KEY = "host";
     public static final String INVITATION_KEY = "invite";
 
