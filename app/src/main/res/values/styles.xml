@@ -12,12 +12,10 @@
 
     </style>
 
-
     <style name="AppTheme.NoActionBar" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
 
     <style name="AppTheme.MenuText" parent="AppTheme.NoActionBar">
         <item name="android:textColor">@color/colorWhite</item>
@@ -26,13 +24,6 @@
     <style name="AppTheme.RedButton">
         <item name="android:background">@drawable/red_button</item>
         <item name="android:textSize">15sp</item>
-    </style>
-
-    <style name="MySwitch" parent="@style/Widget.AppCompat.CompoundButton.Switch">
-        <item name="android:textColorPrimaryDisableOnly">#b71c1c</item>
-        <item name="android:colorControlActivated">#1b5e20</item>
-        <item name="android:colorForeground">#f57f17</item>
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
