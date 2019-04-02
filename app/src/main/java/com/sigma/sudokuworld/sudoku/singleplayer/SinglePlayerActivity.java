@@ -25,7 +25,13 @@ public class SinglePlayerActivity extends SudokuActivity {
 
         SingleplayerViewModelFactory factory = new SingleplayerViewModelFactory(getApplication(), mSaveID);
         mSinglePlayerViewModel = ViewModelProviders.of(this, factory).get(SinglePlayerViewModel.class);
+
         super.setGameViewModel(mSinglePlayerViewModel);
+        super.mLongClickHandler.setTTSLanguage(
+                mSinglePlayerViewModel.getNativeLanguage().getCode(),
+                mSinglePlayerViewModel.getForeignLanguage().getCode()
+        );
+
         mGameTimer.setElapsedTime(mSinglePlayerViewModel.getElapsedTime());
     }
 
