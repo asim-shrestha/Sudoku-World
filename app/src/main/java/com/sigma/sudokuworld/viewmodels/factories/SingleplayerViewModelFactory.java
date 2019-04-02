@@ -1,9 +1,10 @@
-package com.sigma.sudokuworld.viewmodels;
+package com.sigma.sudokuworld.viewmodels.factories;
 
         import android.app.Application;
         import android.arch.lifecycle.ViewModel;
         import android.arch.lifecycle.ViewModelProvider;
         import android.support.annotation.NonNull;
+        import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
 
 public class SingleplayerViewModelFactory implements ViewModelProvider.Factory {
 

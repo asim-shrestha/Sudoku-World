@@ -6,7 +6,7 @@ import android.os.Bundle;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 import com.sigma.sudokuworld.sudoku.SudokuActivity;
 import com.sigma.sudokuworld.viewmodels.SinglePlayerViewModel;
-import com.sigma.sudokuworld.viewmodels.SingleplayerViewModelFactory;
+import com.sigma.sudokuworld.viewmodels.factories.SingleplayerViewModelFactory;
 
 public class SinglePlayerActivity extends SudokuActivity {
     protected long mSaveID = 0;
