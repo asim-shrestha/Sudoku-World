@@ -25,10 +25,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-        <activity android:name=".MenuActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+
+
+        <activity android:name=".MenuActivity"/>
         <activity android:name=".sudoku.singleplayer.SinglePlayerActivity"/>
         <activity android:name=".sudoku.multiplayer.MultiplayerActivity" />
 

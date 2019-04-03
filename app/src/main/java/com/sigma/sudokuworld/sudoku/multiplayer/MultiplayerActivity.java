@@ -67,7 +67,7 @@ public class MultiplayerActivity extends SudokuActivity {
         }
 
         else if (requestCode == RC_PLAYER_INVITE) {
-            mConnectionViewModel.setSelectOpponentsResult(resultCode, data.getExtras());
+            mConnectionViewModel.setSelectOpponentsResult(resultCode, data);
         }
     }
 

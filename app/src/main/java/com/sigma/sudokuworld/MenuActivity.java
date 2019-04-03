@@ -218,6 +218,7 @@ public class MenuActivity extends BaseActivity {
         mFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)
                 .addToBackStack(null)
+
                 .commit();
     }
 

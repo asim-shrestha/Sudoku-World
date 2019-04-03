@@ -123,12 +123,17 @@ public class ConnectionViewModel extends AndroidViewModel {
         return mSelectOpponentsIntent;
     }
 
-    public void setSelectOpponentsResult(int resultCode, Bundle data) {
-        if (resultCode != RESULT_OK) {
-            leaveRoom();
-        } else {
-            buildHostedRoom(data);
+    public void setSelectOpponentsResult(int resultCode, Intent data) {
+
+        //Checking valid result
+        if (resultCode == RESULT_OK && data != null) {
+            if (data.getExtras() != null) {
+                buildHostedRoom(data.getExtras());
+                return;
+            }
         }
+
+        leaveRoom();
     }
 
     public Intent getWaitingRoomIntent() {
@@ -192,7 +197,7 @@ public class ConnectionViewModel extends AndroidViewModel {
     private void performHostSetup() {
         Log.d(TAG, "performHostSetup: I AM HOST");
 
-        PuzzleGenerator.Puzzle puzzle = new PuzzleGenerator(4).generatePuzzle(GameDifficulty.EASY);
+        PuzzleGenerator.Puzzle puzzle = new PuzzleGenerator(4).generatePuzzle(GameDifficulty.MEDIUM);
         broadcastPuzzle(puzzle.getCellValues(), puzzle.getSoltuion());
     }
 
