@@ -212,6 +212,13 @@ public class MultiplayerActivity extends SudokuActivity {
                 mMultiplayerViewModel.setCompetitorFilledCell(integer, false);
             }
         });
+
+        mConnectionViewModel.getCompetitorSubsectionFilledCell().observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer integer) {
+                //TODO fill subsection;
+            }
+        });
     }
 
     private void displayGameOverScreen() {

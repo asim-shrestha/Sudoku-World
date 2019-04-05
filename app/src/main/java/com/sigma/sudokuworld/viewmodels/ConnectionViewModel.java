@@ -43,6 +43,11 @@ public class ConnectionViewModel extends AndroidViewModel {
     private static byte EMPTY_SQUARE_PROTOCOL = 2;
     private static byte PUZZLE_PROTOCOL = 3;
     private static byte WINNER_PROTOCOL = 4;
+    private static byte SUBSECTION_COMPLETE_PROTOCOL = 5;
+
+    private static byte SHUFFLE_PROTOCOL = 63;
+    private static byte REMOVE_PROTOCOL = 62;
+    private static byte DELETE_PROTOCOL = 61;
 
     //Clients
     private RealTimeMultiplayerClient mRealTimeMultiplayerClient;
@@ -70,6 +75,9 @@ public class ConnectionViewModel extends AndroidViewModel {
     public enum GameState {
         NEW, INVITE, LOBBY, SETUP, PLAYING, OVER, ERROR, LEAVE, PEER_LEFT, SINGED_OUT
     }
+    public enum PowerUp {
+        SHUFFLE, REMOVE, DELETE
+    }
 
     //Game over
     private Participant mWinnerParticipant;
@@ -79,6 +87,7 @@ public class ConnectionViewModel extends AndroidViewModel {
     private MutableLiveData<GameState> mGameStateLiveData;
     private MutableLiveData<Integer> mCompetitorFilledCell;
     private MutableLiveData<Integer> mCompetitorEmptiedCell;
+    private MutableLiveData<Integer> mCompetitorSubsectionFilledCell;
 
 
     public ConnectionViewModel(@NonNull Application application) {
@@ -88,6 +97,7 @@ public class ConnectionViewModel extends AndroidViewModel {
         mGameStateLiveData = new MutableLiveData<>();
         mCompetitorFilledCell = new MutableLiveData<>();
         mCompetitorEmptiedCell = new MutableLiveData<>();
+        mCompetitorSubsectionFilledCell = new MutableLiveData<>();
 
         mGoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(mApplication);
         if (mGoogleSignInAccount == null) {
@@ -438,6 +448,10 @@ public class ConnectionViewModel extends AndroidViewModel {
                 mCompetitorEmptiedCell.setValue((int) bytes[1]);
             }
 
+            else if (bytes[0] == SUBSECTION_COMPLETE_PROTOCOL) {
+                mCompetitorSubsectionFilledCell.setValue((int) bytes[1]);
+            }
+
             else if (bytes[0] == PUZZLE_PROTOCOL) {
                 Log.d(TAG, "onRealTimeMessageReceived: PUZZLE_PROTOCOL RECEIVED");
 
@@ -544,6 +558,40 @@ public class ConnectionViewModel extends AndroidViewModel {
         }
     }
 
+
+    private void broadcastSubsectionComplete(int cellNumber) {
+
+        byte[] bytes = new byte[2];
+
+        bytes[0] = SUBSECTION_COMPLETE_PROTOCOL;
+        bytes[1] = (byte) cellNumber;
+
+        mRealTimeMultiplayerClient.sendUnreliableMessageToOthers(bytes, mRoomID); //TODO: reliable msg?
+    }
+
+    private void broadcastPowerUp(PowerUp powerUp, int cellNumber) {
+
+        for (Participant p : mParticipants) {
+            if (isParticipantMe(p.getParticipantId())) continue;
+
+            byte[] bytes = { WINNER_PROTOCOL };
+
+            mRealTimeMultiplayerClient.sendReliableMessage(
+                    bytes,
+                    mRoomID,
+                    p.getParticipantId(),
+                    null)
+                    .addOnSuccessListener(new OnSuccessListener<Integer>() {
+                        @Override
+                        public void onSuccess(Integer integer) {
+                            Log.d(TAG, "onSuccess: GAME_WIN_PROTOCOL SUCCESSFULLY DELIVERED");
+                            endGame();
+                        }
+                    });
+        }
+
+    }
+
     /*
      *
      * - Misc -
@@ -638,6 +686,10 @@ public class ConnectionViewModel extends AndroidViewModel {
 
     public LiveData<Integer> getCompetitorEmptiedCell() {
         return mCompetitorEmptiedCell;
+    }
+
+    public LiveData<Integer> getCompetitorSubsectionFilledCell() {
+        return mCompetitorSubsectionFilledCell;
     }
 
     public void leaveGameRoom() {
