@@ -176,7 +176,8 @@ public class MultiplayerActivity extends SudokuActivity {
             @Override
             public void onChanged(@Nullable Integer integer) {
                 if (integer != null) {
-                    if (mMultiplayerViewModel.getCellValue(integer) != 0) {
+
+                    if (mMultiplayerViewModel.isCorrectValue(integer, mMultiplayerViewModel.getCellValue(integer))){
                         mConnectionViewModel.broadcastMove(integer, true);
                     } else {
                         mConnectionViewModel.broadcastMove(integer, false);
