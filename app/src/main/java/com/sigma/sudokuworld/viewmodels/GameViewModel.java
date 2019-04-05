@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class GameViewModel extends BaseSettingsViewModel {
-    private int mBoardSize;
-    private int mBoardLength;
+    protected int mBoardSize;
+    protected int mBoardLength;
     private Game mGame;
 
     private MutableLiveData<List<String>> cellLabelsLiveData;

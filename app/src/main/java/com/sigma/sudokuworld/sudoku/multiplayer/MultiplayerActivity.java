@@ -218,7 +218,9 @@ public class MultiplayerActivity extends SudokuActivity {
             @Override
             public void onChanged(@Nullable Integer integer) {
                 //TODO fill subsection;
+                mMultiplayerViewModel.setCompetitorFilledSubsection(integer);
             }
+
         });
     }
 

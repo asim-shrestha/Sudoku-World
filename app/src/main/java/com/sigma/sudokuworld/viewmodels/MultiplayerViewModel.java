@@ -64,6 +64,27 @@ public class MultiplayerViewModel extends GameViewModel {
         }
     }
 
+    public void setCompetitorFilledSubsection(int cellNumber){
+        //Get values
+        int subsectionHeight = (int) Math.floor(Math.sqrt(mBoardLength));
+        int subsectionWidth = (int) Math.ceil(Math.sqrt(mBoardLength));
+        int row = (cellNumber / mBoardLength);
+        int column = (cellNumber % mBoardLength);
+        int subsectionRow = mBoardLength * subsectionHeight * (row / subsectionHeight);
+        int subsectionColumn = subsectionWidth* (column / subsectionWidth);
+        int i;
+
+        //Draw subsection highlights
+        for (i = 0; i < subsectionWidth; i++) {
+            for (int j = 0; j < subsectionWidth; j++) {
+                int currCell = subsectionRow + mBoardLength * i + subsectionColumn + j;
+                String label = labels.get(currCell);
+                label = SudokuGridView.COMPETITOR_FILLED_FLAG + label;
+                labels.set(currCell, label);
+            }
+        }
+        updateLiveLabels();
+    }
     /**
      * Check if the cell is filled by the competitor
      * @param cellNumber cell number
