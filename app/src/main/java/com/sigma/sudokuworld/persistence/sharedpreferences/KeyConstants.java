@@ -9,6 +9,7 @@ public final class KeyConstants {
     public static final String CELL_VALUES_KEY = "values";
     public static final String SOLUTION_VALUES_KEY = "solution";
     public static final String LOCKED_CELLS_KEY = "locked";
+    public static final String GAME_TIME_KEY = "time";
 
     //Db keys
     public static final String SAVE_ID_KEY = "saveID";

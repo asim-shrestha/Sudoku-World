@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".sudoku.SudokuWin"
     android:background="@color/colorAccent">
-
     <TextView
         android:text="Congratulations!"
         android:layout_width="match_parent"
@@ -21,7 +21,7 @@
         android:id="@+id/congratulations"/>
 
     <TextView
-        android:id="@+id/difficulty"
+        android:id="@+id/difficultyText"
         android:text="difficulty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
         app:layout_constraintTop_toBottomOf="@+id/congratulations"/>
 
     <TextView
-        android:id="@+id/time"
+        android:id="@+id/timeText"
         android:text="0:00"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
         android:textSize="24sp"
         android:textAlignment="center"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintTop_toBottomOf="@+id/difficulty"/>
+        app:layout_constraintTop_toBottomOf="@+id/difficultyText"/>
 
 
 </android.support.constraint.ConstraintLayout>

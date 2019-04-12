@@ -17,7 +17,9 @@ import android.widget.Toast;
 
 import com.sigma.sudokuworld.BaseActivity;
 import com.sigma.sudokuworld.SettingsFragment;
+import com.sigma.sudokuworld.game.GameDifficulty;
 import com.sigma.sudokuworld.game.GameMode;
+import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
 import com.sigma.sudokuworld.sudoku.singleplayer.LongClickHandler;
 import com.sigma.sudokuworld.viewmodels.GameViewModel;
@@ -242,9 +244,18 @@ public abstract class SudokuActivity extends BaseActivity {
             mSoundPlayer.playCorrectSound();
             //Start SudokuWin activity
             Intent intent = new Intent(this,SudokuWin.class);
+
+            //Place game time into intent
+            intent.putExtra(KeyConstants.GAME_TIME_KEY, mGameTimer.getElapsedTime());
+            //Place game difficulty into intent
+            String gameDifficulty = GameDifficulty.toString(mGameViewModel.getGameDifficulty());
+            intent.putExtra(KeyConstants.DIFFICULTY_KEY, gameDifficulty);
+
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
             startActivity(intent);
-            mGameViewModel.finishGame();
+
+            //End activity and delete game instance
+            mGameViewModel.deleteGame();
             this.finish();
         }
 

@@ -6,6 +6,8 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
+
+import com.sigma.sudokuworld.game.GameDifficulty;
 import com.sigma.sudokuworld.game.GameMode;
 import com.sigma.sudokuworld.persistence.GameRepository;
 import com.sigma.sudokuworld.persistence.LanguageRepository;
@@ -106,6 +108,10 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
 
     public void setElapsedTime(long elapsedTime) {
         mGame.setTimeInterval(elapsedTime);
+    }
+
+    public GameDifficulty getGameDifficulty(){
+        return mGame.getDifficulty();
     }
 
     public GameMode getGameMode() {
@@ -244,7 +250,7 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
         return label;
     }
 
-    public void finishGame(){
+    public void deleteGame(){
         new GameRepository(getApplication()).deleteGame(mGame);
     }
 }
