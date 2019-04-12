@@ -9,8 +9,6 @@ import com.sigma.sudokuworld.BaseActivity;
 import com.sigma.sudokuworld.R;
 import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 
-import static android.text.TextUtils.concat;
-
 public class SudokuWin extends BaseActivity {
 
     @Override
