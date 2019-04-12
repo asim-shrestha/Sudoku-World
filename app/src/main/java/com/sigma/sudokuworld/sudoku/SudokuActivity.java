@@ -1,6 +1,7 @@
 package com.sigma.sudokuworld.sudoku;
 
 import android.arch.lifecycle.Observer;
+import android.content.Intent;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -239,9 +240,12 @@ public abstract class SudokuActivity extends BaseActivity {
         //The Sudoku board is correct
         if (incorrectCells.size() == 0) {
             mSoundPlayer.playCorrectSound();
-            Toast.makeText(getBaseContext(),
-                    "Congratulations, You've Won!",
-                    Toast.LENGTH_LONG).show();
+            //Start SudokuWin activity
+            Intent intent = new Intent(this,SudokuWin.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+            startActivity(intent);
+            mGameViewModel.finishGame();
+            this.finish();
         }
 
         //The Sudoku board is incorrect

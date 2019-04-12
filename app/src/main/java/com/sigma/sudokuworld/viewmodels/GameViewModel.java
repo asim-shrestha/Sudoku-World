@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.SparseArray;
 import com.sigma.sudokuworld.game.GameMode;
+import com.sigma.sudokuworld.persistence.GameRepository;
 import com.sigma.sudokuworld.persistence.LanguageRepository;
 import com.sigma.sudokuworld.persistence.WordSetRepository;
 import com.sigma.sudokuworld.persistence.db.entities.Game;
@@ -241,5 +242,9 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
         }
 
         return label;
+    }
+
+    public void finishGame(){
+        new GameRepository(getApplication()).deleteGame(mGame);
     }
 }
