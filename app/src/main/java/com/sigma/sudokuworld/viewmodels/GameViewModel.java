@@ -100,10 +100,8 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
 
 
         if (!isCorrectValue(cellNumber, value)) {
-            value--;
-
-            if (mWordPairs !=  null && mWordPairs.size() >= value) {
-                new WordPairRepository(mApplication).incrementMisuseCount(mWordPairs.get(value).getPairID());
+            if (mWordPairs !=  null && mWordPairs.size() >= value - 1) {
+                new WordPairRepository(mApplication).incrementMisuseCount(mWordPairs.get(value - 1).getPairID());
             }
         }
 

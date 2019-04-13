@@ -16,7 +16,8 @@ interface PairWithSetDao {
         n.wordID as n_wordID, n.word as n_word, n.languageID as n_languageID,
         f.wordID as f_wordID, f.word as f_word, f.languageID as f_languageID,
         nlang.name as n_lang_name,
-        flang.name as f_lang_name
+        flang.name as f_lang_name,
+        misuseCount as incorrectCount
         FROM word_set_cross_reference as wscr
         INNER join word_pairs as p on wscr.pairID == p.pairID
         INNER JOIN words as n on p.nativeWordID == n.wordID
