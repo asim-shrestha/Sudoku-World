@@ -8,6 +8,8 @@ import android.util.Log;
 import android.util.SparseArray;
 import com.sigma.sudokuworld.game.GameMode;
 import com.sigma.sudokuworld.persistence.LanguageRepository;
+import com.sigma.sudokuworld.persistence.WordPairRepository;
+import com.sigma.sudokuworld.persistence.WordRepository;
 import com.sigma.sudokuworld.persistence.WordSetRepository;
 import com.sigma.sudokuworld.persistence.db.entities.Game;
 import com.sigma.sudokuworld.persistence.db.entities.Language;
@@ -22,7 +24,9 @@ import java.util.List;
 public abstract class GameViewModel extends BaseSettingsViewModel {
     private int mBoardSize;
     private int mBoardLength;
+
     private Game mGame;
+    private List<WordPair> mWordPairs;
 
     private MutableLiveData<List<String>> cellLabelsLiveData;
     private MutableLiveData<List<String>> buttonLabelsLiveData;
@@ -93,6 +97,15 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
 
         // Locked cell
         if (mGame.getLockedCells()[cellNumber]) return;
+
+
+        if (!isCorrectValue(cellNumber, value)) {
+            value--;
+
+            if (mWordPairs !=  null && mWordPairs.size() >= value) {
+                new WordPairRepository(mApplication).incrementMisuseCount(mWordPairs.get(value).getPairID());
+            }
+        }
 
         mGame.setCellValue(cellNumber, value);
         updateCellLabel(cellNumber, value);
@@ -172,14 +185,14 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
         WordSetRepository wordSetRepository = new WordSetRepository(getApplication());
         LanguageRepository languageRepository = new LanguageRepository(getApplication());
 
-        List<WordPair> wordPairs = wordSetRepository.getAllWordPairsInSet(mGame.getSetID());
+        mWordPairs = wordSetRepository.getAllWordPairsInSet(mGame.getSetID());
 
-        if (nativeLanguage == null && !wordPairs.isEmpty()) {
-            nativeLanguage = languageRepository.getLanguageByName(wordPairs.get(0).getNativeLanguageName());
+        if (nativeLanguage == null && !mWordPairs.isEmpty()) {
+            nativeLanguage = languageRepository.getLanguageByName(mWordPairs.get(0).getNativeLanguageName());
         }
 
-        if (foreignLanguage == null && !wordPairs.isEmpty()) {
-            foreignLanguage = languageRepository.getLanguageByName(wordPairs.get(0).getForeignLanguageName());
+        if (foreignLanguage == null && !mWordPairs.isEmpty()) {
+            foreignLanguage = languageRepository.getLanguageByName(mWordPairs.get(0).getForeignLanguageName());
         }
 
         nativeWordsMap = new SparseArray<>();
@@ -188,9 +201,9 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
         foreignWordsMap = new SparseArray<>();
         foreignWordsMap.append(0, "");
 
-        for(int i = 0; i < wordPairs.size(); i++) {
-            nativeWordsMap.append(i + 1, wordPairs.get(i).getNativeWord().getWord());
-            foreignWordsMap.append(i + 1, wordPairs.get(i).getForeignWord().getWord());
+        for(int i = 0; i < mWordPairs.size(); i++) {
+            nativeWordsMap.append(i + 1, mWordPairs.get(i).getNativeWord().getWord());
+            foreignWordsMap.append(i + 1, mWordPairs.get(i).getForeignWord().getWord());
         }
     }
 

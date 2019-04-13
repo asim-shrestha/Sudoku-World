@@ -52,12 +52,21 @@ public class WordPairRepository {
 
         long pID;
         if (pair == null) {
-            pID = mPairDao.insert(new Pair(0, nID, fID));
+            pID = mPairDao.insert(new Pair(0, nID, fID, 0));
         } else {
             pID = pair.getPairID();
         }
 
         return pID;
+    }
+
+    public void incrementMisuseCount(long pairID) {
+        Pair pair = mPairDao.getPair(pairID);
+
+        if (pair != null) {
+            pair.setMisuseCount(pair.getMisuseCount() + 1);
+            mPairDao.update(pair);
+        }
     }
 }
 
