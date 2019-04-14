@@ -12,6 +12,7 @@ import java.util.List;
 
 public class AddSetActivity extends AbstractDrillDownActivity implements AddSetFragment.OnFragmentInteractionListener {
     private static final int MIN_SET_SIZE = 4;
+    private static final int MAX_SET_SIZE = 4;
 
     private AddSetFragment mAddSetFragment;
     private List<WordPair> mCheckedPairs;
@@ -71,6 +72,11 @@ public class AddSetActivity extends AbstractDrillDownActivity implements AddSetF
         else if (mCheckedPairs.size() < MIN_SET_SIZE) {
             isValidSet = false;
             errorMsg = "The set needs at least " +  MIN_SET_SIZE + " words.";
+        }
+
+        else if (mCheckedPairs.size() > MAX_SET_SIZE) {
+            isValidSet = false;
+            errorMsg = "The set needs to be less than " +  MAX_SET_SIZE + " words.";
         }
 
         if (isValidSet) {

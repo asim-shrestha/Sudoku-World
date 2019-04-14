@@ -2,9 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.sigma.sudokuworld">
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
-    <application android:name=".SudokuWorldApplication"
+    <application
+        android:name=".SudokuWorldApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -12,13 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".sudoku.SudokuWin"></activity>
 
-        <meta-data android:name="com.google.android.gms.games.APP_ID"
-                   android:value="@string/app_id" />
-        <!--<meta-data android:name="com.google.android.gms.version"-->
-                   <!--android:value="@integer/google_play_services_version"/>-->
-
-
+        <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
+            android:value="@string/app_id" /> <!-- <meta-data android:name="com.google.android.gms.version" -->
+        <!-- android:value="@integer/google_play_services_version"/> -->
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,28 +27,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-
-        <activity android:name=".MenuActivity"/>
-        <activity android:name=".sudoku.singleplayer.SinglePlayerActivity"/>
-        <activity android:name=".sudoku.multiplayer.MultiplayerActivity" />
-
-        <!--Set builder-->
+        <activity android:name=".MenuActivity" />
+        <activity android:name=".sudoku.singleplayer.SinglePlayerActivity" />
+        <activity android:name=".sudoku.multiplayer.MultiplayerActivity" /> <!-- Set builder -->
         <activity
-                android:name=".masterdetail.MasterSelectActivity"
-                android:theme="@style/AppTheme"
-                android:parentActivityName=".MenuActivity"/>
+            android:name=".masterdetail.MasterSelectActivity"
+            android:parentActivityName=".MenuActivity"
+            android:theme="@style/AppTheme" />
         <activity
-                android:name=".masterdetail.detail.PairDetailActivity"
-                android:parentActivityName=".masterdetail.MasterSelectActivity"/>
+            android:name=".masterdetail.detail.PairDetailActivity"
+            android:parentActivityName=".masterdetail.MasterSelectActivity" />
         <activity
-                android:name=".masterdetail.detail.SetDetailActivity"
-                android:parentActivityName=".masterdetail.MasterSelectActivity"/>
+            android:name=".masterdetail.detail.SetDetailActivity"
+            android:parentActivityName=".masterdetail.MasterSelectActivity" />
         <activity
-                android:name=".masterdetail.detail.AddPairActivity"
-                android:parentActivityName=".masterdetail.MasterSelectActivity"/>
+            android:name=".masterdetail.detail.AddPairActivity"
+            android:parentActivityName=".masterdetail.MasterSelectActivity" />
         <activity
-                android:name=".masterdetail.detail.AddSetActivity"
-                android:parentActivityName=".masterdetail.MasterSelectActivity"/>
+            android:name=".masterdetail.detail.AddSetActivity"
+            android:parentActivityName=".masterdetail.MasterSelectActivity" />
     </application>
+
 </manifest>

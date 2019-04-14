@@ -1,6 +1,7 @@
 package com.sigma.sudokuworld.sudoku;
 
 import android.arch.lifecycle.Observer;
+import android.content.Intent;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -16,7 +17,9 @@ import android.widget.Toast;
 
 import com.sigma.sudokuworld.BaseActivity;
 import com.sigma.sudokuworld.SettingsFragment;
+import com.sigma.sudokuworld.game.GameDifficulty;
 import com.sigma.sudokuworld.game.GameMode;
+import com.sigma.sudokuworld.persistence.sharedpreferences.KeyConstants;
 import com.sigma.sudokuworld.persistence.sharedpreferences.PersistenceService;
 import com.sigma.sudokuworld.sudoku.singleplayer.LongClickHandler;
 import com.sigma.sudokuworld.viewmodels.GameViewModel;
@@ -36,7 +39,7 @@ public abstract class SudokuActivity extends BaseActivity {
     protected Button[] mInputButtons;
     protected ImageButton mBackButton;
     protected ImageButton mSettingsButton;
-    private SoundPlayer mSoundPlayer;
+    protected SoundPlayer mSoundPlayer;
 
     protected LongClickHandler mLongClickHandler;
     protected FragmentManager mFragmentManager;
@@ -236,16 +239,8 @@ public abstract class SudokuActivity extends BaseActivity {
         //Clear the selected cell highlight
         mSudokuGridView.clearHighlightedCell();
 
-        //The Sudoku board is correct
-        if (incorrectCells.size() == 0) {
-            mSoundPlayer.playCorrectSound();
-            Toast.makeText(getBaseContext(),
-                    "Congratulations, You've Won!",
-                    Toast.LENGTH_LONG).show();
-        }
-
         //The Sudoku board is incorrect
-        else {
+        if (!incorrectCells.isEmpty()) {
             mSudokuGridView.setIncorrectCells(incorrectCells);
             mSoundPlayer.playWrongSound();
         }
