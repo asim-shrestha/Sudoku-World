@@ -36,6 +36,7 @@ public class CheckedPairRecyclerViewAdapter extends RecyclerView.Adapter<Checked
         holder.mWordPair = mWordPairs.get(position);
         holder.mNativeWord.setText(mWordPairs.get(position).getNativeWord().getWord());
         holder.mForeignWord.setText(mWordPairs.get(position).getForeignWord().getWord());
+        holder.mCount.setText(Long.toString(mWordPairs.get(position).getIncorrectCount()));
 
         holder.mCheckBox.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,6 +65,7 @@ public class CheckedPairRecyclerViewAdapter extends RecyclerView.Adapter<Checked
         final TextView mNativeWord;
         final TextView mForeignWord;
         final CheckBox mCheckBox;
+        final TextView mCount;
         WordPair mWordPair;
 
         ViewHolder(View view) {
@@ -72,6 +74,7 @@ public class CheckedPairRecyclerViewAdapter extends RecyclerView.Adapter<Checked
             mCheckBox = view.findViewById(R.id.checkBox);
             mNativeWord = view.findViewById(R.id.nWord);
             mForeignWord = view.findViewById(R.id.fWord);
+            mCount = view.findViewById(R.id.incorrectCount);
         }
 
         @Override

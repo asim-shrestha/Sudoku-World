@@ -26,5 +26,8 @@ import android.arch.persistence.room.PrimaryKey
 data class Pair (
     @PrimaryKey(autoGenerate = true) var pairID: Long,
     var nativeWordID: Long,
-    var foreignWordID: Long
+    var foreignWordID: Long,
+    var misuseCount: Long = 0
 )
+
+

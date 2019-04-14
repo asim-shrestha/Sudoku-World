@@ -18,7 +18,8 @@ public class SettingsFragment extends Fragment {
     private Switch mSfxSwitch;
     private Switch mMusicSwitch;
     private Switch mHintsSwitch;
-    private Switch mRectangleSwitch;
+    //TODO Completely remove or implement Rectangle Mode
+    //private Switch mRectangleSwitch;
 
     private Button mCancelButton;
     private Button mSaveButton;
@@ -37,7 +38,7 @@ public class SettingsFragment extends Fragment {
         mSfxSwitch = mView.findViewById(R.id.sfxSwitch);
         mMusicSwitch = mView.findViewById(R.id.musicSwitch);
         mHintsSwitch = mView.findViewById(R.id.hintsSwitch);
-        mRectangleSwitch = mView.findViewById(R.id.rectangleMode);
+        //mRectangleSwitch = mView.findViewById(R.id.rectangleMode);
         mCancelButton = mView.findViewById(R.id.settingsCancelButton);
         mSaveButton = mView.findViewById(R.id.settingsSaveButton);
 
@@ -65,7 +66,7 @@ public class SettingsFragment extends Fragment {
         mSfxSwitch.setChecked(mMenuViewModel.isSfxEnabled());
         mMusicSwitch.setChecked(mMenuViewModel.isMusicEnabled());
         mHintsSwitch.setChecked(mMenuViewModel.isHintsEnabled());
-        mRectangleSwitch.setChecked(mMenuViewModel.isRectangleModeEnabled());
+        //mRectangleSwitch.setChecked(mMenuViewModel.isRectangleModeEnabled());
     }
 
     private void saveSettings() {
@@ -73,6 +74,6 @@ public class SettingsFragment extends Fragment {
         mMenuViewModel.setSfxEnabled(mSfxSwitch.isChecked());
         mMenuViewModel.setMusicEnabled(mMusicSwitch.isChecked());
         mMenuViewModel.setHintsEnabled(mHintsSwitch.isChecked());
-        mMenuViewModel.setRectangleModeEnabled(mRectangleSwitch.isChecked());
+        //mMenuViewModel.setRectangleModeEnabled(mRectangleSwitch.isChecked());
     }
 }

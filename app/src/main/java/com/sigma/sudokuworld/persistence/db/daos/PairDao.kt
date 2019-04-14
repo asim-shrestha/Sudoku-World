@@ -17,12 +17,14 @@ interface PairDao {
         n.wordID as n_wordID, n.word as n_word, n.languageID as n_languageID,
         f.wordID as f_wordID, f.word as f_word, f.languageID as f_languageID,
         nlang.name as n_lang_name,
-        flang.name as f_lang_name
+        flang.name as f_lang_name,
+        misuseCount as incorrectCount
         FROM word_pairs
         INNER JOIN words as n on nativeWordID == n.wordID
         INNER JOIN words as f on foreignWordID == f.wordID
         INNER JOIN languages as nlang on n.languageID == nlang.languageID
         INNER JOIN languages as flang on f.languageID == flang.languageID
+        ORDER BY misuseCount DESC
     """)
     fun getAllWordPairs(): LiveData<List<WordPair>>
 
@@ -31,7 +33,8 @@ interface PairDao {
         n.wordID as n_wordID, n.word as n_word, n.languageID as n_languageID,
         f.wordID as f_wordID, f.word as f_word, f.languageID as f_languageID,
         nlang.name as n_lang_name,
-        flang.name as f_lang_name
+        flang.name as f_lang_name,
+        misuseCount as incorrectCount
         FROM word_pairs
         INNER JOIN words as n on nativeWordID == n.wordID
         INNER JOIN words as f on foreignWordID == f.wordID
@@ -44,11 +47,17 @@ interface PairDao {
     @Query("SELECT * FROM word_pairs WHERE nativeWordID = :nativeWordID AND foreignWordID = :foreignWordID")
     fun getPair(nativeWordID: Long, foreignWordID: Long): Pair?
 
+    @Query("SELECT * FROM word_pairs WHERE pairID = :pairID")
+    fun getPair(pairID: Long): Pair?
+
     @Insert(onConflict = OnConflictStrategy.FAIL)
     fun insert(vararg wordPairs: Pair)
 
     @Insert(onConflict = OnConflictStrategy.FAIL)
     fun insert(wordPair: Pair): Long
+
+    @Update
+    fun update(vararg pair: Pair)
 
     @Delete
     fun delete(vararg pair: Pair)

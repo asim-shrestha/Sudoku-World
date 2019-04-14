@@ -9,5 +9,6 @@ data class WordPair (
         @Embedded(prefix = "n_") var nativeWord: Word = Word(),
         @Embedded(prefix = "f_") var foreignWord: Word = Word(),
         @ColumnInfo(name = "n_lang_name")var nativeLanguageName: String = "",
-        @ColumnInfo(name = "f_lang_name")var foreignLanguageName: String = ""
+        @ColumnInfo(name = "f_lang_name")var foreignLanguageName: String = "",
+        var incorrectCount: Long = 0
 )

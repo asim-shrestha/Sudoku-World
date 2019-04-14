@@ -80,18 +80,8 @@
                 android:text="@string/hintsMode"
                 android:layout_marginTop="10dp"
                 android:textColor="@color/colorWhite"/>
-
-            <Switch
-                android:id="@+id/rectangleMode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/RectangleMode"
-                android:layout_marginTop="10dp"
-                android:textColor="@color/colorWhite"/>
-
-
-
         </LinearLayout>
+
     </ScrollView>
         <LinearLayout
             android:layout_width="match_parent"
