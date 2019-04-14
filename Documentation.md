@@ -14,13 +14,16 @@
 - User story: As a competitor, I would like to challenge my friends to complete sudoku boards the fastest to see who has learned a new language better.
     - Given: that two users have a stable internet connection and is connected to google play games
     - When: the users press play in multiplayer mode
-    - Then: they will me match-made against each other and must race to finish their given board the fastest<br/><br/>
-    - Given: that the user is hosting a match
+    - Then: they will be match-made against each other and must race to finish their given board the fastest<br/><br/>
+    - Given: that the user has selected "Display native words in initial cells"
     - When: the user enters multiplayer mode
-    - Then: he will be able to choose the settings for the game such as difficulty and board size<br/><br/>
-    - Given: that the user is in a multiplayer match
-    - When: the user reaches a certain quota of filled cells
-    - Then: A power up will appear that the user can use to make solving the puzzle first easier for him<br/><br/>
+    - Then: the initial cells of a multiplayer game will be in the native language of the set<br/><br/>
+    - Given: that the user has a stable internet connection and has played a multiplayer math before
+    - When: the user is in the host game screen 
+    - Then: the user can invite players they have previously played to another match<br/><br/>
+    - Given: that the user has a stable internet connection and is in the multiplayer menu
+    - When: the user presses the leaderboards button
+    - Then: the user is able to see statistics such as players with the most wins and games played<br/><br/>
 
 
 - User story: As a language learner, I would like to create my own word sets to challenge myself with.
@@ -39,7 +42,7 @@
 
 
 - User story: As a user, I would like to play mutiple different puzzles so that I always face a new challenge.
-    - Given: that the user has pressed play within the "New Game" menu
+    - Given: that the user has presses play within the "New Game" menu
     - When: the game is loading
     - Then: a valid, single solution sudoku puzzle will be generated using a custom backtracking search algorithm.<br/><br/>
 
@@ -57,7 +60,7 @@
     - Then: there will be a timer under the sudoku board which keeps track of how long a puzzle has been played for.<br/><br/>
     - Given: that the user is playing a sudoku puzzle and has completed it properly
     - When: the user presses check answer
-    - Then: a menu with statistics such as total time taken and number of incorrect cells would display<br/><br/>
+    - Then: a menu with statistics such as total time taken and game mode will display<br/><br/>
 
 
 - User Story: As a user, I would like some relaxing music to be playing in order to help my concentration.
@@ -84,10 +87,10 @@
     - Then: a settings menu will appear, enabling the user to change desired settings<br/><br/>
     
 
-- User Story: As a language learner, I would like to be able to learn up to 4 different languages.
-    - Given: that the user is in the set builder
-    - When: the user wants to make a new word set, the user can add word pairs of the desired language
-    - Then: the user is able to create a worded said in either english, spanish, french, or russian<br/><br/>
+- User Story: As a language learner, I would like to be able to learn up to many different languages.
+    - Given: that the user is within the "My Word Pairs" section of the "Change set" menu
+    - When: the user is creating a word pair
+    - Then: the user is able to choose the languages that the pairs of words belong to<br/><br/>
 
 
 # User stories of past iterations:
@@ -130,7 +133,10 @@
 - User Story: As a player, I would like to be able to check if I solved the sudoku puzzle correctly.
     - Given: that the user has placed the correct values into every cell
     - When: the user presses the "Check Answer" button
-    - Then: a toast saying “Congratulations, You’ve Won!”  will display.<br/><br/>
+    - Then: a toast saying “Congratulations, You’ve Won!”  will display.
+    - Given: that the user has not placed the correct values into every cell
+    - When: the user presses the "Check Answer" button
+    - Then: all of the incorrect cells will be highlighted in red<br/><br/>
 
 
 - User Story: As a transiter, I would like to be able to play the game in landscape mode for when i ride the bus.
@@ -169,7 +175,10 @@
     - Then: the set is downloaded and the user is able to select the set in the "My Sets" catagory and play puzzles with it<br/><br/>
 
     
-- User story: As a user, I would like to know which words I struggle with the most so that I may practice them more.
-    - Given: that the user has gotten at least 12 unique words wrong before
-    - When: the user is in the "My Sets" catagory of the "Set Builder" menu
-    - Then: A set containing the users most incorrect words will appear<br/><br/>
+- User story: As a user, I would like to be able to know and practice with the words i struggle the most with.
+    - Given: that the user has gotten at least words wrong before
+    - When: the user is creating a new word set with the incorrect words
+    - Then: the word list will be sorted by the number of times the user has gotten the word wrong
+    - Given: that the user has gotten words wrong before
+    - When: the user is selecting the words he/she desires for her word set
+    - Then: numbers will appear beside the word pairs that indicate how many times they have been incorrect<br/><br/>
