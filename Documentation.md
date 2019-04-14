@@ -21,9 +21,9 @@
     - Given: that the user has a stable internet connection and has played a multiplayer math before
     - When: the user is in the host game screen 
     - Then: the user can invite players they have previously played to another match<br/><br/>
-    - Given: that the user is in the multiplayer menu
+    - Given: that the user has a stable internet connection and is in the multiplayer menu
     - When: the user presses the leaderboards button
-    - Then: the user can invite players they have previously played to another match<br/><br/>
+    - Then: the user is able to see statistics such as players with the most wins and games played<br/><br/>
 
 
 - User story: As a language learner, I would like to create my own word sets to challenge myself with.
@@ -60,7 +60,7 @@
     - Then: there will be a timer under the sudoku board which keeps track of how long a puzzle has been played for.<br/><br/>
     - Given: that the user is playing a sudoku puzzle and has completed it properly
     - When: the user presses check answer
-    - Then: a menu with statistics such as total time taken and number of incorrect cells will display<br/><br/>
+    - Then: a menu with statistics such as total time taken and game mode will display<br/><br/>
 
 
 - User Story: As a user, I would like some relaxing music to be playing in order to help my concentration.
@@ -178,4 +178,7 @@
 - User story: As a user, I would like to be able to know and practice with the words i struggle the most with.
     - Given: that the user has gotten at least words wrong before
     - When: the user is creating a new word set with the incorrect words
-    - Then: the word list will be sorted by the number of times the user has gotten the word wrong<br/><br/>
+    - Then: the word list will be sorted by the number of times the user has gotten the word wrong
+    - Given: that the user has gotten words wrong before
+    - When: the user is selecting the words he/she desires for her word set
+    - Then: numbers will appear beside the word pairs that indicate how many times they have been incorrect<br/><br/>
