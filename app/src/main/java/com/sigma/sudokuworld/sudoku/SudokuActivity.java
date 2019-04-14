@@ -39,7 +39,7 @@ public abstract class SudokuActivity extends BaseActivity {
     protected Button[] mInputButtons;
     protected ImageButton mBackButton;
     protected ImageButton mSettingsButton;
-    private SoundPlayer mSoundPlayer;
+    protected SoundPlayer mSoundPlayer;
 
     protected LongClickHandler mLongClickHandler;
     protected FragmentManager mFragmentManager;
@@ -239,28 +239,8 @@ public abstract class SudokuActivity extends BaseActivity {
         //Clear the selected cell highlight
         mSudokuGridView.clearHighlightedCell();
 
-        //The Sudoku board is correct
-        if (incorrectCells.size() == 0) {
-            mSoundPlayer.playCorrectSound();
-            //Start SudokuWin activity
-            Intent intent = new Intent(this,SudokuWin.class);
-
-            //Place game time into intent
-            intent.putExtra(KeyConstants.GAME_TIME_KEY, mGameTimer.getElapsedTime());
-            //Place game difficulty into intent
-            String gameDifficulty = GameDifficulty.toString(mGameViewModel.getGameDifficulty());
-            intent.putExtra(KeyConstants.DIFFICULTY_KEY, gameDifficulty);
-
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
-            startActivity(intent);
-
-            //End activity and delete game instance
-            mGameViewModel.deleteGame();
-            this.finish();
-        }
-
         //The Sudoku board is incorrect
-        else {
+        if (!incorrectCells.isEmpty()) {
             mSudokuGridView.setIncorrectCells(incorrectCells);
             mSoundPlayer.playWrongSound();
         }

@@ -36,6 +36,5 @@ public class SudokuWin extends BaseActivity {
 
         difficultyText.setText(gameDifficulty);
         timeText.setText(gameTime);
-
     }
 }
