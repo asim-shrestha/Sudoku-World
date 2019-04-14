@@ -16,6 +16,16 @@ public enum GameDifficulty {
                 throw new IllegalArgumentException("Game difficulty not recognized");
         }
     }
+
+    public static String toString(GameDifficulty gameDifficulty) {
+        switch (gameDifficulty){
+            case EASY: return "Easy";
+            case MEDIUM: return "Medium";
+            case HARD: return "Hard";
+            default:
+                throw new IllegalArgumentException("Game difficulty not recognized");
+        }
+    }
 }
 
 
