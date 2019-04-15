@@ -103,7 +103,7 @@ public abstract class GameViewModel extends BaseSettingsViewModel {
 
 
         if (!isCorrectValue(cellNumber, value)) {
-            if (mWordPairs !=  null && mWordPairs.size() >= value - 1) {
+            if (mWordPairs !=  null && mWordPairs.size() >= value && (getGameMode() != GameMode.NUMBERS)) {
                 new WordPairRepository(mApplication).incrementMisuseCount(mWordPairs.get(value - 1).getPairID());
             }
         }
